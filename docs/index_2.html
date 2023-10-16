@@ -2516,7 +2516,7 @@ nimmt.</p>
 <pre><code>## # A tibble: 1 × 5
 ##     row   col expected actual file                                              
 ##   &lt;int&gt; &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;                                             
-## 1     3     1 a double .      C:/Users/nikla/AppData/Local/Temp/Rtmp0IFbtr/file…</code></pre>
+## 1     3     1 a double .      C:/Users/nikla/AppData/Local/Temp/RtmpmwEXpx/file…</code></pre>
 <p><code>readr</code> erwartete ein <code>double</code>, aber bekam ein
 <code>.</code>. Das lässt vermuten, dass der Dataset <code>.</code> für
 <em>Missing Values</em> benutzt. Wir setzen dafür
@@ -3515,7 +3515,7 @@ Model die starke Beziehung zwischen Preis und Karat entfernen.</p>
 ## ✖ dplyr::lag()      masks stats::lag()
 ## ✖ yardstick::spec() masks readr::spec()
 ## ✖ recipes::step()   masks stats::step()
-## • Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
+## • Use suppressPackageStartupMessages() to eliminate package startup messages</code></pre>
 <pre class="r"><code>diamonds &lt;- diamonds |&gt;
   mutate(
     log_price = log(price),
@@ -3547,37 +3547,37 @@ x</code></pre>
 <pre class="r"><code>z &lt;- c(rep(5, 20), rep(10, 20), rep(-1, 20), rep(-5, 20), rep(-2,20))
 y &lt;- rnorm(100) + 1:100 + z
 y</code></pre>
-<pre><code>##   [1]  7.087713  7.321207  8.106566  8.804173  9.713520 12.088091 12.314201
-##   [8] 13.353793 13.342982 14.055208 15.896348 16.980965 17.456429 19.908262
-##  [15] 17.831188 22.082643 21.348611 23.159554 23.119865 22.867998 30.947931
-##  [22] 32.913318 30.873215 35.661068 35.471435 35.040201 35.781847 39.111359
-##  [29] 39.773196 39.427953 42.475791 42.528065 43.914385 42.825690 44.882354
-##  [36] 46.187247 46.979110 48.878365 48.334274 49.536221 40.454101 41.612361
-##  [43] 40.694364 42.995962 43.193172 44.851549 46.944467 47.193097 48.368653
-##  [50] 47.343744 49.877798 50.758537 51.972512 51.389331 54.718265 55.605214
-##  [57] 55.042207 55.615891 58.045386 59.829637 55.695530 57.035632 56.727679
-##  [64] 58.908173 61.131282 58.341878 62.335617 63.353538 64.551226 64.800588
-##  [71] 66.469988 68.932449 67.694637 70.156677 70.997340 70.765587 71.722477
-##  [78] 72.127470 75.145907 74.560320 77.921950 80.477711 81.217312 82.020454
-##  [85] 83.064557 85.243119 84.246712 86.316922 87.686614 88.088023 88.857129
-##  [92] 88.466012 91.569994 91.962984 92.496412 95.603468 96.410373 95.933892
-##  [99] 98.877735 97.797002</code></pre>
+<pre><code>##   [1]  5.951268  8.619043  7.072649  8.622613 11.675578 10.248445 12.269853
+##   [8] 12.617224 13.289976 14.657750 15.998992 17.312293 16.920397 18.447024
+##  [15] 19.263508 21.017030 23.591946 23.961134 23.981846 25.446944 32.254438
+##  [22] 29.258340 34.066953 34.035883 33.920828 34.602577 36.299464 38.116590
+##  [29] 38.929531 39.151473 41.361261 43.224655 42.456821 44.566442 44.768332
+##  [36] 47.163830 47.710610 47.775110 48.554507 50.582241 40.581503 42.865030
+##  [43] 41.889910 43.238587 43.673579 43.724959 44.740644 46.159683 46.696245
+##  [50] 48.238053 49.341951 51.830339 49.775779 54.694538 53.595642 54.536998
+##  [57] 55.694423 56.272682 58.427316 59.089598 54.681300 56.568142 57.778026
+##  [64] 58.742936 61.190537 59.997247 63.744984 64.507903 64.498317 64.676983
+##  [71] 65.296272 68.213419 68.927387 70.760593 70.079900 71.607194 70.455052
+##  [78] 74.453922 74.595011 74.287771 79.837202 79.189021 80.136261 82.473556
+##  [85] 84.549710 83.966076 86.163425 85.322000 87.068785 87.750776 90.303175
+##  [92] 89.289786 91.888923 91.074279 94.044214 96.079241 94.276898 98.242531
+##  [99] 96.232022 98.078180</code></pre>
 <pre class="r"><code>kat &lt;- c(rep(&quot;blau&quot;, 20), rep(&quot;grün&quot;, 20), rep(&quot;orange&quot;, 20), rep(&quot;rot&quot;, 20), rep(&quot;schwarz&quot;, 20))
 df &lt;- tibble(x, y, kat)
 df</code></pre>
 <pre><code>## # A tibble: 100 × 3
 ##        x     y kat  
 ##    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;
-##  1     1  7.09 blau 
-##  2     2  7.32 blau 
-##  3     3  8.11 blau 
-##  4     4  8.80 blau 
-##  5     5  9.71 blau 
-##  6     6 12.1  blau 
+##  1     1  5.95 blau 
+##  2     2  8.62 blau 
+##  3     3  7.07 blau 
+##  4     4  8.62 blau 
+##  5     5 11.7  blau 
+##  6     6 10.2  blau 
 ##  7     7 12.3  blau 
-##  8     8 13.4  blau 
+##  8     8 12.6  blau 
 ##  9     9 13.3  blau 
-## 10    10 14.1  blau 
+## 10    10 14.7  blau 
 ## # ℹ 90 more rows</code></pre>
 <pre class="r"><code>df |&gt;
   ggplot(aes(x=x,y=y)) +
@@ -3592,16 +3592,16 @@ d_a</code></pre>
 <pre><code>## # A tibble: 100 × 5
 ##    .pred .resid     x     y kat  
 ##    &lt;dbl&gt;  &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;
-##  1  9.13  -2.04     1  7.09 blau 
-##  2  9.99  -2.67     2  7.32 blau 
-##  3 10.9   -2.75     3  8.11 blau 
-##  4 11.7   -2.92     4  8.80 blau 
-##  5 12.6   -2.87     5  9.71 blau 
-##  6 13.4   -1.36     6 12.1  blau 
-##  7 14.3   -2.00     7 12.3  blau 
-##  8 15.2   -1.82     8 13.4  blau 
-##  9 16.0   -2.70     9 13.3  blau 
-## 10 16.9   -2.85    10 14.1  blau 
+##  1  9.12 -3.17      1  5.95 blau 
+##  2  9.99 -1.37      2  8.62 blau 
+##  3 10.9  -3.78      3  7.07 blau 
+##  4 11.7  -3.10      4  8.62 blau 
+##  5 12.6  -0.908     5 11.7  blau 
+##  6 13.4  -3.20      6 10.2  blau 
+##  7 14.3  -2.04      7 12.3  blau 
+##  8 15.2  -2.56      8 12.6  blau 
+##  9 16.0  -2.76      9 13.3  blau 
+## 10 16.9  -2.25     10 14.7  blau 
 ## # ℹ 90 more rows</code></pre>
 <pre class="r"><code>ggplot(d_a, aes(x = x, y = .resid)) + 
   geom_point() +
@@ -5612,12 +5612,12 @@ Alternativen ausgeben zu lassen.</p>
 wir <code>str_glue()</code> aus dem <strong>glue</strong> Paket
 benutzen. Alles innerhalb <code>{}</code> wird bewertet, als wäre es
 außerhalb der Anführungszeichen.</p>
-<pre class="r"><code>df |&gt; mutate(greeting = str_glue(&quot;Hi {name}!&quot;))</code></pre>
+<pre class="r"><code>#df |&gt; mutate(greeting = str_glue(&quot;Hi {name}!&quot;))</code></pre>
 <p><code>str_glue()</code> konvertiert <em>Missing Values</em> zu
 <code>"NA"</code>. Jetzt ist es inkonsistent zu <code>str_c()</code>.
 Wenn du <code>{</code> oder <code>}</code> einfügen willst, nutze
 <code>{{</code> bzw. <code>}}</code>.</p>
-<pre class="r"><code>df |&gt; mutate(greeting = str_glue(&quot;{{Hi {name}!}}&quot;))</code></pre>
+<pre class="r"><code>#df |&gt; mutate(greeting = str_glue(&quot;{{Hi {name}!}}&quot;))</code></pre>
 </div>
 <div id="str_flatten" class="section level3" number="12.3.3">
 <h3><span class="header-section-number">12.3.3</span>
@@ -6843,7 +6843,7 @@ oder <code>now()</code>:</p>
 <pre class="r"><code>today()</code></pre>
 <pre><code>## [1] &quot;2023-10-16&quot;</code></pre>
 <pre class="r"><code>now()</code></pre>
-<pre><code>## [1] &quot;2023-10-16 00:35:58 CEST&quot;</code></pre>
+<pre><code>## [1] &quot;2023-10-16 11:22:04 CEST&quot;</code></pre>
 <p>Die folgenden Abschnitte beschreiben vier weitere Möglichkeiten.</p>
 <div id="während-import-mit-readr" class="section level3"
 number="15.2.1">
