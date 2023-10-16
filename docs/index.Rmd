@@ -1,0 +1,5 @@
+---
+title: "Meine R Seite"
+---
+
+Entdecke die Welt von R. Lerne programmieren kennen. Gehe dann in Data Science mit R. Auch Machine Leaarning mit R ist aufregend. Aber nichts ist so spannend, wie zahlreiche kleinere R Projekte mit massig Code.

@@ -1,0 +1,6339 @@
+---
+title: "R Data Science - Kapitel 2"
+---
+
+# Einleitung 
+
+Im ersten Teil haben wir die wichtigsten Konzepte kennengelernt. Es wurde ein wenig theoretischer und wir haben viel über R kennengelernt. Ich möchte Teil 1 ein wenig mit der Grundgrammatik vergleichen.  
+In Teil 2 geht es um **Data Science**. Hier lernen wir dia Anwendung kennen, mehr Vokabeln, mehr Spaß?  
+Wir werden sehen. 
+
+## Was lernen wir?  
+
+In einem typischen Data Science Projekt haben wir folgende Schritte:  
+
+Zuerst müssen wir die Daten importieren. Aus einer Datei oder dem Netz oder einer Datenbank für gewöhnlich, so dass wir eine schöne, übersichtliche Tabelle haben. Im besten Fall versteht sich.  
+  
+Danach muss aufgeräumt werden. Spalten mit Variablen und Zeilen mit Beobachtungen liegen uns vor, so dass wir uns im weiteren nicht mehr um nervige Aufräumarbeit kümmern müssen.  
+  
+Haben wir aufgeräumt, so werden die Daten transformiert. Relevante Variablen werden zusammengefasst, neue Variablen entstehen aus alten durch Funktionen, *summary statistics* werden berechnet. Aufräumen und Transformation nennen wir zusammen: *Wrangling*.  
+
+Danach wird es spannend: Visualisation und Modelle erstellen steht im Vordergrund. Eine Grafik sagt mehr als 1000 Worte. Richtig romantisch, oder?  
+
+Kommunikation folgt dann. Kommuniziere deine Ergebnisse zu Anderen. Dies wird oft vernachlässigt, ist aber nicht immer so leicht wie man denkt.  
+
+Umfasst werden all diese Werkzeuge von der Programmierung. Um ein erfolgreicher Data Scientist zu sein, musst du nicht auch ein Experte in Sachen Programmierung sein. Aber ein besserer Programmierer zu sein hilft, da es dir erlaubt viele Aufgaben zu automatisieren und erheblich zu beschleunigen.  
+
+## Voraussetzungen
+
+Es hilft natürlich sich mit den wichtigsten Konzepten von Teil 1 auseinandergesetzt zu haben. Neben R und RStudio brauchen wir noch das **tidyverse** Paket und viele weitere.  
+
+### tidyverse
+
+Ein Paket ist eine Kollektion von Funktionen, Daten und Dokumentationen von R. Funktionen in R zu nutzen ist das Erfolgsgeheimis von R.  
+Die meisten Pakete, die wir hier kennenlernen sind Teil vom `tidyverse` Paket. Mit einer Zeile Code kannst du `tidyverse` installieren.  
+
+```{r eval = FALSE}
+install.packages("tidyverse")
+```
+
+Anschließend musst du natürlich noch das Paket laden:
+
+```{r}
+library(tidyverse)
+```
+
+So gehen wir immer vor, wenn Pakete benötigt werden. Sie erleichtern uns die Arbeit.
+Acht Pakete werden hier auf einmal geladen: **ggplot2**, **tibble**, **tidyr**, **readr**, **purrr**, **dplyr**, **stringr** und **forcats**. Bei fast jeder Analyse brauchst du sie.
+
+### Weitere Pakete
+
+In diesem Teil brauchen wir wahrscheinlich noch drei weitere Pakete:
+
+```{r eval=FALSE}
+install.packages(c("nycflights13", "gapminder", "Lahman"))
+```
+
+```{r}
+library(nycflights13)
+library(gapminder)
+library(Lahman)
+```
+
+Sie liefern uns Daten.
+
+# Daten visualisieren
+
+In diesem Kapitel fokusieren wir uns auf `ggplot2`. Das Paket haben wir schon über `library(tidyverse)` geladen. Falls nicht, holen wir dies schnell nach.  
+
+```{r}
+library(tidyverse)
+```
+
+Ein Paket musst du nur einmal installieren, es aber bei jeder neuen Session wieder laden. Hinzo kommen jetzt Daten von Pinguinen. 
+
+```{r eval = FALSE}
+install.packages("palmerpenguins")
+```
+
+```{r}
+library(palmerpenguins)
+```
+
+## Fragen
+
+Gibt es einen Zusammenhang zwischen der Flossenlänge eines Pinguins und seinem Gewicht? Wie sieht dieser Zusammenhang aus? Hängt er von der Spezie der Pinguine ab? Und vielleicht sogar von der Herkunft der Pinguine?
+
+### `penguins` data frame  
+
+Dieser Datensatz enthält 344 Zeilen und 7 Spalten.  
+
+Einen alternativen Blick kannst du mit `glimpse()` auf die Daten werfen. Oder mit `View(penguins)`.
+
+```{r}
+glimpse(penguins)
+```
+
+`species`, `flipper_length_mm` und `body_mass_g` gehören zu den Variablen. Mehr Infos unter `?penguins`.  
+
+Wir wollen jetzt das Gewicht in Abhängigkeit von der Flossenlänge darstellen. Für alle drei Spezien getrennt.  
+
+### `ggplot` erstellen
+
+Das erste Argument von `ggplot()` ist der Datensatz. 
+
+```{r}
+ggplot(data = penguins)
+```
+
+Es entsteht ein leerer Graph. Wir brauchen natürlich noch die Variablen.  
+Das `mapping` Argument der `ggplot()` Funktion definiert wie Variablen abgebildet werden, um sie zu visualisieren. Es kommt immer mit der `aes()` Funktion und den `x` und `y` Argumenten von `aes()` daher.  
+Bei uns soll die Flossenlänge auf der x-Achse sein und der Body Maß auf der y-Achse. 
+
+```{r}
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm))
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm, y = body_mass_g))
+```
+
+Unsere leere Leinwand wurde jetzt ein wenig gefüllt. Aber wo sind die Pinguine? Noch nicht da, weil wir noch nicht gesagt haben wie die Beobachtungen auf den Plot angewendet werden sollen.
+Um das zu machen müssen wir ein **geom** definieren. Dieses Objekt benutzt einen Plot um Daten zu repräsentieren. Oftmals wird der Typ des Plots an `geom_` angehängt wie z.B. `geom_bar`, `geom_line`, `geom_boxplot` oder `geom_point`.  
+Mithilfe von `geom_point` werden Punkte zum Plot hinzugefügt, so dass ein Scatterplot entsteht. Insgesamt gibt es sehr viele *geom* Funktionen.
+
+```{r}
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+```
+
+Wir haben einen einigermaßen linearen, positiven Zusammenhang. Genauso wie erwartet zwischen Flossenlänge und Gewicht. Nur die verschiedenen Spezien fehlen noch.  
+Eine Fehlermeldung wurde aber auch noch ausgegeben. Hier fehlen 2 Werte, siehe Tabelle oder hier (der Code ist neu für uns. Keine Sorge, Erklärung kommt noch).
+
+```{r}
+penguins |>
+  select(species, flipper_length_mm, body_mass_g) |>
+  filter(is.na(body_mass_g) | is.na(flipper_length_mm))
+```
+
+
+*Missing Values* haben ihre Daseinsberechtigung. Kein Witz.
+
+### Hinzufügen von *aesthetics* und *layers*
+
+Den Zusammenhang zwischen zwei Variablen darzustellen ist schön und gut. Doch oftmals fragt man sich, ob es nicht noch weitere Variablen gibt, die den Zusammenhang erklären oder ändern.  
+In unserem Beispiel nehmen wir noch die Spezie hinzu. Aber wo genau?  In das *aesthetic mapping*, in die `aes()` Funktion.
+
+```{r}
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm, y = body_mass_g,
+                     color = species)) +
+  geom_point()
+```
+
+Da eine weitere Variable in das `aes()` aufgenommen wurde, hat `ggplot2` dieser automatisch einen einzigartigen Wert zugewiesen, hier eine eine Farbe jedem Level der Variable. Das nennt sich **scaling**. Auch eine Legende wurde automatisch hinzugefügt. Weitere Schichten (*layers*) sind möglich.  
+Zum Beispiel eine glatte Kurve, die den Zusammenhang anschaulich wiedergibt. Ein neues *geom* wird hinzugefügt: `geom_smooth()`.
+
+```{r}
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm, y = body_mass_g,
+                     color = species)) +
+  geom_point() +
+  geom_smooth()
+```
+
+Wir wollen aber nur eine Kurve für alle Spezien zusammen. Wie geht das denn?
+
+Wir haben aes mappings in `ggplot()` definiert, im globalen Level. Jetzt werden sie weiter vererbt von jeder folgenden *geom* Schicht des Plots. Wir können aber jeder *geom* Funktion in `ggplot2` ein lokales `mapping` verpassen. Wollen wir farbige Punkte für die verschiedenen Spezien, aber eine Kurve für alle, so können wir nur für die Punkte `geom_point()` eine Unterscheidung vornehmen, durch `color = species`.
+
+```{r}
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(mapping = aes(color = species)) +
+  geom_smooth()
+```
+
+So gefällt uns das doch schon viel besser. Uns reichen verschiedene Farben aber nicht aus. Wir wollen auch verschiedene Symbole. Es gibt auch Farbenblinde, auch an die denken wir jetzt einmal.
+
+Zusätzlich können wir auch `species` zum `shape` *aes* hinzufügen.
+
+```{r}
+ggplot(data = penguins,
+       mapping = aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(mapping = aes(color = species, shape = species)) +
+  geom_smooth()
+```
+
+Als weitere Schicht können wir noch die `labs()` Funktion hinzufügen. Alles (*Labels*) sieht dann noch schöner aus. 
+
+```{r}
+ggplot(penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = species)) +
+  geom_smooth() +
+  labs(
+    title = "Body mass and flipper length",
+    subtitle = "Dimensions for Adelie, Chinstrap, and Gentoo Penguins",
+    x = "Flipper length (mm)", 
+    y = "Body mass (g)",
+    color = "Species", 
+    shape = "Species"
+  )
+```
+
+Die Ausdrücke `data = penguins` und `mapping = aes()` können wir auch verkürzen zu `penguins` und `aes()`. 
+
+```{r eval = FALSE}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) + 
+  geom_point()
+```
+
+Später lernen wir die *Pipe* kennen, dann können wir weiter vereinfachen.
+
+```{r eval = FALSE}
+penguins |> 
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g)) + 
+  geom_point()
+```
+
+## Verteilungen visualisieren
+
+Die Visualisierung hängt natürlich vom Datentyp bzw. dem Skalenniveau ab: kategorial oder numerisch.
+
+### kategoriale Variable
+
+Für kategoriale Variablen bietet sich ein *bar chart* an, ein Säulendiagramm. Es zählt die Häufigkeit der Variable `x`.
+
+```{r}
+ggplot(penguins, aes(x = species)) +
+  geom_bar()
+```
+
+Die Reihenfolge wird oft durch das Alphabet vorgenommen, kann aber nach Häufigkeit vorgenommen werden. Dafür müssen wir aber die Variable zu einem Faktor transformieren. Danach können wir neu sortieren.
+
+```{r}
+ggplot(penguins, aes(x = fct_infreq(species))) +
+  geom_bar()
+```
+
+Mehr dazu später.
+
+### Numerische Variable
+
+Um die Verteilung einer stetigen Variable zu visualisieren, benutze ein Histogramm oder einen *density* (Dichte) *plot*.
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth = 200)
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_density()
+```
+
+Wir sehen, dass 39 Pinguine ein Gewicht zwischen 3500 g und 3700 g haben (Klassengrenzen, Klassenbreite = 200).  
+
+```{r}
+penguins |>
+  count(cut_width(body_mass_g, 200))
+```
+
+Probiere verschiedene Bandbreiten aus, um das anschaulichste Histogramm zu erhalten.
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth = 20)
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth = 200)
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram(binwidth = 2000)
+```
+
+
+## Zusammenhänge visualisieren
+
+Dafür brauchen wir natürlich mindestens zwei Variablen.
+
+### Eine numerische und eine kategoriale Variable
+
+Boxplots natürlich. 
+
+```{r}
+ggplot(penguins, aes(x = species, y = body_mass_g)) +
+  geom_boxplot()
+```
+
+Alternativ bieten sich Häufigkeits-Polygonzüge an, mit `geom_freqpoly()`. Statt konstante Höhen werden hier Linien benutzt. 
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g, color = species)) +
+  geom_freqpoly(binwidth = 200, linewidth = 0.75)
+```
+
+Wir können die Dicke der Linien mit `linewidth` anpassen. Wir können *density plots* anschaulich überlappen, sie transparent machen, Farben benutzen und sie befüllen. Rund werden sie auch noch. Der "Transparenzwert" `alpha` liegt zwischen 0 (komplett transparent) und 1.
+
+```{r}
+ggplot(penguins, aes(x = body_mass_g, color = species, fill = species)) +
+  geom_density(alpha = 0.5)
+```
+
+### Zwei kategoriale Variablen
+
+Die erste Variable wird unter `x` `aes` auf der x-Achse abgetragen und die zweite Variable wird dem `fill` `aes` zugeordnet. Farblich wird dann jeder Balken noch einmal unterteilt (bzgl. der Variable).  
+
+Die Plots sind dann selbsterklärend.
+
+```{r}
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar()
+ggplot(penguins, aes(x = island, fill = species)) +
+  geom_bar(position = "fill")
+```
+
+### Zwei numerische Variablen
+
+Ein **Scatterplot** ist die weitverbreiteste Darstellungsart von zwei numerischen Variablen. 
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+```
+
+### Drei oder mehr Variablen
+
+Eine Möglichkeit ist es, die Variablen einem `aes` zuzuordnen. Neben x-Achse und y-Achse haben wir so insgesamt 4 Variablen: `species` und `island` noch dazu.
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = island))
+```
+
+Zu viele `aes` machen einen Plot aber unübersichtlich. Eine andere, nützliche Möglichkeit bei kategorialen Variablen sind Subplots, **facets** genannt.  
+Benutze dafür `facet_wrap()` Das erste Argument ist eine Tilde, das zweite der Variablenname. Diese Variable sollte natürlich kategorial sein.  
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species, shape = species)) +
+  facet_wrap(~island)
+```
+
+## Plots speichern
+
+`ggsave()` speichert. 
+
+```{r}
+ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point()
+#> Warning: Removed 2 rows containing missing values (`geom_point()`).
+ggsave(filename = "my-plot.png")
+#> Saving 6 x 4 in image
+#> Warning: Removed 2 rows containing missing values (`geom_point()`).
+```
+
+Dieser Befehl speichert den Plot in der *working directory*. Notfalls sucht die Datei auf eurem Computer. Mehr dazu unter `?sec-workflow-scripts`.  
+
+## Gängige Probleme
+
+Denke daran deine Klammern wieder zu schließen. Wenn du ein `+` siehst. R wartet darauf, dass du deinen Befehl zu Ende schreibst. Das `+` steht am Ende der Zeile, nicht am Anfang.  
+Scheue dich nicht google.com zu benutzen, hier findest du wirklich alles. Oder Chat GPT.
+
+# Daten transformieren
+
+## Einleitung
+
+Visualisierung ist schön und gut. Aber es ist doch sehr selten, dass du deine Daten genau in der gewünschten Form bekommst. Oft musst du neue Variablen erstellen, andere zusammenfassen, oder umbenennen, Werte in ihnen neu sortieren. All das lernen wir in diesem Kapitel. Dafür brauchen wir das **dplyr** Paket und einen neuen Datensatz.
+
+### Voraussetzungen
+
+```{r}
+library(nycflights13)
+library(tidyverse)
+```
+
+### nycflights13
+
+Der Datensatz enthält 336 776 Flüge, die 2013 von NYC aus geflogen wurden.
+
+```{r}
+flights
+```
+
+Dieser Datensatz sieht jetzt optisch ein wenig anders aus, als wir es (von früher) gewohnt sind. Weil er ein **tibble** ist, ein spezieller Typ von *Data Frame*. Es werden hier nur die ersten Zeilen angezeigt. Auch nicht alle Spalten, gersde so viele wie auf den Bildschirm passen oder ins Fenster. Der Datentyp ist für große Datensätze gemacht. `View(flights)` bietet eine interaktive Ansicht, ähnlich wie in Excel. Mit `print(flights, width = Inf)` kannst du alle Spalten anzeigen lassen. Oder mit `glimpse()`.
+
+```{r}
+glimpse(flights)
+```
+
+Hier ist auch der Typ jeder Variable angegeben: `<int>` für *integer*, `<dbl>` für *double*, `<chr>` für *character* und `<dttm>` für *date-time*. Wichtig sind sie, da die Operationen, die du auf sie ausführst, vom Datentyp abhängen.  
+
+### dplyr basics
+
+Die wichtigsten *dplyr verbs* lernen wir hier kennen. Sie erlauben uns die meiste Arbeit der Datenmanipulation zu verrichten. Was haben sie alle gemeinsam?
+
+1. Das erste Argument ist ein *Data Frame*.  
+
+2. Die nachfolgenden Argumente beschreiben was mit dem *Data Frame* zu machen ist. Sie benutzen die Variablennamen hierbei (ohne Anführungszeichen).  
+
+3. Das Ergebnis ist ein neuer *Data Frame*.  
+
+Da das erste Argument immer ein *Data Frame* ist, und auch der Output, arbeiten dplyr verbs gut mit der **pipe**, `|>`:  
+
+`x |> f(y)` ist äquivalent zu `f(x, y)`  
+
+und  
+
+`x |> f(y) |> g(z)` ist äquivalent zu `g(f(x, y), z)`.  
+
+Ausgesprochen wir die *pipe* als "dann" oder "then". 
+
+```{r}
+flights |>
+  filter(dest == "IAH") |> 
+  group_by(year, month, day) |> 
+  summarize(
+    arr_delay = mean(arr_delay, na.rm = TRUE)
+  )
+```
+
+```{r}
+fd  <- data.frame(A = c(2009, 2009, 2009, 2010, 2010), B = c(3,4,5,6,8))
+fd|>
+  group_by(A)|>
+  summarise(B = mean(B))
+```
+
+
+Der Code startet mit dem `flights` Datensatz, dann wird gefiltert, dann gruppiert, dann zusammengefasst.  
+*dplyr's verbs* sind in 4 Gruppen organisiert: *rows*, *columns*, *groups*, *tables*.
+
+## Rows
+
+Die wichtigsten Verben, die auf Reihen angewendet werden, sind `filter()` und `arrange()`. Beide Funktionen affektieren nur die Zeilen. Die Spalten bleiben unberührt. `distinct` findet Zeilen mit einzigartigen *Values*. Es kann auch die Spalten verändern.
+
+### `filter()`
+
+Wir behalten die Reihen bei, die bestimmte Werte der Spalten haben. Das erste Argument ist ein Data Frame, danach folgen die Bedingugnen, die erfüllt sein müssen. Alle Flüge mit mehr als 120 Minuten Verspätung:
+
+```{r}
+flights |> 
+  filter(arr_delay > 120)
+```
+
+Natürlich kannst du auch die bekannten Operatoren:  
+
+* `>`  
+* `>=`  
+* `<`  
+* `<=`  
+* `==`  
+* `!=`  
+
+benutzen, und auch `&` (und) oder `|` (oder).
+
+```{r}
+# Flights that departed on January 1
+flights |> 
+  filter(month == 1 & day == 1)
+```
+
+Kombinationen sind also natürlich möglich.
+
+```{r}
+# Flights that departed in January or February
+flights |> 
+  filter(month == 1 | month == 2)
+```
+
+Bekannt ist auch der `%in%` Operator, der die Kombination `|` und `==` ersetzt. Zeilen werden behalten, bei denen die Variable einem der Werte auf der rechten Seite entspricht.
+
+```{r}
+# A shorter way to select flights that departed in January or February
+flights |> 
+  filter(month %in% c(1, 2))
+```
+
+`dplyr` Funktionen modifizieren niemals ihren *input data frame*, `flights` bleibt also erhalten. Um das Ergebnis zu speichern, musst du also den assign Operator `<-` bemühen.
+
+
+```{r}
+jan1 <- flights |> 
+  filter(month == 1 & day == 1)
+jan1
+```
+
+### `arrange()`
+
+`arrange()` ändert die Reihenfolge der Reihen, basierend auf den Werten der Spalten. Als Argumente kommen nach dem *Data Frame* die Spalten, die sortiert werden sollen. Von klein nach groß. Erst Jahr, dann Monat, usw.
+
+```{r}
+flights |> 
+  arrange(year, month, day, dep_time)
+```
+
+Du kannst natürlich auch andersrum sortieren mit `desc()`.
+
+```{r}
+flights |> 
+  arrange(desc(dep_delay))
+```
+
+`arrange()` und `filter()` können natürlich kombiniert werden.
+
+```{r}
+flights |> 
+  filter(dep_delay <= 10 & dep_delay >= -10) |> 
+  arrange(desc(arr_delay))
+```
+
+### `distinct()`
+
+Einzigartige Zeilen werden mit `distinct()` gefunden. Meistens wollen wir jedoch nur eine einzigartige Kombination von ein paar Variablen. Dann brauchen wir diese natürlich als Argument für `distinct`.
+
+```{r}
+# This would remove any duplicate rows if there were any
+flights |> 
+  distinct()
+```
+
+Oder natürlich.
+
+```{r}
+# This finds all unique origin and destination pairs.
+flights |> 
+  distinct(origin, dest)
+```
+
+Für die Anzahl an Duplikaten benutze aber besser `count()`.
+
+## Columns
+
+Es gibt vier verschiedene Verben, die Spalten beeinträchtigen, ohne die Zeilen zu vertauschen:  
+- `mutate()`
+- `select()`
+- `rename()`  
+- `relocate()`
+
+### `mutate()`  
+
+`mutate()` fügt eine neue Spalte hinzu, die aus den bereits existierenden berechnet wird. Wir berechnen einfache Dinge, wie Differenzen und Quotienten, z.B. wie lange ein Flug in der Luft war oder die Geschwindigkeit in Meilen pro Stunde.
+
+```{r}
+flights |> 
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60
+  )
+```
+
+`mutate()` hängt diese neuen Variablen rechts an die Tabellen dran. Mit `.before` können wir die Variablen auch links dran setzen.
+
+```{r}
+flights |> 
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .before = 1
+  )
+```
+
+Der `.` ist ein Zeichen, so dass `.before` ein Argument der Funktion ist, nicht der Name einer neuen Variable. `.after` kannst du auch benutzen, um nach einer Variable deine neue Spalte zu setzen. Statt der Position, kannst du hier auch den Namen der Variable setzen (z.B. `day`). 
+
+```{r}
+flights |> 
+  mutate(
+    gain = dep_delay - arr_delay,
+    speed = distance / air_time * 60,
+    .after = day
+  )
+```
+
+Alternativ kannst du kontrollieren, welche Variablen behalten werden sollen, mit dem `.keep` Argument. Ein nützliches Argument ist `used`, welches dir die Inputs und Outputs deiner Berechnungen anzeigt.
+
+```{r}
+flights |> 
+  mutate(
+    gain = dep_delay - arr_delay,
+    hours = air_time / 60,
+    gain_per_hour = gain / hours,
+    .keep = "used"
+  )
+```
+
+### `select()`
+
+Oftmals kriegt man unendlich viele Variablen an die Hand, von denen uns aber nur ein paar interessieren. `select()` gibt uns nur einige von ihnen wieder. In unserem Beispiel haben wir nur 19 Variablen, aber die Idee zählt.
+
+```{r}
+# Select columns by name
+flights |> 
+  select(year, month, day)
+```
+
+```{r}
+# Select all columns between year and day (inclusive)
+flights |> 
+  select(year:day)
+```
+
+```{r}
+# Select all columns except those from year to day (inclusive)
+flights |> 
+  select(!year:day)
+```
+
+```{r}
+# Select all columns that are characters
+flights |> 
+  select(where(is.character))
+```
+
+Viele weitere Hilfsfunktionen arbeiten mit `select()`:
+
+```{r}
+# starts_with("tai"): matches names that begin with “tai”
+flights |> 
+    select(starts_with("tai"))
+```
+
+* `starts_with("abc")`
+* `ends_with("xyz")`  
+* `contains("ijk")`  
+* `num_range("x", 1:3)`: matcht `x1`, `x2`, `x3`
+
+Variablen neu benennen über `select()` durch `=`.
+
+```{r}
+flights |> 
+  select(tail_num = tailnum)
+```
+
+### `rename()`
+
+```{r}
+flights |> 
+  rename(tail_num = tailnum)
+```
+
+Funktioniert wie `select()`, aber behält alle nicht ausgewähle Variablen bei.
+
+### `relocate()`
+
+Bewege Variablen nach vorne.
+
+```{r}
+flights |> 
+  relocate(time_hour, air_time)
+```
+
+Oder an einen bestimmten Ort mit `.before` und `.after`.
+
+```{r}
+flights |> 
+  relocate(year:dep_time, .after = time_hour)
+```
+
+```{r}
+flights |> 
+  relocate(starts_with("arr"), .before = dep_time)
+```
+
+## Gruppen
+
+`dplyr` wird noch mächtiger durch die Arbeit mit Gruppen. 
+
+### `group_by` 
+
+Benutze `group_by()` um deinen Datensatz in Gruppen zu unterteilen, die dir bei deiner Analyse helfen.
+
+```{r}
+flights |> 
+  group_by(month)
+```
+
+Die Daten werden nicht verändert, aber der Output ist jetzt *grouped by month*. `grouped_by()` verändert das Verhalten nachkommender Verben.
+
+### `summarize()`
+
+Die wichtigste gruppierte Operation ist eine Zusammenfassung (*summary*), welche jede Gruppe zu einer einzelnen Zeile zusammenfasst. Die durchschnittliche *departure delay* (Abflugverzögerung) nach Monaten kann so berechnet werden.
+
+```{r}
+flights |> 
+  group_by(month) |> 
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE)
+  )
+```
+
+In einem `summarize()` Aufruf kannst du jede beliebige Anzahl von *Summaries* ausgeben lassen. `n()` gibt die Anzahl von Zeilen in jeder Gruppe wieder.
+
+```{r}
+flights |> 
+  group_by(month) |> 
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE), 
+    n = n()
+  )
+```
+
+### `slice_` Funktionen
+
+Fünf Funktionen erlauben es dir spezielle Zeilen innerhalb jeder Gruppe wiederzugeben.  
+  
+* `df |> slice_head(n = 1)` erste Zeile jeder Gruppe
+* `df |> slice_tail(n = 1)` letzte Zeile jeder Gruppe
+* `df |> slice_min(x, n = 1)` Zeile mit kleinstem Wert von `x`
+* `df |> slice_max(x, n = 1)` Zeile mit größtem Wert
+* `df |> slice_sample(n = 1)` zufällige Zeile
+
+Über `n` kannst du auch mehr als eine Zeile dir ausgeben lassen. Stattdessen kannst du dir auch einen Prozentsatz ausgeben lassen: `prop = 0.1` für 10%.
+
+```{r}
+flights |> 
+  group_by(dest) |> 
+  slice_max(arr_delay, n = 1)
+```
+
+Eine ähnliche Ausgabe kriegst du über `summarize()`. Nur einmal kriegst du die ganze Zeile, einmal die *single summary*.
+
+```{r}
+flights |> 
+  group_by(dest) |> 
+  summarize(max_delay = max(arr_delay, na.rm = TRUE))
+```
+
+### Gruppieren nach mehreren Variablen
+
+Du kannst natürlich auch nach mehreren Variablen gruppieren. Eine Gruppe für jeden Tag.
+
+```{r}
+daily <- flights |>  
+  group_by(year, month, day)
+daily
+```
+
+Wenn du ein *tibble* zusammenfasst, gruppiert mit mehr als einer Variable, kriegst du einen Hinweis nach welcher Variable vor der letzten zuvor gruppiert wurde.
+
+```{r}
+daily_flights <- daily |> 
+  summarize(
+    n = n()
+  )
+daily_flights |>
+  print(n = 30)
+```
+
+Diese Meldung kannst du unterdrücken durch:
+
+```{r}
+daily_flights <- daily |> 
+  summarize(
+    n = n(), 
+    .groups = "drop_last"
+  )
+```
+
+Und erhälst so dann:
+
+```{r}
+daily_flights |>
+  print(n = 5)
+```
+
+### Ungrouping
+
+Durch `ungroup()` kannst du die Gruppierung außerhalb von `summarize()` entfernen.
+
+```{r}
+daily |> 
+  ungroup() |>
+  summarize(
+    delay = mean(dep_delay, na.rm = TRUE), 
+    flights = n()
+  )
+```
+
+Wenn du einen ungruppierten *Data Frame* zusammenfasst, kriegst du logischerweise nur eine Zeile als Ausgabe. Als hättest du nur eine Gruppe.
+
+## Case Study
+
+Bei Aggregation ist es immer sinnvoll eine *count* Variable mit einzubauen.   
+Schauen wir uns die Flugzeuge an, identifiziert durch ihre *tail number*, die die höchsten durchschnittlichen Verspätungen haben.
+
+```{r}
+delays <- flights |>  
+  filter(!is.na(arr_delay), !is.na(tailnum)) |> 
+  group_by(tailnum) |> 
+  summarize(
+    delay = mean(arr_delay, na.rm = TRUE),
+    n = n()
+  )
+
+ggplot(delays, aes(x = delay)) + 
+  geom_freqpoly(binwidth = 10)
+```
+
+Manche Flugzeuge haben einen durchschnittlichen *delay* von 300 Minuten.  
+Erstellen wir einen Scatterplot mit Anzahl an Flügen vs. *average delay*:
+
+```{r}
+ggplot(delays, aes(x = n, y = delay)) + 
+  geom_point(alpha = 1/10)
+```
+
+Gruppen mit den kleinsten Anzahlen an Beobachtungen wollen wir rausfiltern, sodass mehr *Pattern* und weniger extreme Variationen in kleinen Gruppen angezeigt werden.
+
+```{r}
+delays |>  
+  filter(n > 25) |> 
+  ggplot(aes(x = n, y = delay)) + 
+  geom_point(alpha = 1/10) + 
+  geom_smooth(se = FALSE)
+```
+
+__Beispiel_2__ Baseball.
+
+Aus dem **Lahman** Paket: Anteil an Versuchen, bei denen der Ball getroffen wurde vs. Anzahl an Versuche.
+
+```{r}
+batters <- Lahman::Batting |> 
+  group_by(playerID) |> 
+  summarize(
+    perf = sum(H, na.rm = TRUE) / sum(AB, na.rm = TRUE),
+    n = sum(AB, na.rm = TRUE)
+  )
+batters
+```
+
+Zwei Muster sind zu erkennen: mehr Datenpunkte heißt weniger Variation. Und eine positive Korrelation zwischen `perf` und `n` ist zu erkennen. Logisch, da der beste Batter auch die meisten Möglichkeiten kriegen soll.
+
+```{r}
+batters |> 
+  filter(n > 100) |> 
+  ggplot(aes(x = n, y = perf)) +
+    geom_point(alpha = 1 / 10) + 
+    geom_smooth(se = FALSE)
+```
+
+Sortierst du naiv nach `desc(ba)` (*batting average*), sind oben die glücklichsten, nicht die besten Spieler zu finden.
+
+```{r}
+batters |> 
+  arrange(desc(perf))
+```
+
+# Pipes
+
+Die Pipe `|>` ist ein mächtiges Werkzeug, die eine Reihe von Operationen ausdrückt, die ein Objekt transformieren. Bekannt ist vielleicht der Vorgänger `%>%`.
+
+Für den *keyboard shortcut* Ctrl + Shift + M, gehe in *Options*, *Editing* und klicke *Use native pipe operator* an. 
+
+## Warum Pipe benutzen?
+
+Jedes *dplyr verb* ist sehr simpel, jedoch erfordert die Lösung komplexer Probleme eine Kombination vieler Verben. 
+
+```{r}
+flights |>  
+  filter(!is.na(arr_delay), !is.na(tailnum)) |> 
+  group_by(tailnum) |> 
+  summarize(
+    delay = mean(arr_delay, na.rm = TRUE),
+    n = n()
+  )
+```
+
+Die Verben stehen am Beginn jeder Zeile:  
+`flights` Daten, dann filter, dann gruppieren, dann zusammenfassen.
+
+Ohne *Pipe*:
+
+```{r}
+summarize(
+  group_by(
+    filter(
+      flights, 
+      !is.na(arr_delay), !is.na(tailnum)
+    ),
+    tailnum
+  ), 
+  delay = mean(arr_delay, na.rm = TRUE
+  ), 
+  n = n()
+)
+```
+
+## magrittr und die `%>%` Pipe
+
+Im __magrittr__ Paket wird die `%>%` Pipe angeboten. Diese Pipe kannst du benutzen, wenn das tidyverse Paket geladen ist.
+
+```{r}
+library(tidyverse)
+
+mtcars %>% 
+  group_by(cyl) %>%
+  summarize(n = n())
+```
+
+## `|>` vs. `%>%`  
+
+Die Pipe übergibt das Objekt zu ihrer linken Seite als erstes Argument auf die rechte Seite. `%>%` erlaubt es die Platzierung zu tauschen:
+
+* `x %>% f(1)` ist äquivalent zu `f(x, 1)`, aber `x %>% f(1, .)` ist äquivalent zu `f(1, x)`.  
+Bei der "neuen Pipe" muss das Argument genannt werden. `x |> f(1, y = _)` ist äquivalent zu `f(1, y = x)`. 
+
+* Mit `%>%` kannst du `.` auf der linken Seite von Operatoren wie `$`, `[[` oder `[` benutzen, so dass du z.B. eine einzelne Spalte extrahieren kannst: `mtcars %>% .$cyl`.  
+Du kannst sogar zwei mal ersetzen: `df %>% {split(.$x, .$y)}` ist äquivalent zu `split(df$x, df$y)`.  
+Für das Extrahieren einer Spalte benutze statt `pull(mtcars, cyl)` die pull Funktion `dplyr::pull()`:
+
+```{r}
+mtcars |> pull(cyl)
+```
+
+* `%>%` erlaubt es dir bei Funktionen die Klamern wegzulassen, wenn es keine Argumente gibt: `mtcars[,1] %>% mean` funktioniert, `mtcars[,1] |> mean` aber nicht.
+
+## `|>` vs. `+`
+
+Da `ggplot2` vor der Pipe entwickelt wurde, ist der Übergang von `|>` zu `+` notwendig:
+
+```{r}
+ggplot2::diamonds |> 
+  count(cut, clarity) |> 
+  ggplot(aes(x = clarity, y = cut, fill = n)) + 
+  geom_tile()
+```
+
+Vor den zwei Doppelpunkten steht das Paket aus dem der Datensatz kommt!
+Gleiche Ergebnisse liefert übrigens:
+
+```{r}
+aa<-count(ggplot2::diamonds, cut, clarity)
+ggplot(aa, aes(x = clarity, y = cut, fill = n)) +
+  geom_tile()
+```
+
+# Code Style
+
+Ohne guten *Code style* kannst du arbeiten, mit ist es aber wesentlich einfacher. Es gibt sogar Pakete mit denen du deinen Code aufhübschen kannst. Zum Beispiel das **styler** Paket. Nach der Installation benutze Cmd + Shift + P und gebe `styler` ein, um alle Shortcuts zu sehen.
+
+## Namen
+
+Kleinbuchstaben, Zahlen und Trennungen durch `_` werden als guter Style angesehen.
+
+```{r eval = F}
+# Strebe nach:
+short_flights <- flights |> filter(air_time < 60)
+
+# Vermeide:
+SHORTFLIGHTS <- flights |> filter(air_time < 60)
+```
+
+Lange, beschreibende Namen sind einfach zu verstehen. Kurze sind schneller zu tippen, aber auch eventuell später schwer zu verstehen.
+
+## Lücken
+
+Lücken bei mathematischen Operatoren erleichtern das Lesen (`+`, `-`, `==`, `<`). Nicht bei `^`, aber um Zuweisungen. Keine Lücken stehen nach oder vor Klammern, aber nach dem `,`.  
+
+```{r eval = F}
+# bitte
+z <- (a + b)^2 / d
+
+# nicht
+z<-( a + b ) ^ 2/d
+
+# bitte
+mean(x, na.rm = TRUE)
+
+# nicht
+mean (x ,na.rm=TRUE)
+```
+
+Extra Lücken einzufügen, so dass es der Lesbarkeit und Harmonie dient, ist durchaus wünschenswert.
+
+```{r eval = F}
+flights |> 
+  mutate(
+    speed      = air_time / distance,
+    dep_hour   = dep_time %/% 100,
+    dep_minute = dep_time %%  100
+  )
+```
+
+## Pipes
+
+*Pipes* sollten immer das letzte Element einer Zeile sein. 
+
+```{r eval = FALSE}
+# bitte 
+flights |>  
+  filter(!is.na(arr_delay), !is.na(tailnum)) |> 
+  count(dest)
+
+# nicht
+flights|>filter(!is.na(arr_delay), !is.na(tailnum))|>count(dest)
+```
+
+Hat die *piping function* Argumente wie `mutate()` oder `summarize()`, so kommt jedes Argument in eine neue Zeile. 
+
+```{r eval = F}
+# bitte
+flights |>  
+  group_by(tailnum) |> 
+  summarize(
+    delay = mean(arr_delay, na.rm = TRUE),
+    n = n()
+  )
+
+# nicht
+flights |>
+  group_by(
+    tailnum
+  ) |> 
+  summarize(delay = mean(arr_delay, na.rm = TRUE), n = n())
+```
+
+Nach der Zeile der *Pipe* wird zwei Leerzeichen eingerückt. Bekommt jedes Argument eine eigene Zeile wird wieder eingerückt. Die `)` bekommt wieder eine eigene Zeile, auf Höhe des Funktionsnamens.
+
+```{r eval = F}
+# bitte
+flights |>  
+  group_by(tailnum) |> 
+  summarize(
+    delay = mean(arr_delay, na.rm = TRUE),
+    n = n()
+  )
+
+# nicht
+flights|>
+  group_by(tailnum) |> 
+  summarize(
+             delay = mean(arr_delay, na.rm = TRUE), 
+             n = n()
+           )
+
+flights|>
+  group_by(tailnum) |> 
+  summarize(
+  delay = mean(arr_delay, na.rm = TRUE), 
+  n = n()
+  )
+```
+
+Manchmal passt der komplette Befehl in eine Zeile, jedoch wächst erfahrungsgemäß die Zeile schnell an. 
+
+```{r eval = F}
+# alles passt kompakt in eine Zeile
+df |> mutate(y = x + 1)
+
+# vier mal so viel Zeilen, jedoch einfach zu verlängern 
+# mehr Variable und Schritte in der Zukunft.
+df |> 
+  mutate(
+    y = x + 1
+  )
+```
+
+Vermeide es zu lange *Pipes* von mehr als 10-15 Zeilen zu schreiben. Breche sie runter in Unteraufgaben und verpasse ihnen günstige Namen. Wichtig.
+
+## ggplot2
+
+Was für `|>` bei der *Pipe* gilt, gilt natürlich auch für `+` bei `ggplot2`.
+
+```{r eval = F}
+flights |> 
+  group_by(month) |> 
+  summarize(
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) |> 
+  ggplot(aes(x = month, y = delay)) +
+  geom_point() + 
+  geom_line()
+```
+
+Jedes Argument kommt in ihre eigene Zeile.
+
+```{r eval = F}
+flights |> 
+  group_by(dest) |> 
+  summarize(
+    distance = mean(distance),
+    speed = mean(air_time / distance, na.rm = TRUE)
+  ) |> 
+  ggplot(aes(x = distance, y = speed)) +
+  geom_smooth(
+    method = "loess",
+    span = 0.5,
+    se = FALSE, 
+    color = "white", 
+    size = 4
+  ) +
+  geom_point()
+```
+
+## Sectioning Comments
+
+Wird dein Skript länger, so trenne es in kleinere Happen. Verpasse Kommentare und hebe sie optisch hervor.
+
+```{r eval = F}
+# Load data --------------------------------------
+
+# Plot data --------------------------------------
+```
+
+Mit Cmd + Shift + R werden sie unten links im Editor angezeigt, in einer *drop-down* Liste.
+
+# Daten importieren
+
+## Einleitung
+
+Mit den von R bereitgestellten Daten zu arbeiten hilft ungemein, aber für eigene Projekte wollen wir natürlich auch mal eigene Daten importieren.
+
+### Voraussetzungen
+
+Dazu brauchen wit das __readr__ Paket, welches Teil des tidyverse ist.
+
+```{r}
+library(tidyverse)
+```
+
+## Daten aus Datei einlesen
+
+Zu Beginn konzentrieren wir uns auf eine *.csv* Datei:  
+In der ersten Zeile stehen für gewöhnlich die Spaltennamen, danach kommen die Daten.
+
+```{r eval = FALSE}
+#> Student ID, Full Name,Age
+#> 1,Sunil Huffmann,4
+#> 2,Baclay Lynn,5
+#> 3,Peter Pan,7
+#> 4,Leon Leonidas,
+#> 5,Marion Farre,five
+#> 6,Attila Attilon,6
+```
+
+Diese Daten können wir aus der Datei einlesen mit `read_csv()`. Zwei Spalten haben wir noch hinzugefügt
+
+```{r}
+students <- read_csv("data/students.csv")
+```
+
+Bei Ausgabe wird die Anzahl der Zeilen und Spalten genannt, das Trennzeichen und die Spalten-Spezifikationen: Namen und Datentyp.
+
+### Praktische Hinweise
+
+Nach dem Einlesen werden die Daten für gewöhnlich transformiert, so dass wir mit ihnen einfacher arbeiten können.
+In der `favourite.food` Spalte haben wir den `Character String` `N/A`, den wir in ein "richtiges" `NA`, not available, transformieren wollen. 
+
+```{r}
+students <- read_csv("data/students.csv", na = c("N/A", ""))
+students
+```
+
+`Student ID` und `Full Name` sind umgeben von *Backticks*. Das passiert, weil es Leerzeichen in den Variablennamen gibt, so dass die Namensregeln für Variablen gebrochen werden. Wir können natürlich die Variablennamen umbenennen.
+
+```{r}
+students |> 
+  rename(
+    student_id = `Student ID`,
+    full_name = `Full Name`
+  )
+```
+
+Eine Alternatie ist es `janitor::clean_names()` zu benutzen, so dass heuristisch alle Namen in angenehme Formate gebracht werden.
+
+```{r}
+library(janitor)
+students |> janitor::clean_names()
+```
+
+Eine andere gewöhnliche Aufgabe ist es den Variablentyp zu bedenken. Zum Beispiel ist `meal_type` eine kategoriale Variable mit einer bekannten Menge an möglichen Werten, die in R als Faktoren dargestellt werden sollten.
+
+```{r}
+students |>
+  janitor::clean_names() |>
+  mutate(
+    meal_plan = factor(meal_plan)
+  )
+```
+
+Die Werte sind gleich geblieben, nur der Typ der Variablen (unterhalb der Namen) hat sich von *Character* `<chr>` zu Faktor `<fct>` geändert.  
+
+Als nächstes wollen wir noch die `age` Spalte reparieren. Sein Typ ist *Character*, weil in einer Zeile `five`, statt `5` steht. 
+
+```{r}
+students <- students |>
+  janitor::clean_names() |>
+  mutate(
+    meal_plan = factor(meal_plan),
+    age = parse_number(if_else(age == "five", "5", age))
+  )
+
+students
+```
+
+### Andere Argumente
+
+Ein Trick am Anfang: `read_csv()` kann in einem *String* kreierte csv Dateien lesen:
+
+```{r}
+read_csv(
+  "a,b,c
+  1,2,3
+  4,5,6"
+)
+```
+
+Die erste Zeile wird für die Variablen benutzt. Manchmal finden wir noch davor Metadaten, die du durch `skip = n` weglassen kannst. In diesem Fall die ersten n Zeilen. Oder benutze Kommentare wie folgt:
+
+```{r}
+read_csv(
+  "The first line of metadata
+  The second line of metadata
+  x,y,z
+  1,2,3",
+  skip = 2
+)
+
+read_csv(
+  "# A comment I want to skip
+  x,y,z
+  1,2,3",
+  comment = "#"
+)
+```
+
+Manchmal haben Daten keine Spaltennamen. Durch `col_names = FALSE` teilst du dies R mit, so dass die erste Zeile nicht als Kopf benutzt wird, sondern R automatisch Spaltennamen von `X1` bis `Xn` ausgibt.
+
+```{r}
+read_csv(
+  "1,2,3
+  4,5,6",
+  col_names = FALSE
+)
+```
+
+Einen *Character* Vektor mit Spaltennamen kannst du natürlich auch an die Tabelle übergeben.
+
+```{r}
+read_csv(
+  "1,2,3
+  4,5,6",
+  col_names = c("x", "y", "z")
+)
+```
+
+Für mehr Informationen, schau in der Dokumentation von `read_csv()` nach.
+
+### Andere Dateitypen
+
+Hast du bis jetzt alles verstanden, sind andere Typen unkompliziert: `read_csv2()`, `read_tsv()`, `read_delim()`, `read_fwf()`, `read_table()`, `read_log()`.  
+  
+## Spaltentypen kontrollieren
+
+Der Typ jeder Variable wird von **readr** geraten, da eine CSV keine Informationen liefert. 
+
+### Guessing Types
+
+Für das Raten wird eine Heuristik von `readr` genutzt. Es geht die Reihen durch:
+
+* Gibt es `F`, `T`, `FALSE`, `TRUE`? Wenn ja, dann ist der Typ *logical*.
+
+* Gibt es Zahlen? Dann *number*.
+
+* Matcht es dem ISO8601 Standard? Dann *date* oder *date-time*.
+
+* Ansonsten muss es wohl ein *String* sein.
+
+```{r}
+read_csv("
+  logical,numeric,date,string
+  TRUE,1,2021-01-15,abc
+  false,4.5,2021-02-15,def
+  T,Inf,2021-02-16,ghi"
+)
+```
+
+Bei einem "netten" Datensatz funktioniert es. Ansonsten nicht.
+
+### Missing Values, Spaltentypen und Probleme
+
+Erscheinen unerwartete Werte, so erhalten wir oft einen *Character* als Datentyp. Oft ist ein `NA` dafür verantwortlich. Schauen wir uns ein einfaches Problem an.
+
+```{r}
+csv <- "
+  x
+  10
+  .
+  20
+  30"
+```
+
+Einlesen ergibt:
+
+```{r}
+df <- read_csv(csv)
+```
+
+Der *Missing Value* ist schnell gefunden `.`. Bei Tausenden von Reihen fällt das Aufspüren aber schwerer.  
+Wir können `readr` sagen, dass `x` eine numerische Spalte ist und dann schauen wo es Probleme gibt. Dies geschieht mit dem `col_types` Argument, das eine benannte Liste entgegen nimmt.
+
+```{r}
+df <- read_csv(csv, col_types = list(x = col_double()))
+```
+
+Ein Problem wird angezeigt. Mehr können wir herausfinden mit `problems()`:
+
+```{r}
+problems(df)
+```
+
+`readr` erwartete ein `double`, aber bekam ein `.`. Das lässt vermuten, dass der Dataset `.` für *Missing Values* benutzt. Wir setzen dafür `na = "."`.
+
+```{r}
+df <- read_csv(csv, na = ".")
+```
+
+### Spaltentypen
+
+`readr` bietet neun Spaltentypen an:
+
+* `col_logical()` und `col_double()` liest *logicals* und *numbers*. Sie werden selten gebraucht, da `readr` sie meist für uns rät.
+
+* `col_integer()` liest *integers* (ganze Zahlen). Sie verbrauchen nur halb so viel Platz wie *doubles* im Memory, sind also nicht unwichtig.
+
+* `col_character()` liest *Strings*. 
+
+* `col_factor()`, `col_date()` und `col_datime()` kreieren Faktoren, *dates* und *date-time*. 
+
+* `col_number()` ignoriert nicht-numerische Komponenten.
+
+* `col_skip()` lässt eine Spalte weg.
+
+Überschreiben vom Spaltentyp ist möglich, durch wechseln von `list()` zu `cols()`.
+
+```{r}
+csv <- "
+x,y,z
+1,2,3"
+
+read_csv(csv, col_types = cols(.default = col_character()))
+```
+
+Oder neu schreiben.
+
+```{r}
+read_csv(csv, col_types = list(x = col_double(), y = col_integer(), z = col_double()))
+```
+
+`cols_only()` liest nur die gewollte Spalte ein.
+
+```{r}
+read_csv(
+  "x,y,z
+  1,2,3",
+  col_types = cols_only(x = col_character())
+)
+```
+
+## Daten aus multiplen Dateien einlesen
+
+Hast du *Sales* Daten von verschiedenen Monaten in verschiedenen Dateien, so kannst du sie zusammenfügen mit `read_csv()`.
+
+```{r eval = FALSE}
+sales_files <- c("data/01-sales.csv", "data/02-sales.csv", "data/03-sales.csv")
+read_csv(sales_files, id = "file")
+```
+
+Der neue Parameter `id` fügt eine neue Spalte hinzu, der die Herkunft der Datei angibt.  
+Es kann mühselig sein die Namen als Liste zu schreiben, wenn man viele Dateien hat. Benutze `list.files()` um die Dateien für dich zu finden. Ein Muster sollte im Namen vorhanden sein.
+
+```{r eval = FALSE}
+sales_files <- list.files("data", pattern = "sales\\.csv$", full.names = TRUE)
+sales_files
+```
+
+## Dateien schreiben
+
+`readr` bietet zwei Funktionen, um Daten zu schreiben: `write_csv()`, `write_tsv()`. Als Argumente brauchst du den *Data Frame* und den Ort. 
+
+```{r eval = FALSE}
+write_csv(students, "students.csv")
+```
+
+Die *type information* geht beim Schreiben als `csv` verloren.
+
+```{r}
+students
+write_csv(students, "data/students-2.csv")
+read_csv("data/students-2.csv")
+```
+
+Das macht CSVs ein wenig unzuverlässig für Zwischenergebnisse. Du musst die Spaltenspezifikation jedes mal aufs Neue kreieren. Es gibt zwei Alternativen:
+
+1. `write_rds()` und `read_rds()`. Sie lagern Daten in R's binary Format RDS.
+
+```{r}
+write_rds(students, "data/students.rds")
+read_rds("data/students.rds")
+```
+
+2. Das *arrow* Paket mit *parquet* Dateien.
+
+```{r}
+library(arrow)
+write_parquet(students, "data/students.parquet")
+read_parquet("data/students.parquet")
+```
+
+*Parquets* sind schneller als RDS, aber brauchen das Paket.
+
+## Data Entry
+
+Manchmal musst du ein `tibble()` mit der Hand schreiben. 
+
+```{r}
+tibble(
+  x = c(1, 2, 5),
+  y = c("h", "m", "g"),
+  z = c(0.08, 0.83, 0.60)
+)
+```
+
+Jede Spalte muss natürlich die selbe Länge haben.  
+`tribble()` liest die Daten zeilenweise ein. Spaltennamen starten mit `~`, Einträge werden durch Komma getrennt.
+
+```{r}
+tribble(
+  ~x, ~y, ~z,
+  "h", 1, 0.08,
+  "m", 2, 0.83,
+  "g", 5, 0.60,
+)
+```
+
+# Visualisieren: Layers
+
+## Einleitung
+
+In Kapitel 2 haben wir uns mit Plots beschäftigt. In diesem Abschnitt erweitern wir unser Wissen und lernen etwas über die geschichtete Grammatik von Grafiken. 
+
+### Voraussetzung
+
+In diesem Abschnitt konzentrieren wir uns natürlich auf `ggplot2`. Lade `tidyverse`.
+
+```{r}
+library(tidyverse)
+```
+
+## Aesthetic Mappings
+
+Unser `mpg` Datensatz (Autos) hat 234 Zeilen und 11 Spalten:
+
+```{r}
+ggplot2::mpg
+```
+
+Interessante Variablen für uns sind:
+
+1. `displ`: Hubraum in Liter. Numerische Variable.
+
+2. `hwy`: Treibstoffeffizienz in Meilen pro Gallone. Numerische Variable.
+
+3. `class`: Autotyp. Kategoriale Variable.
+
+Mehr zu `mpg` auf der entsprechenden Hilfsseite über `?mpg`.
+
+Zuerst wollen wir die Beziehung zwischen `displ` und `hwy` visualisieren, für die verschiedenen Klassen von Autos. Ein *Scatterplot* mit `x` und `y` `aes` und der kategorialen Variable als `color` oder `shape` überrascht hier weniger.
+
+```{r}
+# Left
+ggplot(mpg, aes(x = displ, y = hwy, color = class)) +
+  geom_point()
+
+# Right
+ggplot(mpg, aes(x = displ, y = hwy, shape = class)) +
+  geom_point()
+```
+
+Wir kriegen zwei Warnungen. Auf der `shape` Seite können wir nur 6 verschiedene Symbole als Punkte darstellen, wir haben aber 7. Eventuell können wir hier manuell auf 7 kommen. 
+
+Zusätzlich werden 62 Zeilen vernachlässigt, da *Missing Values* vorliegen. Diese sind die SUVs, die nicht geplotted wurden, da mehr als 6 Formen nicht mögich sind.  
+Statt Farben unf Formen können wir auch Größe und Transparenz plotten.
+
+```{r}
+# Left
+ggplot(mpg, aes(x = displ, y = hwy, size = class)) +
+  geom_point()
+# Right
+ggplot(mpg, aes(x = displ, y = hwy, alpha = class)) +
+  geom_point()
+```
+
+Warnungen erscheinen ebenfalls. Es ist nicht ratsam eine nicht-ordinale diskrete Variable mit Hilfe einer geordneten `aes` (`size` oder `alpha`) abzubilden, da eine Reihenfolge hier gar nicht existiert. Größe und Transparenz suggerieren dies aber.  
+Bilden wir ein `aes` ab, so sorgt `ggplot2` für den Rest. Eine Legende, die die Zuordnung zwischen den Stufen und Werten erklärt. Diese wird bei uns nicht gebaut, dafür Achsen mit Markierungen und Werten. Du kannst `aes` Eigenschaften unseres `geom` manuell setzen, wie z.B. blaue Punkte.  
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point(color = "blue")
+```
+
+Ein *aesthetic* kannst du setzen durch den Namen als Argument der `geom` Funktion, als Wert musst du etwas sinnvolles finden:
+
+* Name der Farbe als *String*
+* Größe des Punktes in mm
+* Form des Punktes als Zahl (0-20), siehe Hilfeseiten.
+
+## Geometrische Objekte
+
+```{r}
+# Left
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point()
+
+# Right
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_smooth()
+```
+
+Beide Plots nutzen verschiedene geometrische Objekte (*geom*), um die Daten zu repräsentieren:
+
+*point geom* (Punkte) vs. *smooth geom* (Linie).
+
+Jede `geom` Funktion in `ggplot2` nimmt ein `mapping` Argument, aber nicht jedes `aes` funktioniert mit jedem `geom`. Den *shape* einer Linie zu setzen macht keinen Sinn. Wenn du es versuchst, so ignoriert `ggplot2` dieses *aes mapping*. 
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, shape = drv)) + 
+  geom_smooth()
+ggplot(mpg, aes(x = displ, y = hwy, linetype = drv)) + 
+  geom_smooth()
+```
+
+Hier sorgt `geom_smooth()` für drei Linie, basierend auf ihrem `drv` Wert (Antrieb). `4` steht für 4-Rad-Antrieb, `f` Vorderantrieb, `r` Heckantrieb.  
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, linetype = drv, color = drv)) + 
+  geom_smooth() +
+  geom_point()
+```
+
+Dieser Plot enthält zwei `geoms` im selben Graphen. 
+Viele `geoms`, wie `geom_smooth()` geben multiple Reihen von Daten aus. Für sie kannst du `group` `aes` zu kategorialen Variablen setzen, um multiple Objekte zu zeichnen. `ggplot2` zeichnet aber immer ein separates Objekt für jeden Wert der gruppierenden Variable. Mach davon gebrauch, da der `group` aes keine Legende liefert.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_smooth()
+              
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_smooth(aes(group = drv))
+    
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_smooth(aes(color = drv), show.legend = FALSE)
+```
+
+Wenn du Zuordnungen in einer `geom` Funktion platzierst, behandelt `ggplot2` sie als lokale *Mappings*. Es erweitert oder überschreibt die globalen *Mappings* für diese Ebene (*layer*). So kann man verschiedene `aes` in verschiedenen Ebenen anzeigen.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point(aes(color = class)) + 
+  geom_smooth()
+```
+
+Diese Idee kannst du genauso benutzen, um verschiedene Daten für jede Ebene zu benutzen. Rote Punkte und Kreise zeigen Zweisitzer-Autos an. Das lokale Daten-Argument in `geom_smooth()` überschreibt das globale in `ggplot2` für diese eine Ebene.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_point(
+    data = mpg |> filter(class == "2seater"), 
+    color = "red"
+  ) +
+  geom_point(
+    data = mpg |> filter(class == "2seater"), 
+    shape = "circle open", size = 3, color = "red"
+  )
+```
+
+*Geoms* sind die wichtigen Fundamente bei der Erstellung von *ggplots*. Der Look des Plots kann komplett durch die Wahl dieser bestimmt und verändert werden. Unten erkennen wir, dass es zwei Ausreißer gibt, die Verteilung zweigipflig und rechtsschief ist. Dafür betrachten wir uns verschiedene Plots.
+
+```{r}
+# Left
+ggplot(mpg, aes(x = hwy)) +
+  geom_histogram(binwidth = 2)
+
+# Middle
+ggplot(mpg, aes(x = hwy)) +
+  geom_density()
+
+# Right
+ggplot(mpg, aes(x = hwy)) +
+  geom_boxplot()
+```
+
+`ggplot2` bietet mehr als 40 *geoms* an, es gibt aber natürlich noch mehr Möglichkeiten [Link](https://exts.ggplot2.tidyverse.org/gallery/ ).
+
+Die Dichte mithilfe von *ridgeline plots* zu erstellen ist sehr chic. `fill` und `color` machen die Dichten bunt und `alpha` transparent. 
+
+```{r}
+library(ggridges)
+
+ggplot(mpg, aes(x = hwy, y = drv, fill = drv, color = drv)) +
+  geom_density_ridges(alpha = 0.5, show.legend = FALSE)
+#> Picking joint bandwidth of 1.28
+```
+
+## Facets
+
+Schon kennengelernt haben wir `facet_wrap()`, das Plots in Unterplots unterteilt, basierend auf einer kategorialen Variable.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  facet_wrap(~cyl)
+```
+
+Um deinen Plot weiter zu unterteilen auf zwei Variablen, benutze `facet_grid()`. 
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  facet_grid(drv ~ cyl)
+```
+
+`cyl` und `drv` sind kategoriale Variablen. Für beide werden immer wieder dieselben Achsen x und y gewählt. Die Skala bleibt unverändert. Setzt du das `scales` Argument in der *facet* Funktion auf `"free"`, so werden automatisch verschiedene Bereiche der Achsen gesetzt.  
+Weitere Arguemnte sind `free_x` und `free_y` für jeweils nur eine der beiden Achsen.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  facet_grid(drv ~ cyl, scales = "free")
+```
+
+## Statistische Transformationen
+
+Ein Balkendiagramm mit `geom_bar()` oder `geom_col()` ist schnell erstellt. Der `cut` unseres Diamantendatensatzes ist schnell visualisiert.
+
+```{r}
+ggplot(diamonds, aes(x = cut)) + 
+  geom_bar()
+```
+
+Auf der y-Achse wird "*count*" abgetragen. Diese ist aber keine Variable in `diamonds`. Der Algorithmus, der benutzt wird um neue Werte für jeden Graph zu berechnen, heißt __stat__ (*statistical transformation*). 
+
+Welches *stat* ein *geom* benutzt, kannst du am *default* Wert sehen. `?geom_bar` zeigt, dass der *default* Wert für `stat` "*count*" ist. `geom_bar()` benutzt also `stat_count()`, welches auf derselben Seite wie `geom_bar()` dokumentiert ist. Im Abschnitt "*Computed Variables*" siehst du, dass zwei neue Variablen berechnet werden: "*count*" und "*prop*". Jedes *geom* hat ein *default stat* und andersrum. Du brauchst dir also keine Sorgen über die *stats* zu machen, wenn du *geoms* benutzt. Es gibt jedoch drei Gründe, warum du ein *stat* explizit benutzen solltest:
+
+1. Weil du den *default stat* überschreiben willst. So können wir die Höhe der Balken über die __y__ Variable der rohen Werte darstellen.
+
+```{r}
+cut_frequencies <- tribble(
+  ~cut,         ~freq,
+  "Fair",       1610,
+  "Good",       4906,
+  "Very Good",  12082,
+  "Premium",    13791,
+  "Ideal",      21551
+)
+
+ggplot(cut_frequencies, aes(x = cut, y = freq)) +
+  geom_bar(stat = "identity")
+```
+
+2. Du willst den *default* überschreiben, da du z.B. an den relativen, statt den absoluten Häufigkeiten interessiert bist.
+
+```{r}
+ggplot(diamonds, aes(x = cut, y = after_stat(prop), group = 1)) + 
+  geom_bar()
+```
+
+3. Du willst mehr Aufmerksamkeit auf die statistische Transformation legen. `stat_summary()` fasst die y-Werte zusammen für jeden x-Wert und gibt Median, Minimum und Maximum aus.
+
+```{r}
+ggplot(diamonds) + 
+  stat_summary(
+    aes(x = cut, y = depth),
+    fun.min = min,
+    fun.max = max,
+    fun = median
+  )
+```
+
+`ggplot2` bietet mehr als 20 *stats* an. Jedes ist eine Funkton.
+
+## Position Adjustments
+
+Die Farben der Balken kannst du mit `color` oder `fill` gestalten. 
+
+```{r}
+ggplot(diamonds, aes(x = cut, color = cut)) + 
+  geom_bar()
+ggplot(diamonds, aes(x = cut, fill = cut)) + 
+  geom_bar()
+```
+
+Was passiert jetzt, wenn du eine weitere Variable hinzufügst? Die Balken stapeln sich automatisch. Jedes Rechteck repräsentiert eine Kombination aus `cut` und `clarity`.
+
+```{r}
+ggplot(diamonds, aes(x = cut, fill = clarity)) + 
+  geom_bar()
+```
+
+Das Stapeln wird automatisch durch die __position adjustment__ ausgeführt. Du kannst es auch verhindern, indem du `position` auf `"identity"`, `"dodge"`, oder `"fill"` setzt. 
+
+1. `position = "identity"` platziert jedes Objekt genau an der anfallenden Position ohne es zu stapeln. Für Balken ist das natürlich nicht sehr sinnvoll, da viele Überlappungen entstehen. Wir können die Balken transparent machen (halb, ganz), um das Diagramm ein wenig anschaulicher zu gestalten. `alpha` und `fill = NA` helfen.
+
+```{r}
+ggplot(diamonds, aes(x = cut, fill = clarity)) + 
+  geom_bar(alpha = 1/5, position = "identity")
+ggplot(diamonds, aes(x = cut, color = clarity)) + 
+  geom_bar(fill = NA, position = "identity")
+```
+
+2. `position = "fill"` arbeitet wie das Stapeln, nur dass jedes Set von Balken die gleiche Höhe hat. So lassen sich Anteile leichter vergleichen.
+
+```{r}
+ggplot(diamonds, aes(x = cut, fill = clarity)) + 
+  geom_bar(position = "fill")
+```
+
+3. `position = "dodge"` platziert die überlappenden Objekte direkt nebeneinander. So lassen sich die individuellen Werte leichter vergleichen.
+
+```{r}
+ggplot(diamonds, aes(x = cut, fill = clarity)) + 
+  geom_bar(position = "dodge")
+```
+
+Ein weiteres nützliches *Adjustment* lässt sich für Scatterplots finden. 
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point()
+```
+
+Hier haben wir 126 Punkte, obwohl 234 Beobachtungen im Datensatz existieren. Warum?  
+Weil sich viele Punkte überlappen. Das nennt man __overplotting__. Die Verteilung der Daten ist so schwerer zu erkennen. Das lässt sich durch `position = "jitter"` vermeiden. Die Punkte werden nahe beieinander platziert.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point(position = "jitter")
+```
+
+## Koordinatensytem
+
+Das kartesische Koordinatensystem mit x-Achse und y-Achse ist bekannt. Es gibt aber noch zwei weitere Koordinatensysteme.
+
+1. `coord_quickmap()` setzt das Abbildungsverhältnis für Karten. Das ist bei Geodaten mit `ggplot2` wichtig. Hier wird nichts verzerrt, die Proportionen bleiben maßstabsgetreu.
+
+```{r}
+nz <- map_data("nz")
+
+ggplot(nz, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "white", color = "black")
+
+ggplot(nz, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill = "white", color = "black") +
+  coord_quickmap()
+```
+
+2.  `coord_polar()` benutzt Polarkoordianten. Auch eine schöne Visualisierung (*Coxcomb Chart*).
+
+```{r}
+bar <- ggplot(data = diamonds) + 
+  geom_bar(
+    mapping = aes(x = cut, fill = cut), 
+    show.legend = FALSE,
+    width = 1
+  ) + 
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+
+bar + coord_flip()
+bar + coord_polar()
+```
+
+## Layered Grammar of Graphics
+
+Ein __Template__ für Grafiken mit *Position Adjustments*, *stats*, Koordinatensystem und *Faceting* sieht jetzt so aus.
+
+```{r eval = F}
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(
+     mapping = aes(<MAPPINGS>),
+     stat = <STAT>, 
+     position = <POSITION>
+  ) +
+  <COORDINATE_FUNCTION> +
+  <FACET_FUNCTION>
+```
+
+Unser neues Template nimmt sieben Parameter. In der Praxis musst du natürlich selten alle sieben Parameter nennen für einen Graphen, da *defaults* vorhanden sind. 
+
+Am Anfang steht der Datensatz, den du so transformierst, dass er die Informationen enthält, die du brauchst (mit *stat*). Wähle ein geometrisches (*geom*) Objekt, um jede Beobachtung darzustellen. Benutze die *aes*, um Variablen darzustellen. Dann folgt das *Mapping*, du wählst ein passendes Koordinatensystem für deine *geoms*, wählst die Achsen weise.
+
+Du hast einen Graphen, kannst *Position Adjustments* vornehmen, den Grapen splitten in Subplots. Mehrere Schichten können hinzugefügt werden, wobei jede Schicht einen *Dataset*, *geom*, *Mappings*, *stat* und *Position Adjustment* benutzt. 
+Mit diesem Verfahren kannst du Hunderte von Plots bauen.
+
+# Visualisieren: Explorative Datenanalyse (EDA)
+
+## Einleitung
+
+In diesem Kapitel werden Daten visualisiert, und transformiert. EDA ist ein wichtiger Teil der Datenanalyse. *Data Cleaning* gehört hier genauso zu, wie die *Modelling*.
+
+### Voraussetzungen
+
+Alles was wir bisher mithilfe von `dplyr` und `ggplot2` kennengelernt haben, kommt hier zur Anwendung.
+
+```{r}
+library(tidyverse)
+```
+
+## Fragen
+
+Das Ziel der EDA ist es ein Verständnis deiner Daten zu entwickeln. Durch Fragestellungen wird dein Interesse auf einen bestimmten Bereich gelenkt, so dass diese dir helfen die passenden Graphiken, Modelle und Transformstionen zu wählen.  
+Es gibt nicht DIE passende Frage, aber Fragen über die Streuung in den Variablen und Kovarianz zwischen den Daten zu stellen, ist nie verkehrt.
+
+## Variation
+
+Jede Messung stetiger  oder diskreter Variablen bringt meist eine gewisse Streuung mit sich. Gewicht, Größe und Alter in der Bevölkerung sind nämlich nicht konstant. Jede Variable hat ihr eigenes Muster der Streuung. Um dieses zu verstehen, hilft es erst einmal es zu visualisieren. 
+
+Wir beginnen mit der Visualisierung von Gewichten (`carat`). Unser Diamantendatensatz dürfte mittlerweile bekannt sein. 54 000 Diamanten liegen vor und `carat` ist hierbei eine numerische Variable. Wir können sie somit im Histogramm darstellen.
+
+```{r}
+ggplot(diamonds, aes(x = carat)) +
+  geom_histogram(binwidth = 0.5)
+```
+
+### Typische Werte
+
+Im Balkendiagramm und Histogramm stehen hohe Balken für gewöhnliche und kurze Balken für seltenen Werte. Liegt kein Balken vor, so fehlen hier die Ausprägungen. 
+
+* Welche Werte kommen warum am häufigsten vor?  
+* Welche Werte sind rar und wieso?  
+* Gibt es ein Muster in den Daten?
+
+Bei den Diamanten fragt man sich, wieso es Brüche gibt und warum ganze Werte überproportional häufig vorkommen. Warum ist die Verteilung der Peaks rechtsschief?
+
+```{r}
+smaller <- diamonds |> 
+  filter(carat < 3)
+
+ggplot(smaller, aes(x = carat)) +
+  geom_histogram(binwidth = 0.01)
+```
+
+Die Länge von 272 Eruptionen eines Geysirs zeigt ein interessantes Muster auf. 
+
+```{r}
+ggplot(faithful, aes(x = eruptions)) + 
+  geom_histogram(binwidth = 0.25)
+```
+
+Viele Fragen haben mit der Abhängigkeit von zwei Variablen zu tun. Eine erklärt das Verhalten der anderen.
+
+### Seltene Werte
+
+**Ausreißer** sind unübliche Beobachtungen. Sie scheinen nicht in das Muster der Verteilung zu passen. Manchmal sind sie Eintragungsfehler, andere Male geben sie neue Erkenntnisse. Im Histogramm sind sie manchmal schwer zu entdecken.
+
+```{r}
+ggplot(diamonds, aes(x = y)) + 
+  geom_histogram(binwidth = 0.5)
+```
+
+Um das Entdecken leichter zu machen, müssen wir ein wenig in die Daten reinzoomen.
+
+```{r}
+ggplot(diamonds, aes(x = y)) + 
+  geom_histogram(binwidth = 0.5) +
+  coord_cartesian(ylim = c(0, 50))
+```
+
+`coord_cartesian()` hat auch ein `xlim()` Argument, so dass du in den Bereich der x-Achse reinzoomen kannst. `ggplot2` hat auch `xlim()` und `ylim()` Funktionen, die Daten außerhalb der Grenzen entsorgen.  
+So entdecken wir drei unübliche Werte: 0, ~30, ~60.
+
+```{r}
+unusual <- diamonds |> 
+  filter(y < 3 | y > 20) |> 
+  select(price, x, y, z) |>
+  arrange(y)
+unusual
+```
+
+Die `y` Variable misst einer der drei Dimensionen des Diamanten in mm. Eine Breite von 0 mm ist natürlich nicht möglich, also falsch. Die großen Diamanten müssen auch falsch sein, da die Kosten nicht mit der Größe korrelieren.  
+Die Analyse kann mit und ohne Ausreißer gefahren werden. Hier können sie rausgenommen werden. Verändern sie das Bild der Daten; so meist nicht. Welche Gründe gibt es? Ein Ausschluss muss gerechtfertigt sein.
+
+## Unübliche Werte bearbeiten
+
+Bei der Analyse von unüblichen Werten hast du zwei Möglichkeiten. 
+
+1. Schließe die ganze Zeile aus:
+
+```{r}
+diamonds2 <- diamonds |> 
+  filter(between(y, 3, 20))
+```
+
+Es ist nicht zu empfehlen, da ganze Beobachtungsreihen ausgeschlossen werden, statt einer defekten. Auch kann dann dein Datensatz zu stark reduziert sein.
+
+2. Ersetze die ungewöhnlichen Werte durch *Missing Values*. Dies geschieht am einfachsten mit `mutate()`. Der `ifelse()` Befehl hilft hier.
+`if_else()` ist nicht `ifelse()`. Da bei `if_else()` die erstellten Variablen von verschiedenem Datentyp sind, müssen wir die `NA` auch zum Datentyp *double* transformieren. Bei `ifelse()` ist dies nicht nötig. 
+
+```{r}
+diamonds2 <- diamonds |> 
+  mutate(y = if_else(y < 3 | y > 20, NA_real_, y))
+```
+
+`ifelse()` hat drei Argumente. Das erste `test` sollte ein logischer Vektor sein. Alternativ benutze `case_when()`.  
+Erstellst du einen Plot mit `NA`'s, so warnt dich `ggplot2`, dass sie entfernt wurden.
+
+```{r}
+ggplot(diamonds2, aes(x = x, y = y)) + 
+  geom_point()
+#> Warning: Removed 9 rows containing missing values (`geom_point()`).
+```
+
+Diese Warnung kann mit `na.rm = TRUE` unterdrückt werden. 
+
+```{r}
+ggplot(diamonds2, aes(x = x, y = y)) + 
+  geom_point(na.rm = TRUE)
+```
+
+In einem anderen Beispiel wollen wir herausfinden, inwiefern sich Beobachtugen unterscheiden, bei denen Werte vorliegen im Gegensatz zu Beobachtungen, bei denen *Missing Values* vorhanden sind. `nycflights13::flights` hat in `dep_time` fehlenden Werte, sodass der Flug wahrscheinlich gecancelt wurde. Vergleichen wir also die planmäßigen Abflugzeiten der Flüge bzw. abgesagten Flüge.
+
+```{r}
+nycflights13::flights |>
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + (sched_min / 60)    
+  ) |>
+  ggplot(aes(x = sched_dep_time)) + 
+  geom_freqpoly(aes(color = cancelled), binwidth = 1/4)
+```
+
+Der Vergleich ist schwierig, da hier viel mehr Flüge als abgesagte sind.
+
+## Kovariation
+
+Die Variation betrachtet eine Variable, die Kovariation beschreit das Verhalten zwischen Variablen. Die Beziehung zwischen zwei oder mehr Variablen zu visualisieren, hilft bei der Analyse natürlich enorm.
+
+### Kategoriale und numerische Variable
+
+Zum Beispiel der Preis eines Diamanten wird mit der Qualität verglichen (`cut`). 
+
+```{r}
+ggplot(diamonds, aes(x = price)) + 
+  geom_freqpoly(aes(color = cut), binwidth = 500, size = 0.75)
+#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+#> ℹ Please use `linewidth` instead.
+```
+
+Wieder nicht ideal, da es große Unterschiede in den Häufigkeiten gibt. 
+
+```{r}
+ggplot(diamonds, aes(x = cut)) + 
+  geom_bar()
+```
+
+Um den Vergleich einfacher zu machen, werden die Werte auf der y-Achse ausgetauscht. Nehmen wir die Dichte, so ist die Fläche unter dem Graphen für alle `cut` Werte immer gleich eins. 
+
+```{r}
+ggplot(diamonds, aes(x = price, y = after_stat(density))) + 
+  geom_freqpoly(aes(color = cut), binwidth = 500, size = 0.75)
+```
+
+Da `density` keine Variable des `diamonds` Datensatzes ist, müssen wir es berechnen. Dafür benutzen wir die `after_stat()` Funktion.  
+Das Ergebnis jedoch überrascht. Es sieht so aus, als ob die niedrigste (*fair*) Qualität, den höchsten Durchschnittspreis hat. 
+
+Ein visuell einfacher Plot, ist der Boxplot.
+
+```{r}
+ggplot(diamonds, aes(x = cut, y = price)) +
+  geom_boxplot()
+```
+
+Weniger Informationen sehen wir, aber dafür sind die Boxplots kompakter. Aber auch hier kann an der These festgehalten werden, dass qualitativ bessere Diamanten günstiger sind. Warum ist das wohl so?  
+`cut` ist hier ein geordneter Faktor. Viele Variablen haben nicht eine Anordnung, so dass sie neu sortiert werden müssen. Eine Möglichkeit ist hier die `fct_reorder()` Funktion.  
+Im `mpg` Datensatz z.B. wollen wir die *highway mileage* (Fahrleistung auf Autobahn) je nach `class` (*type of car*) darstellen. 
+
+```{r}
+ggplot(mpg, aes(x = class, y = hwy)) +
+  geom_boxplot()
+```
+
+Sortieren wir `class` neu, basierend aud dem Median von `hwy`:
+
+```{r}
+ggplot(mpg,
+       aes(x = fct_reorder(class, hwy, median), y = hwy)) +
+  geom_boxplot()
+```
+
+Oder:
+
+```{r}
+ggplot(mpg,
+       aes(x = hwy, y = fct_reorder(class, hwy, median))) +
+  geom_boxplot()
+```
+
+## Zwei kateroriale Variablen
+
+Hier musst du für jede Kombination von *Levels* die Häufigkeiten zählen. 
+
+```{r}
+ggplot(diamonds, aes(x = cut, y = color)) +
+  geom_count()
+```
+
+Die Größe der Kreise zeigt wie viele Beobachtungen in jedes Paar fallen.  
+Mit `dplyr` lassen sich die *Counts* bestimmen und mit `geom_tile()` visualisieren.
+
+```{r}
+diamonds |> 
+  count(color, cut) |>  
+  ggplot(aes(x = color, y = cut)) +
+  geom_tile(aes(fill = n))
+```
+
+Die Reihen und Spalten lassen sich wieder ordnen und eine **Heatmap** wird visualisiert.
+
+### Zwei numerische Variablen
+
+Kovariation kannst du als Muster in den Punkten sehen. Eine exponentiale Beziehung zwischen Karatgröße und Preis von Diamanten z.B.
+
+```{r}
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point()
+```
+
+Bei großen Datensätzen werden *Scatterplots* jedoch unhandlich, da sich Punkte überlappen: der `alpha` *aesthetic* hilft. 
+
+```{r}
+ggplot(diamonds, aes(x = carat, y = price)) + 
+  geom_point(alpha = 1 / 100)
+```
+
+Für große Datensätze kann *transparency* aber herausfordernd sein.  Wir können aber die Daten gruppieren. Schon kennengelernt haben wir dafür `geom_histogram()` und `geom_freqpoly()`. Wir haben in eine Dimension gruppiert, jetzt in zwei Dimensionen (`geom_bin2d()` und `geom_hex()`).  
+Farben zeigen an, wieviele Punkte in jedes Rechteck fallen. Es wird zwischen Rechtecken und Sechsecken unterschieden. 
+
+```{r}
+ggplot(smaller, aes(x = carat, y = price)) +
+  geom_bin2d()
+
+# install.packages("hexbin")
+ggplot(smaller, aes(x = carat, y = price)) +
+  geom_hex()
+```
+
+Eine weitere, gute Möglichkeit ist es stetige als kategoriale Variablen zu gruppieren und dann entsprechende Grafiken zu wählen, wie Boxplots.
+
+```{r}
+ggplot(smaller, aes(x = carat, y = price)) + 
+  geom_boxplot(aes(group = cut_width(carat, 0.1)))
+```
+
+`cut_width(x, width)` unterteilt `x` in Gruppen der Breite `width`. Jedoch erkennen wir nicht wieviele Beobachtungen in jeden Boxplot fallen, sondern nur die Verteilung. Wir können jedoch die Breite proportional machen zu der Anzahl der Beobachtungen, mit `varwidth = TRUE`.  
+Ein anderer Ansatz ist es dieselbe Anzahl an Punkten in jeder Gruppe anzeigen zu lassen. Das macht `cut_number()`: 
+
+```{r}
+ggplot(smaller, aes(x = carat, y = price)) + 
+  geom_boxplot(aes(group = cut_number(carat, 20)))
+```
+
+## Muster und Modelle
+
+Muster in den Daten geben Hinweise über Zusammenhänge. Wenn ein Zusammenhang zwischen zwei Variablen existiert, so erscheint dieser auch als Muster in den Daten. Wenn du ein Muster in den Daten findest, frag dich:
+
+* Kann das Muster auf Zufall beruhen?
+* Wie kannst du den Zusammenhang über das Muster beschreiben?
+* Wie stark ist dieser?
+* Welche anderen Variablen beeinflussen den Zusammenhang?
+* Ändert sich der Zusammenhang, wenn du dir Untergruppen deiner Daten anschaust?
+
+Das Streudiagramm der Eruptionslänge und Eruptionszeit von einem Geysir zeigt ein Muster auf: längere Wartezeit = längere Eruption. Zwei Cluster sind klar zu erkennen.
+
+```{r}
+ggplot(faithful, aes(x = eruptions, y = waiting)) + 
+  geom_point()
+```
+
+Modelle sind Werkzeuge, um Muster aus den Daten zu ziehen. Gucken wir uns den Diamantendatensatz an. Der Zusammenhang zwischen `cut` und `price` ist schwer zu verstehen, da `cut` und `carat` und `carat` und `price` miteinander korrelieren. Wir können aber über ein Model die starke Beziehung zwischen Preis und Karat entfernen.
+
+```{r}
+library(tidymodels)
+
+diamonds <- diamonds |>
+  mutate(
+    log_price = log(price),
+    log_carat = log(carat)
+  )
+
+diamonds_fit <- linear_reg() |>
+  fit(log_price ~ log_carat, data = diamonds)
+
+diamonds_aug <- augment(diamonds_fit, new_data = diamonds) |>
+  mutate(.resid = exp(.resid))
+
+ggplot(diamonds_aug, aes(x = carat, y = .resid)) + 
+  geom_point()
+```
+
+Jetzt können wir die Beziehng zwischen cut und price herstellen.
+
+```{r}
+ggplot(diamonds_aug, aes(x = cut, y = .resid)) + 
+  geom_boxplot()
+```
+
+Ein weiteres Beispiel: 
+
+```{r}
+x <- 1:100 
+x
+
+z <- c(rep(5, 20), rep(10, 20), rep(-1, 20), rep(-5, 20), rep(-2,20))
+y <- rnorm(100) + 1:100 + z
+y
+
+kat <- c(rep("blau", 20), rep("grün", 20), rep("orange", 20), rep("rot", 20), rep("schwarz", 20))
+df <- tibble(x, y, kat)
+df
+
+df |>
+  ggplot(aes(x=x,y=y)) +
+  geom_point()
+
+
+d_fit <- linear_reg() |>
+  fit(y ~ x, data = df)
+  
+d_a <- augment(d_fit, new_data = df) |>
+mutate(.resid = 1 * .resid)
+d_a
+
+ggplot(d_a, aes(x = x, y = .resid)) + 
+  geom_point() +
+geom_vline(xintercept = c(20,40,60,80), lty = 4) 
+
+ggplot(d_a, aes(x = kat, y = .resid)) +
+geom_boxplot()
+```
+
+
+# Visualisieren: Kommunikation
+
+## Einleitung
+
+In jeder tieferen Analyse werden Massen an Plots erstellt, von denen die meisten schnell wieder verworfen werden. Hast du deine Schlüsse aus den Daten gezogen, gilt es fast immer sie zu kommunizieren. Das Problem ist oft, dass dein Publikum nicht so tief in der Analyse, in den Daten, in der Fachrichtung, drin steckt wie du. So muss es dein Ziel sein, deine Plots so selbsterklärend wie möglich zu gestalten. In diesem Abschitt lernst du ein paar Werkzeuge von `ggplot2` kennen, die dir dabei helfen.  
+
+### Voraussetzungen
+
+Wieder konzentrieren wir uns hier auf `ggplot2` und die Pakete __ggrepel__, __patchwork__ und __dplyr__. 
+
+```{r}
+library(ggrepel)
+library(patchwork)
+```
+
+## Labels
+
+Etiketten bzw. Labels helfen natürlich immer eine Grafik anschaulich zu machen. Sie können mithilfe der `labs()` Funktion hinzugefügt werden. 
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Fuel efficiency generally decreases with engine size")
+```
+
+Die Absicht ist es, die Haupterkenntnis zusammenzufassen. Nur den Plot zu beschreiben sollte man vermeiden. Zwei Möglichkeiten gibt es etwas hinzuzufügen:
+
+* `subtitle` fügt ein weiteres Detail in kleinerer Schrift darunter hinzu. 
+
+* `caption` fügt Text unterhalb der Grafik rechts vom Plot hinzu, meist die Quelle der Daten.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Fuel efficiency generally decreases with engine size",
+    subtitle = "Two seaters (sports cars) are an exception because of their light weight",
+    caption = "Data from fueleconomy.gov"
+  )
+```
+
+`labs()` kannst du auch benutzen, um Achsen- und Legenden-Titel zu ersetzen.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  labs(
+    x = "Engine displacement (L)",
+    y = "Highway fuel economy (mpg)",
+    color = "Car type"
+  )
+```
+
+Mathematische Gleichungen statt *Strings* können genutzt werden. Tausche hierfür `""` aus durch `quote()` und schau dir die Optionen in der Hilfe `?plotmath` an:
+
+```{r}
+df <- tibble(
+  x = 1:10,
+  y = x ^ 2
+)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  labs(
+    x = quote(sum(x[i] ^ 2, i == 1, n)),
+    y = quote(alpha + beta + frac(delta, theta))
+  )
+```
+
+## Annotationen
+
+Manchmal ist es sinnvoll auch individuelle Beobachtungen oder Gruppen von Beobachtungen zu labeln. `geom_text()` ist dabei ähnlich wie `geom_point()`, aber es hat einen zusätzlichen *aes*: `label`. Der macht es möglich Text (Labels) zu deinen Plots hinzuzufügen.  
+Es gibt zwei mögliche Quellen von Labels. Als erstes könntest du ein `tibble` haben, dass Labels anbietet. Im Folgenden schauen wir uns die Autos mit den größten Hubraum pro Antriebsart an und speichern die Informationen als neuen *Data Frame* `label_info`. Neue `dplyr` Funktionen helfen dabei. 
+
+
+
+```{r}
+label_info <- mpg |>
+  group_by(drv) |>
+  arrange(desc(displ)) |>
+  slice_head(n = 1) |>
+  mutate(
+    drive_type = case_when(
+      drv == "f" ~ "front-wheel drive",
+      drv == "r" ~ "rear-wheel drive",
+      drv == "4" ~ "4-wheel drive"
+    )
+  ) |>
+  select(displ, hwy, drv, drive_type)
+
+label_info
+```
+
+Diesen neuen Datensatz benutzen wir um die Labels direkt über den Plots anzuzeigen. Mit `fontface` und `size` können wir den Look der Labels direkt anpassen. Die Ausrichtung der Labels erfolgt mit `hjust` ("left", "center", "right") und `vjust` ("top", "center", "botom"). `theme(legend.position = "none")` unterdrückt die Legende. Sie brauchen wir auf der rechten Seite jetzt natürlich nicht mehr.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, color = drv)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(se = FALSE) +
+  geom_text(
+    data = label_info, 
+    aes(x = displ, y = hwy, label = drive_type),
+    fontface = "bold", size = 5, hjust = "right", vjust = "bottom"
+  ) +
+  theme(legend.position = "none")
+#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+```
+
+Durch die Überlappungen ist der beschriftete Plot nicht mehr ganz so gut zu lesen. Ein Rechteck wird hinter den Text geworfen. `geom_label()` hilft. `nudge_y` hebt die Labels leicht vor die Punkte des Plots:
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, color = drv)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(se = FALSE) +
+  geom_label(
+    data = label_info, 
+    aes(x = displ, y = hwy, label = drive_type),
+    fontface = "bold", size = 5, hjust = "right", alpha = 0.5, nudge_y = 2,
+  ) +
+  theme(legend.position = "none")
+#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+```
+
+Optimal ist es nicht. `geom_label_repel()` vom `ggrepel` Paket sorgt automatisch für eine Platzierung der Labels, sodass sie nicht überlappen.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy, color = drv)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(se = FALSE) +
+  geom_label_repel(
+    data = label_info, 
+    aes(x = displ, y = hwy, label = drive_type),
+    fontface = "bold", size = 5, nudge_y = 2,
+  ) +
+  theme(legend.position = "none")
+#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+```
+
+Auch können wir gewisse Punkte optisch hervorheben mit `geom_text_repel()`. Hier fügen wir sogar zwei Schichten von Punkten übereinander, um die Punkte hervorzuheben.
+
+```{r}
+potential_outliers <- mpg |>
+  filter(hwy > 40 | (hwy > 20 & displ > 5))
+  
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_text_repel(data = potential_outliers, aes(label = model)) +
+  geom_point(data = potential_outliers, color = "red") +
+  geom_point(data = potential_outliers, color = "red", size = 3, shape = "circle open")
+```
+
+Ein Label zum Plot kannst du über einen neuen *Data Frame* hinzufügen. Bestimme dazu die maximalen Werte von x und y und speichere diese Koordinaten. Dann setze die Beschriftung dort ein.
+
+```{r}
+label_info <- mpg |>
+  summarize(
+    displ = max(displ),
+    hwy = max(hwy),
+    label = "Increasing engine size is \nrelated to decreasing fuel economy."
+  )
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_text(
+    data = label_info, aes(label = label), 
+    vjust = "top", hjust = "right"
+  )
+```
+
+Direkt in die Ecken können wir den Text setzen über `+Inf` und `-Inf`. Da wir die exakten Positionen nicht brauchen, ertellen wir den *Data Frame* mithilfe von `tibble()`. 
+
+```{r}
+label_info <- tibble(
+  displ = Inf,
+  hwy = Inf,
+  label = "Increasing engine size is \nrelated to decreasing fuel economy."
+)
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_text(data = label_info, aes(label = label), vjust = "top", hjust = "right")
+```
+
+Ohne einen *Data Frame* funktioniert das Ganze natürlich auch. `annotate()` fügt ein geom zu einem Plot hinzu.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  annotate(
+    geom = "text", x = Inf, y = Inf,
+    label = "Increasing engine size is \nrelated to decreasing fuel economy.",
+    vjust = "top", hjust = "right"
+  )
+```
+
+Wir können ein *Label-geom* statt eines *Text-geoms* benutzen. Ein *Segment-geom* mit dem `arrow` Argument zieht die Aufmerksamkeit auf sich. `x` und `y` *aes* definieren den Startpunkt, `xend` und `yend` den Endpunkt.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  annotate(
+    geom = "label", x = 3.5, y = 38,
+    label = "Increasing engine size is \nrelated to decreasing fuel economy.",
+    hjust = "left", color = "red"
+  ) +
+  annotate(
+    geom = "segment",
+    x = 3, y = 35, xend = 5, yend = 25, color = "red",
+    arrow = arrow(type = "closed")
+  )
+```
+
+`"\n"` überführt das Label in eine weitere Zeile. `stringr::str_wrap()` tut dies automatisch, indem man ihm die Anzahl der Zeichen vorgibt, pro Zeile.
+
+```{r}
+"Increasing engine size is related to decreasing fuel economy." |>
+  str_wrap(width = 40) |>
+  writeLines()
+```
+
+## Skalen
+
+Eine weitere Möglichkeit deinen Plot besser für die Kommunikation zu machen ist die Anpassung der Skalen.
+
+### *Default* Skalen
+
+`ggplot2` setzt normalerweise die Skalen automatisch für dich. Wenn du tippst:
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class))
+```
+
+Dann fügt `ggplot2` automatisch (hinter dem Vorhang) *default* Skalen hinzu.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  scale_x_continuous() +
+  scale_y_continuous() +
+  scale_color_discrete()
+```
+
+Die Namensgebung läuft wie folgt ab: `scale_` folgt der Names des `aes`, dann folgt `_`, dann der Name der Skala. Die *default* Skalen sind nach dem Typ der Variablen benannt: *continuous, discrete, datetime, date*. Es gibt jedoch Gründe die *defaults* zu überschreiben:
+
+* du willst die Parameter der *default* Skala optimieren. Du kannst die *breaks* der Achsen wechseln, oder die Labels der Legende.
+
+* du willst die Skala komplett ersetzen, und einen anderen Algorithmus verwenden.
+
+### Axis ticks und legend keys
+
+Es gibt zwei Argumente, die das Erscheinen der *Ticks* auf der Achse und der *keys* auf der Legende beeinflussen: `breaks` und `labels`. Breaks kontrollieren die Position der *Ticks*. Labels kontrollieren die *text labels*. Die gewöhnlichste Anwendung von `breaks` ist das Überschreiben des *default*:
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  scale_y_continuous(breaks = seq(15, 40, by = 5))
+```
+
+`labels` kannst du genauso benutzen (*Character* Vektor derselben Länge wie `breaks`), du kannst aber auch ihn auf `NULL` setzen, um die Labels zu unterdrücken. 
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  scale_x_continuous(labels = NULL) +
+  scale_y_continuous(labels = NULL)
+```
+
+Das `label` Argument kannst du mit der *labelling* Funktion vom *scales* Paket paaren, sodass die Formatierung von Zahlen wie Währungen und Prozenten leichter fällt. Links wird ein Dollarzeichen gesetzt, rechts durch 1000 geteilt und ein "K" für 1000 angefügt. Die *Breaks* werden auch individuell gesetzt.
+
+```{r}
+# Left
+ggplot(diamonds, aes(x = cut, y = price)) +
+  geom_boxplot(alpha = 0.05) +
+  scale_y_continuous(labels = scales::label_dollar())
+
+# Right
+ggplot(diamonds, aes(x = cut, y = price)) +
+  geom_boxplot(alpha = 0.05) +
+  scale_y_continuous(
+    labels = scales::label_dollar(scale = 1/1000, suffix = "K"), 
+    breaks = seq(1000, 19000, by = 6000)
+  )
+```
+
+Eine weitere nützliche *label* Funktion ist `label_percent()`:
+
+```{r}
+ggplot(diamonds, aes(x = cut, fill = clarity)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(
+    name = "Percentage", 
+    labels = scales::label_percent()
+  )
+```
+
+Hast du wenig Datenpunkte und willst hervorheben, wo die Beobachtung exakt angefallen ist, benutze `breaks`. 
+
+```{r}
+presidential |>
+  mutate(id = 33 + row_number()) |>
+  ggplot(aes(x = start, y = id)) +
+  geom_point() +
+  geom_segment(aes(xend = end, yend = id)) +
+  scale_x_date(name = NULL, breaks = presidential$start, date_labels = "'%y")
+```
+
+### Layout der Legende
+
+Um die Achsen zu optimieren, nutze meist `breaks` und `labels`. Um die Legenden zu kontrollieren, benutze `theme()`. Sie kontrollieren den Nicht-Daten-Bereich. `legend.position` kontrolliert wo genau die Legende gezeichnet wird. 
+
+```{r}
+base <- ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class))
+
+base + theme(legend.position = "left")
+base + theme(legend.position = "top")
+base + theme(legend.position = "bottom")
+base + theme(legend.position = "right") # the default
+```
+
+Mit `legend.position = "none"` kannst du die Legende unterdrücken.  
+Kontrolliere die Anzahl an Zeilen und die Größe der angezeigten Punkte in der Legende mithilfe von `guides()`. 
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow = 1, override.aes = list(size = 4)))
+#> `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+```
+
+### Ersetzen einer Skala
+
+Oft ist es sinnvoll Transformationen deiner Variable zu plotten. Z.B. lässt sich so der Zusammenhang zwischen `carat` und `price` besser sehen.
+
+```{r}
+# Left
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_bin2d()
+
+# Right
+ggplot(diamonds, aes(x = log10(carat), y = log10(price))) +
+  geom_bin2d()
+```
+
+Der Nachteil ist natürlich, dass die Achsen mit den transformierten Werten gelabelt sind. Das macht die Interpretation des Plots schwierig. Man muss jetzt aber schon genau auf die Achsen schauen. 
+
+```{r}
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_bin2d() + 
+  scale_x_log10() + 
+  scale_y_log10()
+```
+
+Die Farbpalette kann für Menschen mit Farbenblindheit angepasst werden.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv))
+
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv)) +
+  scale_color_brewer(palette = "Set1")
+```
+
+Ein *shape mapping* hilft hier natürlich deutlich mehr.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = drv, shape = drv)) +
+  scale_color_brewer(palette = "Set1")
+```
+
+Wenn eine vordefinierte Zuordnung zwischen Werten und Farben existiert, benutze `scale_color_manual()`. Die US Präsidenten können wir so optisch nach Parteizugehörigkeit hervorheben.
+
+```{r}
+presidential |>
+  mutate(id = 33 + row_number()) |>
+  ggplot(aes(x = start, y = id, color = party)) +
+  geom_point() +
+  geom_segment(aes(xend = end, yend = id)) +
+  scale_color_manual(values = c(Republican = "red", Democratic = "blue"))
+```
+
+Für stetige Farbeverläufe benutze `scale_color_gradient()` oder `scale_fill_gradient()`. Für divergierende Skalen benutze `scale_color_gradient2()`. So können die negativen und positiven Werte verschiedenen Farben übergeben werden.  
+
+### Zooming
+
+Es gibt drei Möglichkeiten die Plot Limits zu kontrollieren:
+
+1. Anpassen, welche Daten geplottet werden.
+2. Limits in jeder Skala setzen.
+3. `xlim` und `ylim` im `coord_cartesian()` setzen.
+
+In eine Region zoomt man am besten über `coord_cartesian()`:
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth() +
+  coord_cartesian(xlim = c(5, 7), ylim = c(10, 30))
+
+mpg |>
+  filter(displ >= 5, displ <= 7, hwy >= 10, hwy <= 30) |>
+  ggplot(aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth()
+```
+
+Die Limits von Plots zu reduzieren ist meist äquivalent zu *Subsetting*. Es ist aber nicht selten sinnvoll die Limits zu erweitern, sodass zwei oder mehrere Plots besser miteinander verglichen werden können. 
+
+```{r}
+suv <- mpg |> filter(class == "suv")
+compact <- mpg |> filter(class == "compact")
+
+ggplot(suv, aes(x = displ, y = hwy, color = drv)) +
+  geom_point()
+
+ggplot(compact, aes(x = displ, y = hwy, color = drv)) +
+  geom_point()
+```
+
+Um das Problem zu beheben, können wir den ganzen Datensatz auf die `limits` trainieren.
+
+```{r}
+x_scale <- scale_x_continuous(limits = range(mpg$displ))
+y_scale <- scale_y_continuous(limits = range(mpg$hwy))
+col_scale <- scale_color_discrete(limits = unique(mpg$drv))
+
+ggplot(suv, aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  x_scale +
+  y_scale +
+  col_scale
+
+ggplot(compact, aes(x = displ, y = hwy, color = drv)) +
+  geom_point() +
+  x_scale +
+  y_scale +
+  col_scale
+```
+
+## Themes
+
+Du kannst die Nicht-Datenelemente deines Plots mit einem Thema/*Theme* individuell gestalten.
+
+```{r}
+ggplot(mpg, aes(x = displ, y = hwy)) +
+  geom_point(aes(color = class)) +
+  geom_smooth(se = FALSE) +
+  theme_bw()
+```
+
+Acht *Themes* werden von `ggplot2` per Default mitgeliefert. Auch das Paket __ggthemes__ und ähnliche helfen weiter. Mehr dazu über die Hilfeseiten.  
+
+## Layout
+
+Das *Patchwork* Paket erlaubt es uns mehrere separate Plots in derselben Graphik zu vereinen. Die erstellten Plots musst du erst als Objekt speichern und kannst sie dann über `+` zusammenfügen.
+
+```{r}
+p1 <- ggplot(mpg, aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  labs(title = "Plot 1")
+p2 <- ggplot(mpg, aes(x = drv, y = hwy)) + 
+  geom_boxplot() + 
+  labs(title = "Plot 2")
+p1 + p2
+```
+
+Das Paket hat eine neue Funktionalität dem `+` Operator zugefügt. `|` platziert `p1` und `p3` nebeneinander und `/` schiebt `p2` in die nächste Zeile.
+
+```{r}
+p3 <- ggplot(mpg, aes(x = cty, y = hwy)) + 
+  geom_point() + 
+  labs(title = "Plot 3")
+(p1 | p3) / p2
+```
+
+*Patchwork* erlaubt es uns die Legenden von mehreren Plots zu bündeln. Die Platzierung der Legende kann angepasst werden, die Dimensionen der Plots, ein gemeinsamer Titel, Untertitel, Überschrift, etc.  
+Wir haben 5 Plots jetzt, die Legenden wurden unterdrückt und die Legende oben erstellt mit `& theme(legend.position = "top")`. Die Höhe der Plots wurde angepasst.
+
+
+```{r}
+p1 <- ggplot(mpg, aes(x = drv, y = cty, color = drv)) + 
+  geom_boxplot(show.legend = FALSE) + 
+  labs(title = "Plot 1")
+
+p2 <- ggplot(mpg, aes(x = drv, y = hwy, color = drv)) + 
+  geom_boxplot(show.legend = FALSE) + 
+  labs(title = "Plot 2")
+
+p3 <- ggplot(mpg, aes(x = cty, color = drv, fill = drv)) + 
+  geom_density(alpha = 0.5) + 
+  labs(title = "Plot 3")
+
+p4 <- ggplot(mpg, aes(x = hwy, color = drv, fill = drv)) + 
+  geom_density(alpha = 0.5) + 
+  labs(title = "Plot 4")
+
+p5 <- ggplot(mpg, aes(x = cty, y = hwy, color = drv)) + 
+  geom_point(show.legend = FALSE) + 
+  facet_wrap(~drv) +
+  labs(title = "Plot 5")
+
+(guide_area() / (p1 + p2) / (p3 + p4) / p5) +
+  plot_annotation(
+    title = "City and highway mileage for cars with different drive trains",
+    caption = "Source: Source: https://fueleconomy.gov."
+  ) +
+  plot_layout(
+    guides = "collect",
+    heights = c(1, 3, 2, 4)
+    ) &
+  theme(legend.position = "bottom")
+```
+
+Mehr dazu über die Hilfe oder [link](https://patchwork.data-imaginist.com).
+
+# Transformieren: Logical Vectors
+
+## Einleitung
+
+In diesem Abschnitt lernen wir Werkzeuge für logische Vektoren kennen. Sie können nur `TRUE`, `FALSE`, oder `NA` annehmen. In deiner Analyse findest du sie recht selten, doch trotzdem werden sie fast immer kreiert und manipuliert.
+
+### Voraussetzungen
+
+Die meisten Funktionen, die wir brauchen, werden natürlich schon von __Base R__ bereitgestellt. Um *Data Frames* zu bearbeiten und für Datenbeispiele, laden wir aber dennoch:
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+## Vergleiche
+
+Ein gewöhnlicher Weg einen logischen Vektor zu erzeugen, ist es numerische Vergleiche mithilfe von `<`, `<=`, `>`, `>=`, `!=` und `==` durchzuführen.  
+Bisher haben wir logische Variablen erzeugt mithilfe von `filter()`. Sie wurden berechnet, benutzt und dann wieder entsorgt. Im folgenden Beispiel finden sich über den Filter alle Abflüge am Tag, die ungefähr pünktlich waren.
+
+```{r}
+flights |> 
+  filter(dep_time > 600 & dep_time < 2000 & abs(arr_delay) < 20)
+```
+
+Die logischen Variablen sind hier nicht sichtbar, wir können sie aber sichtbar machen mit `mutate()`:
+
+```{r}
+flights |> 
+  mutate(
+    daytime = dep_time > 600 & dep_time < 2000,
+    approx_ontime = abs(arr_delay) < 20,
+    .keep = "used"
+  )
+```
+
+So können wir den Code besser verstehen und überprüfen, ob jeder Schritt korrekt ausgeführt wurde. Der Filter sieht dann so aus:
+
+```{r}
+flights |> 
+  mutate(
+    daytime = dep_time > 600 & dep_time < 2000,
+    approx_ontime = abs(arr_delay) < 20,
+  ) |> 
+  filter(daytime & approx_ontime)
+```
+
+### Punktvergleiche 
+
+Punktvergleiche mit `==` können sehr gefährlich sein, da sie ein falsches Ergebnis ausgeben können.
+
+```{r}
+x <- c(1 / 49 * 49, sqrt(2) ^ 2)
+x
+x == c(1, 2)
+```
+
+Es wird von einer festen Anzahl an Nachkommastellen ausgegangen. Bei Wurzel aber auch mal gerundet.
+
+```{r}
+print(x, digits = 16)
+```
+
+Eine Option ist es `dplyr::near()` zu nutzen, dass geringfügige Abweichungen ignoriert.
+
+```{r}
+near(x, c(1, 2))
+```
+
+### Missing Values
+
+Fast jede Operation, die einen unbekannten Wert involviert, ist wieder unbekannt.
+
+```{r eval = FALSE}
+NA > 5
+10 == NA
+NA == NA
+# NA
+```
+
+Willst du z.B. alle unbekannte Flüge finden, bei denen `dept_time` fehlt, so funktioniert `dept_time == NA` nicht, da das Ergebnis immer `NA` ist und `filter()` sortiert automatisch fehlende Werte aus.
+
+```{r eval = FALSE}
+flights |> 
+  filter(dep_time == NA)
+```
+
+### `is.na()`
+
+`is.na()` funktioniert mit jedem Typ Vektor und gibt `TRUE` aus für *Missing Values* und `FALSE` für alles andere.
+
+```{r}
+is.na(c(TRUE, NA, FALSE))
+is.na(c(1, NA, 3))
+is.na(c("a", NA, "b"))
+```
+
+Jetzt können wir uns alle Zeilen ausgeben lassen, bei denen in `dept_time` *Missing Values* vorkommen. 
+
+```{r}
+flights |> 
+  filter(is.na(dep_time))
+```
+
+In `arrange()` werden alle *Missing Values* ans Ende gesetzt. Das kannst du überschreiben, indem du nach `is.na()` sotierst.
+
+```{r}
+flights |> 
+  filter(month == 1, day == 1) |> 
+  arrange(dep_time)
+```
+
+```{r}
+flights |> 
+  filter(month == 1, day == 1) |> 
+  arrange(desc(is.na(dep_time)), dep_time)
+```
+
+## Boolsche Algebra
+
+Hast du einmal alle *logical vectors*, so kannst du sie kombinieren: `&` ist "and", `|` ist "oder", `!` ist "nicht" und `xor()` ist "exklusives oder", also nicht die Schnittmenge.  
+
+### Missing Values
+
+```{r}
+df <- tibble(x = c(TRUE, FALSE, NA))
+
+df |> 
+  mutate(
+    and = x & NA,
+    or = x | NA
+  )
+```
+
+Ein `NA` in einem logischen Vektor bedeutet entweder `TRUE` oder `FALSE`. `TRUE | TRUE` und `FALSE | TRUE` sind beide `TRUE`, also muss `NA | TRUE` auch `TRUE` sein. Ähnliches mit `NA & FALSE`. 
+
+### Vermeide (x == a | b)
+
+```{r}
+flights |> 
+   filter(month == 11 | month == 12)
+```
+
+funktioniert. Wenn du aber auf der rechten Seite eine Zahl benutzt, so ist das wie ein `TRUE`. 
+
+```{r}
+flights |> 
+   filter(month == 11 | 12)
+```
+
+Vermeide dies, da jede Zeile dann ausgewählt wird.
+
+```{r}
+flights |> 
+  mutate(
+    nov = month == 11,
+    final = nov | 12,
+    .keep = "used"
+  )
+```
+
+### `%in%`
+
+`x %in% y` gibt einen logischen Vektor der Länge von `x` aus, der `TRUE` ist, wann immer ein Wert `x` irgendwo in `y` ist. 
+
+```{r}
+1:12 %in% c(1, 5, 11)
+letters[1:10] %in% c("a", "e", "i", "o", "u")
+```
+
+Um alle Flüge im November und Dezember zu finden, schreibe:
+
+```{r}
+flights |> 
+  filter(month %in% c(11, 12))
+```
+
+Hier gelten andere Regeln für `NA`.
+
+```{r eval = FALSE}
+c(1, 2, NA) == NA
+#> [1] NA NA NA
+c(1, 2, NA) %in% NA
+#> [1] FALSE FALSE  TRUE
+```
+
+So erhalten wir:
+
+```{r}
+flights |> 
+  filter(dep_time %in% c(NA, 0800))
+```
+
+## Summaries
+
+Nützliche Techniken für das Zusammenfassen von logischen Vektoren erscheinen jetzt. 
+
+### Logical Summaries
+
+Es gibt zwei *logical summaries*: `any()` und `all()`. `any(x)` ist das Äquivalent zu `|`; es gibt `TRUE` aus, wenn es irgendein `TRUE` in `x` gibt. `all(x)` ist äquivalent zu `&`. Es gibt `TRUE` zurück, wenn alle Werte von `x` `TRUE`'s sind. `NA` wird ausgegeben, wenn es *Missing Values* gibt, und zu vermeiden ist dies mit `na.rm = TRUE`.  
+Gibt es Tage, an denen alle Flüge Verspätung hatten?
+
+```{r}
+flights |> 
+  group_by(year, month, day) |> 
+  summarize(
+    all_delayed = all(arr_delay >= 0, na.rm = TRUE),
+    any_delayed = any(arr_delay >= 0, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+### Numeric Summaries Of Logical Vectors
+
+Wenn du einen logischen Vektor in einem numerischen Kontext benutzt, so wird `TRUE` zu `1` und `FALSE` zu `0`. So lassen sich `sum()` und `mean()` sehr nützlich mit logischen Vektoren vereinen, da die Anzahl an `TRUE`'s und der Anteil ausgegeben wird.
+
+```{r}
+flights |> 
+  group_by(year, month, day) |> 
+  summarize(
+    prop_delayed = mean(arr_delay > 0, na.rm = TRUE),
+    .groups = "drop"
+  ) |> 
+  ggplot(aes(x = prop_delayed)) + 
+  geom_histogram(binwidth = 0.05)
+```
+
+Wieviele Flüge sind vor 5 Uhr abgeflogen?
+
+```{r}
+flights |> 
+  group_by(year, month, day) |> 
+  summarize(
+    n_early = sum(dep_time < 500, na.rm = TRUE),
+    .groups = "drop"
+  ) |> 
+  arrange(desc(n_early))
+```
+
+### Logical Subsetting
+
+Wir können `logical vector` auch in `summarize` benutzen, um hier eine einzelne Variable zu filtern. Die Nutzung der eckigen Klammern hilft.  
+Wir wollen den durchschnittlichen *Delay*, also Verspätung, berechnen. Also nur für Flüge mit Verspätung (>0). Eine Möglichkeit:
+
+```{r}
+flights |> 
+  filter(arr_delay > 0) |> 
+  group_by(year, month, day) |> 
+  summarize(
+    behind = mean(arr_delay),
+    n = n(),
+    .groups = "drop"
+  )
+```
+
+Aber was, wenn wir auch die durchschnittliche Verspätung für Flüge berechnen wollen, die zu früh angekommen sind?
+
+```{r}
+flights |> 
+  group_by(year, month, day) |> 
+  summarize(
+    behind = mean(arr_delay[arr_delay > 0], na.rm = TRUE),
+    ahead = mean(arr_delay[arr_delay < 0], na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  )
+```
+
+Bedenke auch den Unterschied der Gruppengröße: *delayed* vs. *total flights*.
+
+## Konditionale Transformationen
+
+Hier gibt es zwei mächtige Werkzeuge: `if_else()` und `case_when()`. 
+
+### `if_else()` 
+
+Mit `dplyr::if_else()` kannst du einen Wert benutzen, wenn die Bedingung `TRUE` ist und einen anderen, wenn sie `FALSE` ist. Das erste der drei Argumente ist die `condition`, ein *logical vector*. Dann `true`, wenn die Bedingung erfüllt ist, und `false`, der Output, falls die *condition false* ist.
+
+```{r}
+x <- c(-3:3, NA)
+if_else(x > 0, "+ve", "-ve")
+```
+
+Es gibt tatsächlich ein viertes optionales Argument, falls der Input `NA` ist.
+
+```{r}
+if_else(x > 0, "+ve", "-ve", "???")
+```
+
+Du kannst anstelle der `true`, `false` Argumente auch Vektoren benutzen. 
+
+```{r}
+if_else(x < 0, -x, x)
+x1 <- c(NA, 1, 2, NA)
+y1 <- c(3, NA, 4, 6)
+if_else(is.na(x1), y1, x1)
+if_else(x == 0, "0", if_else(x < 0, "-ve", "+ve"), "???")
+```
+
+Die letzte Zeile ist hart zu lesen, deshalb wechseln wir lieber zu `dplyr::case_when()`.
+
+### `case_when()`
+
+Eine spezielle Syntax haben wir hier. Sie nimmt Paare vor: `condition ~ output`. `condition` muss ein *logical vector* sein. Bei Erfüllung wird `output` genutzt.
+
+```{r}
+case_when(
+  x == 0   ~ "0",
+  x < 0    ~ "-ve", 
+  x > 0    ~ "+ve",
+  is.na(x) ~ "???"
+)
+```
+
+Wenn kein Fall passt, erhalten wir ein `NA`.
+
+```{r}
+case_when(
+  x < 0 ~ "-ve",
+  x > 0 ~ "+ve"
+)
+```
+
+Für einen *default*, nutze `TRUE` auf der linken Seite.
+
+```{r}
+case_when(
+  x < 0 ~ "-ve",
+  x > 0 ~ "+ve",
+  TRUE ~ "???"
+)
+```
+
+Sind mehrere Bedingungen erfüllt, so wird nur der erste genutzt.
+
+```{r}
+case_when(
+  x > 0 ~ "+ve",
+  x > 3 ~ "big"
+)
+```
+
+Etwas so schönes können wir bauen:
+
+```{r}
+flights |> 
+  mutate(
+    status = case_when(
+      is.na(arr_delay)      ~ "cancelled",
+      arr_delay < -30       ~ "very early",
+      arr_delay < -15       ~ "early",
+      abs(arr_delay) <= 15  ~ "on time",
+      arr_delay > 15        ~ "late",
+      arr_delay > 60        ~ "very late",
+    ),
+    .keep = "used"
+  )
+```
+
+### Kompatible Typen
+
+`ifelse()` und `case_when()` erfordern passende Typen. Passen sie nicht, gibt es Fehlermeldungen.
+
+```{r eval = FALSE}
+if_else(c(TRUE,FALSE), "a", 2)
+```
+
+Kompatibel sind:
+
+* numerische und logische Vektoren.
+* *Strings* und Faktoren. Denke bei einem Faktor an einen *String* mit begrenzten Werten.
+* *Dates* und *date-times*.
+* `NA`-ä- ist kompatibel mit allem.
+
+# Transformieren: Zahlen
+
+## Einleitung
+
+Das Rückgrat der __Data Science__ sind natürlich Zahlen. Was kannst du in R alles mit ihnen machen?
+
+### Voraussetzungen
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+## Zahlen machen
+
+`readr` bietet zwei wichtige Funktionen für die Transformation von *Strings* in Zahlen: `parse_double()` und `parse_number()`. Benutze `parse_double()`, wenn du Zahlen als *Strings* geschrieben hast.
+
+```{r}
+x <- c("1.2", "5.6", "1e3")
+parse_double(x)
+```
+
+Benutze `parse_number()`, wenn dein *String* nicht-numerischen Text enthält, den du ignorieren willst. 
+
+```{r}
+x <- c("$1,234", "USD 3,513", "59%")
+parse_number(x)
+```
+
+## Counts
+
+Für schnelle Entdeckungen und Checken ist diese Funktion `count()` genial. Auch sortieren geht rasch. 
+
+```{r}
+flights |>
+  print(n = 10)
+flights |> count(dest)
+flights |> count(dest, sort = TRUE)
+```
+
+Dieselbe Berechnung kannst du per Hand mit `group_by()` und `summarize()` und `n()` vornehmen. Jetzt kannst du auch andere *Summaries* vornehmen.
+
+```{r}
+flights |> 
+  group_by(dest) |> 
+  summarize(
+    n = n(),
+    delay = mean(arr_delay, na.rm = TRUE)
+  )
+```
+
+`n()` funktioniert natürlich nur in der `dplyr` Umgebung und brauch keine Argumente. Es gibt jedoch ein paar Varianten von `n()`:
+
+* `n_distinct(x)` zählt die Anzahl einzigartiger Werte einer oder mehrerer Variablen. Welche Ziele werden von den meisten Fluglinien angesteuert?
+
+```{r}
+flights |> 
+  group_by(dest) |> 
+  summarize(
+    carriers = n_distinct(carrier)
+  ) |> 
+  arrange(desc(carriers))
+```
+
+* Ein gewichteter *Count* ist eine Summe. Wieviel Meilen ist jedes Flugzeug geflogen?
+
+```{r}
+flights |> 
+  group_by(tailnum) |> 
+  summarize(miles = sum(distance))
+```
+
+`count()` mit dem Argument `wt` macht dasselbe.
+
+```{r}
+flights |> count(tailnum, wt = distance)
+```
+
+*Missing Values* kannst du zählen durch Kombinieren von `sum()` und `is.na()`. Im `flights` Datensatz sind es die gecancellten Flüge.
+
+```{r}
+flights |> 
+  group_by(dest) |> 
+  summarize(n_cancelled = sum(is.na(dep_time))) 
+```
+
+## Numerische Transformationen
+
+Transformationsfunktionen funktionieren sehr gut mit `mutate()`, weil ihr Output dieselbe Länge wie ihr Input hat.
+
+### Arithmetische und recycling Regeln
+
+Die Basics wie Addition usw. sind bekannt. Was aber passiert, wenn linke und rechte Seite verschiedene Längen haben? `flights |> mutate(air_time = air_time / 60)`. 336 766 Zahlen links und eine rechts. Der kürzere Vektor wird wiederholt. 
+
+```{r}
+x <- c(1, 2, 10, 20)
+x / 5
+x / c(5, 5, 5, 5)
+```
+
+Eine Warnung wird ausgegeben, wenn der längere kein Vielfaches des kürzeren Vektors ist.
+
+```{r eval = FALSE}
+x * c(1, 2, 3)
+#> Warning in x * c(1, 2, 3): longer object length is not a multiple of shorter
+```
+
+Diese *recycling rules* werden auch auf logische Vergleiche angewendet (`==`, `<`, `<=`, `>`, `>=`, `!=`) und führen zu überraschenden Ergebnissen, wenn man fälschlicherweise `==` statt `%in%` anwendet. 
+
+```{r}
+flights |> 
+  filter(month == c(1, 2))
+```
+
+Es findet natürlich nur Flüge in ungeraden Zeilen, die im Januar, und Flüge in geraden Zeilen, die im Februar geflogen sind. Um uns vor solchen Fehlern zu schützen: die meisten `tidyverse` Funktionen benutzen eine striktere Form von Recycling, das nur einzelne Werte recyclt. 
+
+### Minimum und Maximum
+
+Arithmetische Funktionen funktionieren gut mit Paaren von Variablen. `pmin()` und `pmax()` geben den kleinsten oder größten Wert in jeder Zeile zurück.
+
+```{r}
+df <- tribble(
+  ~x, ~y,
+  1,  3,
+  5,  2,
+  7, NA,
+)
+
+df |> 
+  mutate(
+    min = pmin(x, y, na.rm = TRUE),
+    max = pmax(x, y, na.rm = TRUE)
+  )
+```
+
+Sie sind ungleich `min()` und `max()`. 
+
+```{r}
+df |> 
+  mutate(
+    min = min(x, y, na.rm = TRUE),
+    max = max(x, y, na.rm = TRUE)
+  )
+```
+
+### Modulare Arithmetic
+
+```{r}
+1:10 %/% 3 # Ganze Zahl bei Division vor dem Komma
+1:10 %% 3 # Nachkommazahl bzw. Rest
+```
+
+Moduare Arithmetic ist für die Flüge nützlich, da die Zeitvarable `sched_dep_time` in `hour` und `minute` umgerechnet werden kann:
+
+```{r}
+flights |> 
+  mutate(
+    hour = sched_dep_time %/% 100,
+    minute = sched_dep_time %% 100,
+    .keep = "used"
+  )
+```
+
+So können wir den Anteil der gestrichenen Flüge über den Tag berechnen.
+
+```{r}
+flights |> 
+  group_by(hour = sched_dep_time %/% 100) |> 
+  summarize(prop_cancelled = mean(is.na(dep_time)), n = n()) |> 
+  filter(hour > 1) |> 
+  ggplot(aes(x = hour, y = prop_cancelled)) +
+  geom_line(color = "grey50") + 
+  geom_point(aes(size = n))
+```
+
+### Logarithmus
+
+```{r}
+starting <- 100
+interest <- 1.05
+
+money <- tibble(
+  year = 1:50,
+  money = starting * interest ^ year
+)
+```
+
+Eine Exponentialkurve zeigt dein Geldwachstum an.
+
+```{r}
+ggplot(money, aes(x = year, y = money)) +
+  geom_line()
+```
+
+Logarithmische Transformation der y-Achse zeigt eine gerade Linie.
+
+```{r}
+ggplot(money, aes(x = year, y = money)) +
+  geom_line() + 
+  scale_y_log10()
+```
+
+### Runden
+
+Benutze `round(x)` zum Runden zum nächsten Nachbarn.
+
+```{r}
+round(123.456)
+```
+
+Präzisiere das Ganze über ein zweites Argument.
+
+```{r}
+round(123.456, 2)  # two digits
+round(123.456, 1)  # one digit
+round(123.456, -1) # round to nearest ten
+round(123.456, -2) # round to nearest hundred
+```
+
+Es wird bei .5 immer zur geraden Zahl gerundet. Abrunden und Aufrunden durch `floor()` und `ceiling()`. 
+
+```{r}
+x <- 123.456
+floor(x)
+ceiling(x)
+```
+
+### Zahlen in Intervalle einteilen
+
+```{r}
+x <- c(1, 2, 5, 10, 15, 20)
+cut(x, breaks = c(0, 5, 10, 15, 20))
+cut(x, breaks = c(0, 5, 10, 100))
+```
+
+Benutze deine eigenen Labels, aber immer eins weniger als `breaks`.
+
+```{r}
+cut(x, 
+  breaks = c(0, 5, 10, 15, 20), 
+  labels = c("sm", "md", "lg", "xl")
+)
+```
+
+Jeder Wert, der nicht im Intervall ist, bekommt ein `NA`. 
+
+```{r}
+y <- c(NA, -10, 5, 10, 30)
+cut(y, breaks = c(0, 5, 10, 15, 20))
+```
+
+### Kummulieren und Aggregieren
+
+```{r}
+x <- 1:10
+cumsum(x)
+```
+
+Im __slider__ Paket gibt es komplexere Aggregate.
+
+## Generelle Transformationen
+
+### Ränge
+
+`dplyr::min_rank()` behandelt Bindungen als 1. 2. 2. 4.
+
+```{r}
+x <- c(1, 4, 2, 3, 2, NA)
+min_rank(x)
+min_rank(desc(x))
+```
+
+Ähnliche Varianten findest du in der Dokumentation.
+
+```{r}
+df <- tibble(x = x)
+df |> 
+  mutate(
+    row_number = row_number(x),
+    dense_rank = dense_rank(x),
+    percent_rank = percent_rank(x),
+    cume_dist = cume_dist(x)
+  )
+```
+
+### Verschiebungen
+
+```{r}
+x <- c(2, 5, 11, 11, 19, 35)
+lag(x) # Verschebung eins nach rechts
+lead(x) # Verschiebung eins nach links
+```
+
+```{r}
+x - lag(x) # Differenz zwischen aktuellem Wert und Vorgänger
+x == lag(x) # wechselt der aktuelle Wert?
+```
+
+Über ein zweites Agument kannst du den "Lag" per Hand bestimmen.
+
+### `consecutive_id()`
+
+Zeiten, wann eine Website besucht wird:
+
+```{r}
+events <- tibble(
+  time = c(0, 1, 2, 3, 5, 10, 12, 15, 17, 19, 20, 27, 28, 30)
+)
+```
+
+Zeit zwischen zwei Besuchen, "gap" größer gleich 5 soll identifiziert werden.
+
+```{r}
+events <- events |> 
+  mutate(
+    diff = time - lag(time, default = first(time)),
+    gap = diff >= 5
+  )
+events
+```
+
+Vom logischen Vektor wollen wir zu einer Gruppierungsvariable: mit `cur_group_id()`:
+
+```{r}
+events <- events |>
+group_by(gap) |>
+mutate(group = cur_group_id())
+events
+```
+
+## Numerische Zusammenfassungen
+
+### Zentrieren
+
+`mean()` vs. `median()`. Je nach Ausreißer und Form erhalten wir verschiedenen Ergebnisse. Bedenke die Einkommensverteilung. Hier ist der `mean` mit Sicherheit größer.  
+Bei unseren Flugverspätungen eben.
+
+```{r}
+flights |>
+  group_by(year, month, day) |>
+  summarize(
+    mean = mean(dep_delay, na.rm = TRUE),
+    median = median(dep_delay, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  ) |> 
+  ggplot(aes(x = mean, y = median)) + 
+  geom_abline(slope = 1, intercept = 0, color = "white", size = 2) +
+  geom_point()
+```
+
+```{r}
+flights |>
+  group_by(year, month, day) |>
+  summarize(
+    mean = mean(dep_delay, na.rm = TRUE),
+    median = median(dep_delay, na.rm = TRUE),
+    n = n(),
+    .groups = "drop"
+  )
+```
+
+### Minimum, Maximum und Quantile
+
+`quantile(x, 0.25)`, `quantile(x, 0.5)`, `quantile(x, 0.95)` sind selbsterklärend.
+
+```{r}
+flights |>
+  group_by(year, month, day) |>
+  summarize(
+    max = max(dep_delay, na.rm = TRUE),
+    q95 = quantile(dep_delay, 0.95, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+### Streuung
+
+Standardabweichung `sd(x)`, Interquartilsabstand `IQR()`. IGQ ist das 75% - 25% Quantil.
+
+```{r}
+flights |> 
+  group_by(origin, dest) |> 
+  summarize(
+    distance_sd = IQR(distance), 
+    n = n(),
+    .groups = "drop"
+  ) |> 
+  filter(distance_sd > 0)
+```
+
+### Verteilungen
+
+Visualisiere die Verteilung bevor du zusammenfassende Statistiken berechnest.
+
+```{r}
+flights |>
+  ggplot(aes(x = dep_delay)) + 
+  geom_histogram(binwidth = 15)
+
+
+flights |>
+  filter(dep_delay < 120) |> 
+  ggplot(aes(x = dep_delay)) + 
+  geom_histogram(binwidth = 5)
+```
+
+Checke, ob die Untergruppen die ganze Verteilung für alle wiederspiegeln.
+
+```{r}
+flights |>
+  filter(dep_delay < 120) |> 
+  ggplot(aes(x = dep_delay, group = interaction(day, month))) + 
+  geom_freqpoly(binwidth = 5, alpha = 1/5)
+```
+
+### Positionen
+
+Es gibt drei Funktionen, die man benutzen kann, um Werte zu extrahieren, die an einer speziellen Position stehen: `first(x)`, `last(x)`, `nth(x)`.
+
+```{r eval = FALSE}
+flights |> 
+  group_by(year, month, day) |> 
+  summarize(
+    first_dep = first(dep_time), 
+    fifth_dep = nth(dep_time, 5),
+    last_dep = last(dep_time)
+  )
+```
+
+Hier fehlt ein `na.rm = T`, daher benutze ich auf den ganzen Datensatz ein `na.omit()`.
+
+```{r}
+flights |> 
+  na.omit() |>
+  group_by(year, month, day) |> 
+  summarize(
+    last_dep = last(dep_time)
+  ) 
+```
+
+Werte aus Positionen ziehen, ist komplementär zu Filtern auf Rängen. Filtern gibt uns alle Variablen, mit jeder Beobachtung in einer eigenen Reihe.
+
+```{r}
+flights |> 
+  group_by(year, month, day) |> 
+  mutate(r = min_rank(desc(sched_dep_time)), .keep = "used") |> 
+  filter(r %in% c(1, max(r)))
+```
+
+### Mit `mutate()`
+
+*Summary Functions* werden normalerweise mit `summarize()` gepaart. Aufgrund der* *recycling rules* aber auch mit `mutate()`, besonders bei Standardisierung:
+
+* `x / sum(x)` - Anteil.
+* `(x - mean(x)) / sd(x)` - Z-Score.
+* `x / first(x)` - Index basierend auf erster Beobachtung.
+
+# Strings
+
+## Einleitung
+
+Hier lernen wir etwas über *String*-Manipulationswerkzeuge. 
+
+### Voraussetzungen
+
+```{r}
+library(babynames)
+```
+
+Das __stringr__ Paket ist Teil des `tidyverse`. Alle `stringr` Funktionen starten mit `str_`.
+
+## Einen String kreieren
+
+```{r}
+string1 <- "This is a string"
+string2 <- 'If I want to include a "quote" inside a string, I use single quotes'
+```
+
+Vergisst du einen Ausdruck zu schließen, so erscheint ein `+`.
+
+### Escapes
+
+```{r}
+double_quote <- "\"" # or '"'
+single_quote <- '\'' # or "'"
+backslash <- "\\"
+```
+
+```{r}
+x <- c(single_quote, double_quote, backslash)
+x
+str_view(x)
+```
+
+### Rohe Strings
+
+```{r}
+tricky <- "double_quote <- \"\\\"\" # or '\"'
+single_quote <- '\\'' # or \"'\""
+str_view(tricky)
+#> [1] │ double_quote <- "\"" # or '"'
+#>     │ single_quote <- '\'' # or "'"
+```
+
+Zu viele Backslashs. Statt dessen, nutze einen __raw string__ durch `r"(` und beende mit `)"`.
+
+```{r}
+tricky <- r"(double_quote <- "\"" # or '"'
+single_quote <- '\'' # or "'")"
+str_view(tricky)
+#> [1] │ double_quote <- "\"" # or '"'
+#>     │ single_quote <- '\'' # or "'"
+```
+
+### Weitere spezielle Characters
+
+`\n` - neue Zeile.  
+`\t` - Tab.
+`\u` `\U` - nicht-englische *Characters*.
+
+```{r}
+x <- c("one\ntwo", "one\ttwo", "\u00b5", "\U0001f604")
+x
+#> [1] "one\ntwo" "one\ttwo" "µ"        "😄"
+str_view(x)
+#> [1] │ one
+#>     │ two
+#> [2] │ one{\t}two
+#> [3] │ µ
+#> [4] │ 😄
+```
+
+## Viele Strings kreieren
+
+### `str_c()`
+
+Nimmt Vektoren an und gibt einen *Character Vector* aus.
+
+```{r}
+str_c("x", "y")
+str_c("x", "y", "z")
+str_c("Hello ", c("John", "Susan"))
+str_c(c("Hallo ", "Servus "), c("Andi ", "Andrea "), c("Ciao", "Servus"), c(" Adios", " Cheers"))
+```
+
+`str_c()` ist designt, um mit `mutate()` genutzt werden und gehorcht so den gewöhnlichen Regeln für *recycling* und *Missing Values*.
+
+```{r}
+set.seed(1410)
+df <- tibble(name = c(wakefield::name(3), NA))
+df |> mutate(greeting = str_c("Hi ", name, "!"))
+```
+
+Benutze `coalesce()`, um statt *Missing Values* Alternativen ausgeben zu lassen.
+
+```{r}
+df |> 
+  mutate(
+    greeting1 = str_c("Hi ", coalesce(name, "you"), "!"),
+    greeting2 = coalesce(str_c("Hi ", name, "!"), "Hi!")
+  )
+```
+
+### `str_glue()`
+
+Viele Gänsefüßchen mussten wir verwenden. Dies ist vermeidbar, wenn wir `str_glue()` aus dem __glue__ Paket benutzen. Alles innerhalb `{}` wird bewertet, als wäre es außerhalb der Anführungszeichen.
+
+```{r eval = FALSE}
+df |> mutate(greeting = str_glue("Hi {name}!"))
+```
+
+`str_glue()` konvertiert *Missing Values* zu `"NA"`. Jetzt ist es inkonsistent zu `str_c()`. Wenn du `{` oder `}` einfügen willst, nutze `{{` bzw. `}}`. 
+
+```{r eval = FALSE}
+df |> mutate(greeting = str_glue("{{Hi {name}!}}"))
+```
+
+### `str_flatten()`
+
+`str_c()` und `glue()` funktionieren gut mit `mutate()`, weil ihr Output dieselbe Länge wie Input hat. Was aber, wenn du nur einen einzelnen *String* ausgegeben haben willst. `str_flatten()` nimmt einen *Character* Vektor und kombiniert jedes Element des Vektors in einen *single String*:
+
+```{r}
+detach("package:tidyverse", unload = TRUE)
+library(tidytable)
+str_flatten(c("x", "y", "z"))
+str_flatten(c("x", "y", "z"), ", ")
+# str_flatten(c("x", "y", "z"), ", ", last = ", and ")
+```
+
+Dadurch lässt es sich gut mit `summarize()` arbeiten:
+
+```{r}
+df <- tribble(
+  ~ name, ~ fruit,
+  "Carmen", "banana",
+  "Carmen", "apple",
+  "Marvin", "nectarine",
+  "Terence", "cantaloupe",
+  "Terence", "papaya",
+  "Terence", "madarine"
+)
+df |>
+  group_by(name) |> 
+  summarize(fruits = str_flatten(fruit, ", "))
+```
+
+## Daten aus Strings ziehen
+
+* `df |>` `separate_longer_delim(col, delim)`
+* `df |>` `separate_longer_position(col, width)`
+* `df |>` `separate_wider_delim(col, delim, names)`
+* `df |>` `separate_wider_position(col, widths)`
+
+### Separieren in Reihen
+
+```{r}
+df1 <- tibble(x = c("a,b,c", "d,e", "f"))
+df1 |> 
+  separate_longer_delim(x, delim = ",")
+#> # A tibble: 6 × 1
+#>   x    
+#>   <chr>
+#> 1 a    
+#> 2 b    
+#> 3 c    
+#> 4 d    
+#> 5 e    
+#> 6 f
+```
+
+```{r}
+df2 <- tibble(x = c("1211", "131", "21"))
+df2 |> 
+  separate_longer_position(x, width = 1)
+#> # A tibble: 9 × 1
+#>   x    
+#>   <chr>
+#> 1 1    
+#> 2 2    
+#> 3 1    
+#> 4 1    
+#> 5 1    
+#> 6 3    
+#> # … with 3 more rows
+```
+
+### Separieren in Spalten
+
+```{r}
+df3 <- tibble(x = c("a10.1.2022", "b10.2.2011", "e15.1.2015"))
+df3 |> 
+  separate_wider_delim(
+    x,
+    delim = ".",
+    names = c("code", "edition", "year")
+  )
+#> # A tibble: 3 × 3
+#>   code  edition year 
+#>   <chr> <chr>   <chr>
+#> 1 a10   1       2022 
+#> 2 b10   2       2011 
+#> 3 e15   1       2015
+```
+
+```{r}
+df3 |> 
+  separate_wider_delim(
+    x,
+    delim = ".",
+    names = c("code", NA, "year")
+  )
+#> # A tibble: 3 × 2
+#>   code  year 
+#>   <chr> <chr>
+#> 1 a10   2022 
+#> 2 b10   2011 
+#> 3 e15   2015
+```
+
+```{r}
+df4 <- tibble(x = c("202215TX", "202122LA", "202325CA")) 
+df4 |> 
+  separate_wider_position(
+    x,
+    widths = c(year = 4, age = 2, state = 2)
+  )
+#> # A tibble: 3 × 3
+#>   year  age   state
+#>   <chr> <chr> <chr>
+#> 1 2022  15    TX   
+#> 2 2021  22    LA   
+#> 3 2023  25    CA
+```
+
+### `separate_wider_delim()`
+
+```{r}
+df <- tibble(x = c("1-1-1", "1-1-2", "1-3", "1-3-2", "1"))
+
+df |> 
+  separate_wider_delim(
+    x,
+    delim = "-",
+    names = c("x", "y", "z")
+  )
+```
+
+```{r}
+df <- tibble(x = c("1-1-1", "1-1-2", "1-3-5-6", "1-3-2", "1-3-5-7-9"))
+
+df |> 
+  separate_wider_delim(
+    x,
+    delim = "-",
+    names = c("x", "y", "z")
+  )
+```
+
+```{r}
+detach("package:tidytable", unload = TRUE)
+library(tidyverse)
+df
+df |> 
+  separate_wider_delim(
+    x,
+    delim = "-",
+    names = c("x", "y", "z"),
+    too_many = "drop"
+  )
+```
+
+```{r}
+df |> 
+  separate_wider_delim(
+    x,
+    delim = "-",
+    names = c("x", "y", "z"),
+    too_many = "merge"
+  )
+```
+
+
+## Buchstaben
+
+In diesem Abschnitt stellen wir Funktionen vor, die es uns erlauben die Buchstaben innerhalb eines *Strings* zu bearbeiten. 
+
+### Länge
+
+`str_length()` gibt die Anzahl der Buchstaben eines *Strings* aus.
+
+```{r}
+str_length(c("a", "R for data science", NA))
+```
+
+Du kannst die `count()` Funktion nutzen, um die Anzahl der Buchstaben von Babynamen zu bestimmen. 
+
+```{r}
+library(babynames)
+babynames |>
+  count(length = str_length(name), wt = n)
+
+babynames |> 
+  filter(str_length(name) == 15) |> 
+  count(name, wt = n, sort = TRUE)
+```
+
+### Subsetting
+
+Sage bitte, wie die ersten drei Buchstaben eines *Substrings* lauten (`str_sub(string, start, end)`).  
+
+```{r}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 3)
+```
+
+Negative Zahlen kannst du benutzen, um vom Ende zurück zu zählen.
+
+```{r}
+str_sub(x, -3, -1)
+```
+
+Wir können `str_sub()` mit `mutate()` benutzen, um den ersten und letzten Buchstaben eines jeden Namens zu finden.
+
+```{r}
+babynames |> 
+  mutate(
+    first = str_sub(name, 1, 1),
+    last = str_sub(name, -1, -1)
+  )
+```
+
+### Lange Strings
+
+`str_trunc(x, 30)`: kein *String* hat mehr Zeichen, als 30. Alles dahinter wird durch `...` ersetzt.  
+`str_wrap(x, 30)` gibt einem *String*, der "zu lang" ist, eine neue Zeile.
+
+```{r}
+x <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+
+str_view(str_trunc(x, 30), "[aeiou]")
+
+str_view(str_wrap(x, 30), "[aeiou]")
+```
+
+# Reguläre Ausdrücke
+
+## Einleitung
+
+In diesem Kapitel konzentrieren wir uns auf Funktionen, die __Regular Expressions__ benutzen. Eine mächtige Sprache, um Muster innerhalb von *Strings* zu beschreiben.
+
+### Voraussetzungen
+
+```{r}
+library(tidyverse)
+library(babynames)
+```
+
+## Muster: Basics
+
+Das zweite Argument wird optisch in der Ausgabe hervorgehoben. Hier also z.B. blackberry durch blau und <...>.
+
+```{r}
+str_view(fruit, "berry")
+#>  [6] │ bil<berry>
+#>  [7] │ black<berry>
+#> [10] │ blue<berry>
+#> [11] │ boysen<berry>
+#> [19] │ cloud<berry>
+#> [21] │ cran<berry>
+#> [29] │ elder<berry>
+#> [32] │ goji <berry>
+#> [33] │ goose<berry>
+#> [38] │ huckle<berry>
+#> ... and 4 more
+```
+
+`a.` matcht jeden *String*, der ein "a" enthält, gefolgt von weiterem *Character*. 
+
+```{r}
+str_view(c("a", "ab", "ae", "bd", "ea", "eab"), "a.")
+#> [2] │ <ab>
+#> [3] │ <ae>
+#> [6] │ e<ab>
+```
+
+Wir können alle Früchte finden, die ein "a" enthalten, gefolgt von drei Buchstaben, gefolgt von einem "e". 
+
+```{r}
+str_view(fruit, "a...e")
+#>  [1] │ <apple>
+#>  [7] │ bl<ackbe>rry
+#> [48] │ mand<arine>
+#> [51] │ nect<arine>
+#> [62] │ pine<apple>
+#> [64] │ pomegr<anate>
+#> [70] │ r<aspbe>rry
+#> [73] │ sal<al be>rry
+```
+
+__Quantifiers__ kontrollieren wie oft ein Muster zutrifft.
+
+* `?`: Muster optional - trifft 0 oder 1 mal zu
+* `+`: Muster wiederholt sich - es trifft mind. einmal zu
+* `*`: Muster optional oder wiederholt sich
+
+```{r}
+# ab? matches an "a", optionally followed by a "b".
+str_view(c("a", "ab", "abb"), "ab?")
+#> [1] │ <a>
+#> [2] │ <ab>
+#> [3] │ <ab>b
+
+# ab+ matches an "a", followed by at least one "b".
+str_view(c("a", "ab", "abb"), "ab+")
+#> [2] │ <ab>
+#> [3] │ <abb>
+
+# ab* matches an "a", followed by any number of "b"s.
+str_view(c("a", "ab", "abb"), "ab*")
+#> [1] │ <a>
+#> [2] │ <ab>
+#> [3] │ <abb>
+```
+
+__Character classes__ sind durch `[]` definiert. Buchstaben darin enthalten matchen: `[abcd]` - "a", "b", "c", "d". Alles außer "a", "b", "c", "d" matcht: `[^abcd]`. Finde Wörter mit 3 Vokalen bzw. 4 Konsonanten hintereinander.
+
+```{r}
+str_view(words, "[aeiou][aeiou][aeiou]")
+#>  [79] │ b<eau>ty
+#> [565] │ obv<iou>s
+#> [644] │ prev<iou>s
+#> [670] │ q<uie>t
+#> [741] │ ser<iou>s
+#> [915] │ var<iou>s
+str_view(words, "[^aeiou][^aeiou][^aeiou][^aeiou]")
+#>  [45] │ a<pply>
+#> [198] │ cou<ntry>
+#> [424] │ indu<stry>
+#> [830] │ su<pply>
+#> [836] │ <syst>em
+```
+
+Zwei Vokale gefolgt von mind. zwei Konsonanten:
+
+```{r}
+str_view(words, "[aeiou][aeiou][^aeiou][^aeiou]+")
+#>  [6] │ acc<ount>
+#> [21] │ ag<ainst>
+#> [31] │ alr<eady>
+#> [34] │ alth<ough>
+#> [37] │ am<ount>
+#> [46] │ app<oint>
+#> [47] │ appr<oach>
+#> [52] │ ar<ound>
+#> [61] │ <auth>ority
+#> [79] │ be<auty>
+#> ... and 62 more
+```
+
+__Alternation__, `|` sucht zwischen Mustern. "apple", "pear", "banana". Oder ein wiederholter Vokal.
+
+```{r eval = F}
+str_view(fruit, "apple|pear|banana")
+#>  [1] │ <apple>
+#>  [4] │ <banana>
+#> [59] │ <pear>
+#> [62] │ pine<apple>
+str_view(fruit, "aa|ee|ii|oo|uu")
+#>  [9] │ bl<oo>d orange
+#> [33] │ g<oo>seberry
+#> [47] │ lych<ee>
+#> [66] │ purple mangost<ee>n
+```
+
+## Key Funktionen
+
+Da die Basics sitzen, benutzen wir sie zusammen mit `stringr` und `tidyr` Funktionen: *detect, count, replace und extract*.
+
+### Detect Matches
+
+`str_detect()` gibt einen *logical vector*, der `TRUE` ist aus, wenn das Muster ein Elemment des *Character Vectors* trifft, ansonsten `FALSE`.
+ 
+```{r}
+str_detect(c("a", "b", "c"), "[aeiou]")
+```
+
+Da `str_detect()` einen *logical vector* ausgibt, passt es gut zu `filter()`. Der Code findet alle Namen, die ein kleines "x" enthalten.
+
+```{r}
+babynames |> 
+  filter(str_detect(name, "x")) |> 
+  count(name, wt = n, sort = TRUE)
+```
+
+`str_detect()` können wir auch mit `summarize()` nutzen: `sum(str_detect(x, pattern))` gibt die Anzahl der Beobachtungen aus, die matchen und mit `mean(...)` die Anteile. 
+
+```{r}
+babynames |> 
+  group_by(year) |> 
+  summarize(prop_x = mean(str_detect(name, "x"))) |> 
+  ggplot(aes(x = year, y = prop_x)) + 
+  geom_line()
+```
+
+Zwei Funktionen sind eng verwandt mit `str_detect()`: `str_subst()`, das die treffenden *Strings* ausgibt und `str_which()`, das die treffenden Indices ausgibt. 
+
+```{r}
+str_subset(c("a", "b", "c"), "[aeiou]")
+str_which(c("a", "b", "c"), "[aeiou]")
+```
+
+### Count Matches
+
+`str_count()` sagt uns, wieviele Matches in jedem *String* sind.
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_count(x, "p")
+```
+
+Wieviele Vokale und Konsonante sind in jedem Namen?
+
+```{r}
+babynames |> 
+  count(name) |> 
+  mutate(
+    vowels = str_count(name, "[aeiou]"),
+    consonants = str_count(name, "[^aeiou]")
+  )
+```
+
+*Regular Expressions* sind *case sensitive*! Drei Möglichkeiten es zu beheben:
+
+* `str_count(name, "[aeiouAEIOU]")`.
+* `str_count(regex(name, ignore_case = TRUE), "[aeiou]")` ignoriere Case.
+* nutze `str_to_lower()`, um die Namen in lower case zu konvertieren: `str_count(str_to_lower(name), "[aeiou]")`. 
+
+```{r}
+babynames |> 
+  count(name) |> 
+  mutate(
+    name = str_to_lower(name),
+    vowels = str_count(name, "[aeiou]"),
+    consonants = str_count(name, "[^aeiou]")
+  )
+```
+
+### Werte ersetzen
+
+Wir können Matches modifizieren mit `str_replace()` und `str_replace_all()`. 
+
+```{r}
+x <- c("apple", "pear", "banana")
+str_replace_all(x, "[aeiou]", "-")
+```
+
+`str_remove()` und `str_remove_all()` sind Abkürzungen für `str_replace(x, pattern, "")`.
+
+```{r}
+x <- c("apple", "pear", "banana")
+str_remove_all(x, "[aeiou]")
+```
+
+### Variablen extrahieren
+
+
+
+
+## Muster - Details
+
+### Escaping
+
+```{r}
+# To create the regular expression \., we need to use \\.
+dot <- "\\."
+
+# But the expression itself only contains one \
+str_view(dot)
+#> [1] │ \.
+
+# And this tells R to look for an explicit .
+str_view(c("abc", "a.c", "bef"), "a\\.c")
+#> [2] │ <a.c>
+```
+
+```{r}
+x <- "a\\b"
+str_view(x)
+#> [1] │ a\b
+str_view(x, "\\\\")
+#> [1] │ a<\>b
+```
+
+```{r}
+str_view(x, r"{\\}")
+#> [1] │ a<\>b
+```
+
+Wenn du versuchst ein Buchtabnesymbol (Literal) zu matchen (`.`, `$`, `|`, `*`, `+`, `?`, `{`, `}`, `(`, `)`), dann gibt es eine Alternative zur Nutzung des \ Escape: `[.]`, `[$]`, ...
+
+```{r}
+str_view(c("abc", "a.c", "a*c", "a c"), "a[.]c")
+#> [2] │ <a.c>
+str_view(c("abc", "a.c", "a*c", "a c"), ".[*]c")
+#> [3] │ <a*c>
+```
+
+### Anker
+
+Wenn du am Anfang matchen willst: `^`, am Ende: `$`.
+
+```{r}
+str_view(fruit, "^a")
+#> [1] │ <a>pple
+#> [2] │ <a>pricot
+#> [3] │ <a>vocado
+str_view(fruit, "a$")
+#>  [4] │ banan<a>
+#> [15] │ cherimoy<a>
+#> [30] │ feijo<a>
+#> [36] │ guav<a>
+#> [56] │ papay<a>
+#> [74] │ satsum<a>
+```
+
+*Full String* mit `^` und `$`:
+
+```{r}
+str_view(fruit, "apple")
+#>  [1] │ <apple>
+#> [62] │ pine<apple>
+str_view(fruit, "^apple$")
+#> [1] │ <apple>
+```
+
+Matche die Grenze zwischen zwei Wörtern (Start, Ende) mit `\b`. Finde so alle Nutzungen von `sum()`. Suche nach `\bsum\b`, um `summarize`, `rowsum` oder ähnliches zu vermeiden.
+
+```{r}
+x <- c("summary(x)", "summarize(df)", "rowsum(x)", "sum(x)")
+str_view(x, "sum")
+#> [1] │ <sum>mary(x)
+#> [2] │ <sum>marize(df)
+#> [3] │ row<sum>(x)
+#> [4] │ <sum>(x)
+str_view(x, "\\bsum\\b")
+#> [4] │ <sum>(x)
+```
+
+```{r}
+str_view("abc", c("$", "^", "\\b"))
+#> [1] │ abc<>
+#> [2] │ <>abc
+#> [3] │ <>abc<>
+```
+
+```{r}
+str_replace_all("abc", c("$", "^", "\\b"), "--")
+```
+
+### Character - Klassen
+
+Du kannst deine eigenen Mengen mit `[]` konstruieren, wo `[abc]` a, b, oder c matcht. Es gibt drei `Character`, die innerhalb der eckigen Klammern eine spezielle Bedeutung haben:
+
+* eine Spanne wird definiert `[a-z]`, die Kleinbuchstaben matcht und `[0-9]` Zahlen.
+* `^` Inverse nimmt ales bis auf a, b oder c auf: `[^abc]`.
+* `\` trennt Zeichen, so dass `^` oder `-` oder `]` matcht: `[\^\-\]]`.
+
+```{r}
+x <- "abcd ABCD 12345 -!@#%."
+str_view(x, "[abc]+")
+#> [1] │ <abc>d ABCD 12345 -!@#%.
+str_view(x, "[a-z]+")
+#> [1] │ <abcd> ABCD 12345 -!@#%.
+str_view(x, "[^a-z0-9]+")
+#> [1] │ abcd< ABCD >12345< -!@#%.>
+
+# You need an escape to match characters that are otherwise
+# special inside of []
+str_view("a-b-c", "[a-c]")
+#> [1] │ <a>-<b>-<c>
+str_view("a-b-c", "[a\\-c]")
+#> [1] │ <a><->b<-><c>
+```
+
+# Factors - Faktoren
+
+## Einleitung
+
+Faktoren werden für kategoriale Variablen genutzt; Variablen, die eine feste Menge an möglichen Werten haben.
+
+### Voraussetzungen
+
+Das __forcats__ Paket ist Teil von `tidyverse`.
+
+```{r}
+library(tidyverse)
+```
+
+## Faktoren - Basics
+
+```{r}
+x1 <- c("Dec", "Apr", "Jan", "Mar")
+```
+
+Als *String* diese Werte aufzunehmen, hat zwei Probleme:
+
+1. Tippfehler
+
+```{r}
+x2 <- c("Dec", "Apr", "Jam", "Mar")
+```
+
+2. Sortieren
+
+```{r}
+sort(x1)
+```
+
+Um einen Faktor zu kreieren, starte mit einer Liste valider __levels__:
+
+```{r}
+month_levels <- c(
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+)
+```
+
+Daraus kannst du einen Faktor bauen:
+
+```{r}
+y1 <- factor(x1, levels = month_levels)
+y1
+
+sort(y1)
+```
+
+Jeder Wert, der sich nicht in *levels* befindet, wird zu `NA` konvertiert.
+
+```{r}
+y2 <- factor(x2, levels = month_levels)
+y2
+```
+
+In alphabetischer Reihenfolge werden die Daten genommen, wenn du die Levels vergisst.
+
+```{r}
+factor(x1)
+```
+
+Du kannst die Reihenfolge nach dem erstmaligen Erscheinen festlegen:
+
+```{r}
+f1 <- factor(x1, levels = unique(x1))
+f1
+f2 <- x1 |> factor() |> fct_inorder()
+f2
+```
+
+Beim Einlesen der Daten kannst du direkt einen Faktor erzeugen mit `col_factor()`:
+
+```{r eval = FALSE}
+library(readr)
+month_levels <- c(
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+)
+
+csv <- "
+month,value
+Jan,12
+Feb,56
+Mar,12"
+
+df <- read_csv(csv, col_types = cols(month = col_factor(month_levels)))
+df$month
+#> [1] Jan Feb Mar
+#> Levels: Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+```
+
+## General Social Survey
+
+Wir benutzen: `forcats::gss_cat`. Der Survey hat Tausende von Fragen.
+
+```{r}
+gss_cat
+```
+
+In einem tibble kannst du die Level mit `count()` sehen.
+
+```{r}
+gss_cat |>
+  count(race)
+```
+
+Oder mit einem Säulendiagramm:
+
+```{r}
+ggplot(gss_cat, aes(x = race)) +
+  geom_bar()
+```
+
+## Reihenfolge der factors ändern
+
+Manchmal macht es Sinn die Reihenfolge der Faktoren zu ändern. Schauen wir uns die durchschnittliche TV Zeit pro Tag und Religionen an.  
+
+```{r}
+relig_summary <- gss_cat |>
+  group_by(relig) |>
+  summarize(
+    age = mean(age, na.rm = TRUE),
+    tvhours = mean(tvhours, na.rm = TRUE),
+    n = n()
+  )
+
+ggplot(relig_summary, aes(x = tvhours, y = relig)) + 
+  geom_point()
+```
+
+Der Plot ist schwer zu lesen, da es hier kein Muster gibt. `fct_reorder()` sortiert um, und nimmt dabei drei Argumente an:
+
+* `f`, der Faktor, wessen Levels du modifizieren willst.
+* `x`, ein numerischer Vektor, den du benutzt, um die Reihenfolge zu bestimmen.
+* optional: `fun`, eine Funktion, wenn es multiple Werte von `x` gibt, für jeden Wert von `f`. Default ist Median.
+
+```{r}
+ggplot(relig_summary, aes(x = tvhours, y = fct_reorder(relig, tvhours))) +
+  geom_point()
+```
+
+Bei komplizierten Transformationen empfehlen wir sie aus `aes()` zu nehmen und in ein separates `mutate()` zu stecken. 
+
+```{r}
+relig_summary |>
+  mutate(
+    relig = fct_reorder(relig, tvhours)
+  ) |>
+  ggplot(aes(x = tvhours, y = relig)) +
+  geom_point()
+```
+
+Wie sieht es mit der Altersverteilung in bestimmten Einkommensstufen aus?
+
+```{r}
+rincome_summary <- gss_cat |>
+  group_by(rincome) |>
+  summarize(
+    age = mean(age, na.rm = TRUE),
+    tvhours = mean(tvhours, na.rm = TRUE),
+    n = n()
+  )
+rincome_summary
+```
+
+Und dann bitte nett darstellen.
+
+```{r}
+ggplot(rincome_summary, aes(x = age, y = fct_reorder(rincome, age))) + 
+  geom_point()
+```
+
+Die Reihenfolge hier sollte jedoch noch einmal überdacht werden. Am Anfang sollte jedoch "Not applicable" stehen. Nutze `fct_relevel()`. Es nimmt einen Faktor `f`, dann jede Anzahl an Levels, die du in die erste Zeile(n) schreiben willst.
+
+```{r}
+ggplot(rincome_summary, aes(x = age, y = fct_relevel(rincome, "Not applicable"))) +
+  geom_point()
+```
+
+Ein anderer Typ der Umordnung ist nützlich, wenn du die Linien eines Plots farblich einfärbst. Durch die Umsortierung passen sich die Farben des Plots auf der rechten Seite der Legende an.
+
+```{r}
+by_age <- gss_cat |>
+  filter(!is.na(age)) |>
+  count(age, marital) |>
+  group_by(age) |>
+  mutate(
+    prop = n / sum(n)
+  )
+
+ggplot(by_age, aes(x = age, y = prop, color = marital)) +
+  geom_line(na.rm = TRUE)
+
+ggplot(by_age, aes(x = age, y = prop, color = fct_reorder2(marital, age, prop))) +
+  geom_line() +
+  labs(color = "marital")
+```
+
+Für Balkendiagramme kannst du `fct_infreq()` benutzen, um Levels Nach Häufigkeit zu sortieren. Kombiniere es mit `fct_rev()`, wenn du den häufigsten Wert auf der rechten, statt auf der linken Seite haben willst.
+
+```{r}
+gss_cat |>
+  mutate(marital = marital |> fct_infreq() |> fct_rev()) |>
+  ggplot(aes(x = marital)) +
+  geom_bar()
+```
+
+## Faktorlevel modifizieren
+
+Mächtiger als die Reihenfolge zu verändern ist es, ihre Werte zu wechseln. Das mächtigste Werkzeug ist `fct_recode()`. Es wechselt den Wert von jedem Level.
+
+```{r}
+gss_cat |> count(partyid)
+```
+
+Die Level sind lapidar und inkonsistent. Die neuen Werte stehen auf der linken und die alten Werte auf der rechten Seite.
+
+```{r}
+gss_cat |>
+  mutate(
+    partyid = fct_recode(partyid,
+      "Republican, strong"    = "Strong republican",
+      "Republican, weak"      = "Not str republican",
+      "Independent, near rep" = "Ind,near rep",
+      "Independent, near dem" = "Ind,near dem",
+      "Democrat, weak"        = "Not str democrat",
+      "Democrat, strong"      = "Strong democrat"
+    )
+  ) |>
+  count(partyid)
+```
+
+Um Gruppen zu kombinieren, kannst du einfach verschiedenen alten Level, gleiche neue verpassen.
+
+```{r}
+gss_cat |>
+  mutate(
+    partyid = fct_recode(partyid,
+      "Republican, strong"    = "Strong republican",
+      "Republican, weak"      = "Not str republican",
+      "Independent, near rep" = "Ind,near rep",
+      "Independent, near dem" = "Ind,near dem",
+      "Democrat, weak"        = "Not str democrat",
+      "Democrat, strong"      = "Strong democrat",
+      "Other"                 = "No answer",
+      "Other"                 = "Don't know",
+      "Other"                 = "Other party"
+    )
+  ) |>
+  count(partyid)
+```
+
+`fct_collapse()` ist eine Variante, wenn du sehr viele Level zusammenfassen willst. 
+
+```{r}
+gss_cat |>
+  mutate(
+    partyid = fct_collapse(partyid,
+      "other" = c("No answer", "Don't know", "Other party"),
+      "rep" = c("Strong republican", "Not str republican"),
+      "ind" = c("Ind,near rep", "Independent", "Ind,near dem"),
+      "dem" = c("Not str democrat", "Strong democrat")
+    )
+  ) |>
+  count(partyid)
+```
+
+Manchmal willst du kleine Gruppen zusammenwerfen. Diesen Job macht `fct_lump_*()`. `fct_lump_lowfreq()` schmeißt die kleinsten Gruppen in eine "Other" Kategorie.
+
+```{r}
+gss_cat |>
+  mutate(relig = fct_lump_lowfreq(relig)) |>
+  count(relig)
+```
+
+Ein bisschen mehr Details wollen wir schon sehen! Wir wollen genau n=10 Gruppen sehen, mit `fct_lump_n()`.
+
+```{r}
+gss_cat |>
+  mutate(relig = fct_lump_n(relig, n = 10)) |>
+  count(relig, sort = TRUE) |>
+  print(n = Inf)
+```
+
+# Dates und Zeiten
+
+## Einleitung
+
+### Voraussetzungen
+
+Wir konzentrieren uns auf das __lubridate__ Paket.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(nycflights13)
+```
+
+## Kreieren von date/times
+
+Drei Typen von date/time beziehen sich auf den Moment der Zeit:
+
+__date__ - Tibble als `<date>`  
+__time__ - Tibble als `<time>`  
+__date-time__ - Tibble als `<dttm>`
+
+Für das aktuelle Datum oder date-time, nutze `today()` oder `now()`:
+
+```{r}
+today()
+
+now()
+```
+
+Die folgenden Abschnitte beschreiben vier weitere Möglichkeiten.
+
+### Während Import mit readr
+
+```{r}
+csv <- "
+  date,datetime
+  2022-01-02,2022-01-02 05:12
+"
+read_csv(csv)
+```
+
+Das Ausgabeformat kannst du individuell bestimmen.
+
+```{r}
+csv <- "
+  date
+  01/02/15
+"
+
+read_csv(csv, col_types = cols(date = col_date("%m/%d/%y")))
+
+
+read_csv(csv, col_types = cols(date = col_date("%d/%m/%y")))
+
+
+read_csv(csv, col_types = cols(date = col_date("%y/%m/%d")))
+```
+
+### Von Strings
+
+```{r}
+ymd("2017-01-31")
+
+mdy("January 31st, 2017")
+
+dmy("31-Jan-2017")
+```
+
+Um ein date-time zu kreieren, füge _ und mind. "h", "m" oder "s" hinzu:
+
+```{r eval = F}
+ymd_hms("2017-01-31 20:11:59")
+#> [1] "2017-01-31 20:11:59 UTC"
+mdy_hm("01/31/2017 08:01")
+#> [1] "2017-01-31 08:01:00 UTC"
+```
+
+### Von individuellen Komponenten
+
+```{r}
+flights |> 
+  select(year, month, day, hour, minute)
+```
+
+```{r}
+flights |> 
+  select(year, month, day, hour, minute) |> 
+  mutate(departure = make_datetime(year, month, day, hour, minute))
+```
+
+
+# Missing Values
+
+## Einleitung
+
+Ein paar Basics haben wir schon kennengelernt, jetzt gehen wir ins Detail. 
+
+### Voraussetzungen
+
+Die meisten Funktionen kommen von __dplyr__ und __tidyr__, die Teil des __tidyverse__ sind.
+
+```{r}
+library(tidyverse)
+```
+
+## Eindeutig Missing Values
+
+Ein paar handliche Werkzeuge, um *Missing Values* zu kreieren oder zu eliminieren. Zellen mit `NA`.
+
+### Last Obversation carried forward
+
+Manchmal zeigt ein `NA`, dass der Wert der vorangehenden Zeile wiederholt wurde.
+
+```{r}
+treatment <- tribble(
+  ~person,           ~treatment, ~response,
+  "Derrick Whitmore", 1,         7,
+  NA,                 2,         10,
+  NA,                 3,         NA,
+  "Katherine Burke",  1,         4
+)
+```
+
+Diese `NA` kann man füllen mit `tidyr::fill()`. Es nimmt eine Menge von Spalten auf.
+
+```{r}
+treatment |>
+  fill(everything())
+```
+
+### Feste Werte
+
+Manchmal werden `NA`'s ersetzt durch feste, bekannte Werte wie 0. Benutze `dplyr:: coalesce()`, um die `NA`'s zu ersetzen:
+
+```{r}
+x <- c(1, 4, 5, 7, NA)
+coalesce(x, 0)
+```
+
+Oft wird eine Zahl wie die -99 als `NA` geschrieben. Ersetze sie durch NA mit der Funktion `dplyr::na_if()`:
+
+```{r}
+x <- c(1, 4, 5, 7, -99)
+na_if(x, -99)
+```
+
+### NaN
+
+Ein spezieller Typ von *Missing Values* ist `NaN`, er verhält sich wie `NA`:
+
+```{r}
+x <- c(NA, NaN)
+x * 10
+
+x == 1
+
+is.na(x)
+```
+
+`NaN` trifft häufig bei mathematischen Operationen auf:
+
+```{r}
+0 / 0 
+0 * Inf
+Inf - Inf
+```
+
+## Implizierte Missing Values
+
+__Explizite__ *Missing Values* kannst du durch ein `NA` lokalisieren. Implizierte *Missing Values* zeichnen sich dadurch aus, dass ganze Zeilen oder Spalten fehlen. 
+
+```{r}
+stocks <- tibble(
+  year  = c(2020, 2020, 2020, 2020, 2021, 2021, 2021),
+  qtr   = c(   1,    2,    3,    4,    2,    3,    4),
+  price = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
+)
+```
+
+### Pivoting
+
+Ein Werkzeug kann implizierte *Missings* explizit machen, und umgekehrt: __Pivoting__.
+In unserem Beispiel muss jede Kombination von Zeilen und Spalten einen Wert haben. 
+
+```{r}
+stocks |>
+  pivot_wider(
+    names_from = qtr, 
+    values_from = price
+  )
+```
+
+### `Complete`
+
+`tidyr::complete()` generiert explizite *Missings*, durch das Anbieten der Variablen, die die Kombinationen von Zeilen definieren, die existieren sollten. Zum Beispiel wissen wir, dass alle Kombinationen von `year` und `qtr` in `stocks` existieren sollten.
+
+```{r}
+stocks |>
+  complete(year, qtr)
+```
+
+Du rufst `complete()` mit den existierenden Variablen auf, so dass die fehlenden Kombinationen aufgefüllt werden. Sind die Variablen selbst nicht komplett, kannst du eigene Werte liefern. So kannst du den `stocks` Datensatz von 2019 bis 2021 laufen lassen. 
+
+```{r}
+stocks |>
+  complete(year = 2019:2021, qtr)
+```
+
+Benutze `full_seq(x, 1)`, um fehlende Lücken zu stopfen, hier in Einer-Schritten.
+
+```{r}
+full_seq(c(1, 2, 4, 5, 10), 1)
+```
+
+### Joins
+
+__Joins__ lernen wir später näher kennen. `dplyr::anti_join(x, y)` nimmt nur die Reihen in `x`, die kein Match in `y` haben. So können wir enthüllen, dass Informationen zu vier Flughäfen fehlen, die in `flights` genannt wurden.
+
+```{r}
+library(nycflights13)
+
+flights |> 
+  distinct(faa = dest) |> 
+  anti_join(airports)
+```
+
+Zuerst werden alle verschiedenen `dest` in faa gespeichert. Mit `anti_join(airports)` wird dann in der Variable `faa` in dem Datensatz `airports` geschaut, ob die `dest` dort zu finden sind. In unserem Fall fehlen dort vier Flughäfen.  
+
+```{r}
+flights |> 
+  distinct(tailnum) |> 
+  anti_join(planes)
+```
+
+## Faktoren und leere Gruppen
+
+```{r}
+health <- tibble(
+  name   = c("Ikaia", "Oletta", "Leriah", "Dashay", "Tresaun"),
+  smoker = factor(c("no", "no", "no", "no", "no"), levels = c("yes", "no")),
+  age    = c(34L, 88L, 75L, 47L, 56L),
+)
+```
+
+Wir wollen erstmal die Anzahl an Rauchern zählen mit `dplyr::count()`.
+
+```{r}
+health |> count(smoker)
+```
+
+Da die Gruppe nur Nichtraucher enthält, werden keine Nicht-Raucher angezeigt. Wir können aber nach diesen nachfragen, auch wenn keine vorhanden sind, mit `.drop = FALSE`:
+
+```{r}
+health |> count(smoker, .drop = FALSE)
+```
+
+Gleiches mit Achsen:
+
+```{r}
+ggplot(health, aes(x = smoker)) +
+  geom_bar() +
+  scale_x_discrete()
+
+ggplot(health, aes(x = smoker)) +
+  geom_bar() +
+  scale_x_discrete(drop = FALSE)
+```
+
+Gleiches Problem mit `dplyr::group_by()`:
+
+```{r}
+health |> 
+  group_by(smoker, .drop = FALSE) |> 
+  summarize(
+    n = n(),
+    mean_age = mean(age),
+    min_age = min(age),
+    max_age = max(age),
+    sd_age = sd(age)
+  )
+```
+
+Ein leerer Vektor hat die Länge 0, *Missing Values* haben jeweils die Länge 1.  
+Führe Summary durch und dann mache die implizierten *Missings* explizit mit `complete()`.
+
+```{r}
+health |> 
+  group_by(smoker) |> 
+  summarize(
+    n = n(),
+    mean_age = mean(age),
+    min_age = min(age),
+    max_age = max(age),
+    sd_age = sd(age)
+  ) |> 
+  complete(smoker)
+```
+
+# Joins
+
+## Einleitung
+
+Es ist selten, dass du nur einen einzigen *Data Frame* hast. Normalerweise hast du mehrere und du musst sie "joinen", also zusammenfügen. Es gibt zwei Arten von joins:
+
+* __Mutating Joins__ - fügt neue Variablen einem *Data Frame* hinzu, von *matching Observations* in einem anderen.
+* __Filtering Joins__ - filtert Beobachtungen eines *Data Frames*, je nachdem, ob sie eine Observation in einem anderen matchen.
+
+### Voraussetzungen
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+## Schlüssel - Keys
+
+Zuerst müssen wir verstehen, wie zwei Tabellen miteinander verbunden werden können. Dies durch ein Paar von Schlüsseln, die sich in jeder Tabelle befinden.
+
+### Primärschlüssel und Fremdschlüssel
+
+Jedes "Join" involviert ein Paar von Schlüsseln: einen Primärschlüssel und einen Fremdschlüssel. Ein Primärschlüssel ist eine Variable, die jede Beobachtung eindeutig identifiziert. __compound key__ sind mehr als eine Variable.  
+
+In `airlines` finden wir zwei Variablen zu jeder Airline: *carrier code* und *name*. Identifizieren lässt sich jede Airline eindeutig durch den *carrier code*, so dass `carrier` der Primärschlüssel ist.
+
+```{r}
+airlines
+```
+
+In `airports` kann jeder Flughafen durch seinen *airport code* identifiziert werden: `faa`.
+
+```{r}
+airports
+```
+
+In `planes` finden wir Infos zu jedem Flugzeug, das durch `tailnum` eindeutig identifiziert werden kann.
+
+```{r}
+planes
+```
+
+`weather` liefert Daten zum Wetter an den Flughäfen. `origin` und `time_hour` sind also hier der *compound* Primärschlüssel.
+
+```{r}
+weather
+```
+
+Ein Fremdschlüssel ist eine Variable (oder mehrere), die zu mit einem anderen Primärschlüssel in einer anderen Tabelle korrespondiert:
+
+* `flights$tailnum` ist Fremdschlüssel, der mit Primärschlüssel `planes$tailnum` korrespondiert.
+
+* `flights$carrier` zu `airlines$carrier`.
+
+* `flights$origin` zu `airports$faa`.
+
+* `flights$dest` zu `airports$faa`.
+
+* `flights$origin-flights$time_hour` *compound Fremdschlüssel*, der mit *compound* Primärschlüssel `weather$origin-weather$time_hour` korrespondiert.
+
+![Verbindung zwischen allen 5 Data Frames im nycflights13 Paket. PK grau, FK weiß.](C:/Users/nikla/OneDrive/Dokumente/R_Udemy/nnn/images/relational.png "Primärschlüssel - Fremdschlüssel") 
+
+### Primärschlüssel checken
+
+Sind sie wirklich einmalig, also die Beobachtungen?
+
+```{r}
+planes |> 
+  count(tailnum) |> 
+  filter(n > 1)
+
+weather |> 
+  count(time_hour, origin) |> 
+  filter(n > 1)
+```
+
+Checke auch nach *Missing Values*!
+
+```{r}
+planes |> 
+  filter(is.na(tailnum))
+
+weather |> 
+  filter(is.na(time_hour) | is.na(origin))
+```
+
+### Surrogat-Schlüssel
+
+Welches ist eigentlich der Primärschlüssel für `flights`? Es gibt drei Variablen, die zusammen jeden Flug eindeutig identifizieren:
+
+```{r}
+flights |> 
+  count(time_hour, carrier, flight) |> 
+  filter(n > 1)
+```
+
+Macht es die Abwesenheit von Duplikaten gleich zu einem guten Primärschlüssel? Ich denke nicht. Hier aber schon, da es irritierend für eine Fluglinie wäre, würden mehrere Flugzeuge mit derselben Flugnummer zur selben Zeit abheben.
+
+Abgesehen davon, können wir einen Surrogat-Schlüssel durch die Zeilennummer konstruieren.
+
+```{r}
+flights2 <- flights |> 
+  mutate(id = row_number(), .before = 1)
+flights2
+```
+
+Bei der Kommunikation zu einem anderen ist es einfach einfacher auf Flug 2001 zu verweisen, als auf Flug UA43, Abflugzeit 9 Uhr, am 21.3.2006.
+
+## Basic Joins
+
+__dplyr__ bietet sechs `join` Funktionen an: *left, inner, right, full, semi, anti*.
+
+### Mutating Joins
+
+Erlaubt uns Variablen von zwei *Data Frames* zu kombinieren. Erst werden die Beobachtungen nach den Schlüsseln gematcht. Dann von einem *Data Frame* Variablen in den anderen kopiert. Die neuen Variablen werden rechts eingeordnet, so dass sie in der Console nicht unbedingt sichtbar sind. Wir bauen uns ein Dataset mit sechs Variablen.
+
+```{r}
+flights2 <- flights |> 
+  select(year, time_hour, origin, dest, tailnum, carrier)
+flights2
+```
+
+Meist benutzt man den `left_join()`. Der Output hat immer dieselbe Zeilenanzahl wie `x`. Der primäre Nutzen ist es Metadaten hinzuzufügen. So können wir den kompletten Airline Namen zu `flights2` hinzufügen.
+
+```{r}
+flights2 |>
+  left_join(airlines)
+```
+
+Oder Wetterdaten zu den Abflugzeiten finden.
+
+```{r}
+flights2 |> 
+  left_join(weather |> select(origin, time_hour, temp, wind_speed))
+```
+
+Die Flugzeuggröße.
+
+```{r}
+flights2 |> 
+  left_join(planes |> select(tailnum, type, engines, seats))
+```
+
+Findet `left_join()` kein Match für eine Reihe in `x`, so wird mit `NA` aufgefüllt. 
+
+```{r}
+flights2 |> 
+  filter(tailnum == "N3ALAA") |> 
+  left_join(planes |> select(tailnum, type, engines, seats))
+```
+
+### Spezifizieren von Join-Schlüsseln
+
+`left_join()` benutzt immer Variablen, die in beiden *Data Frames* auftauchen als Join Key: __natural__ `join`. Manchmal funktioniert es nicht. So können Variablen mit gleichem Namen in verschiedenen Datensätzen eine andere Bedeutung haben.
+
+```{r}
+flights2 |> 
+  left_join(planes)
+```
+
+Hier hat `year` in beiden Datensätzen eine andere Bedeutung. `flight$year` ist das Jahr, in dem der Flug stattgefunden hat. `planes$year` ist das Jahr, in dem das Flugzeug gebaut wurde. Wir wollen aber nur auf `tailnum` joinen, also müssen wir eine explizite Spezifiation anbieten, mit `join_by()`. 
+
+```{r}
+flights2 |> 
+ # left_join(planes, join_by(tailnum)) muss noch aktualisiert werden
+  left_join(planes, by = "tailnum")
+```
+
+Die Variablen `year` wurden im gemeinsamen Datensatz jetzt optisch eindeutig gemacht, mit einem Zusatz (`year.x`, `year.y`), der genau sagt, wo die Variable herkommt: von `x` oder von `y`. Du kannst das Suffix natürlich überschreiben.  
+`by = "tailnum"` steht kurz für `by = c("tailnum" = "tailnum")` (evtl. `join_by(tailnum)` für `join_by(tailnum == tailnum)`).  
+
+Es gibt zwei Möglichkeiten die `flights2` und die `airports` Tabelle zu verbinden: über `dest` oder über `origin`.
+
+```{r}
+flights2 |> 
+  left_join(airports, by = c("dest" = "faa"))
+flights2 |> 
+  left_join(airports, by = c("origin" = "faa"))
+```
+
+### Joins filtern
+
+__Semi-Joins__ behalten alle Reihen in `x`, die ein Match in `y` haben. So können wir alle Flughäfen anzeigen, die passenden Origin haben: 
+
+```{r}
+airports |> 
+  semi_join(flights2, by = c("faa" = "origin"))
+```
+
+Oder natürlich eine passenden Destination.
+
+```{r}
+airports |> 
+  semi_join(flights2, by = c("faa" = "dest"))
+```
+
+Anti-Joins sind das Gegenteil. Sie geben alle Reihen in `x` aus, die kein Match in `y` haben.
+
+```{r}
+flights2 |> 
+  anti_join(airports, by = c("dest" = "faa")) |> 
+  distinct(dest)
+```
+
+Welche `tailnum` fehlen in `planes`? Sie sind in `flights2`, aber nicht in `planes`.
+
+```{r}
+flights2 |>
+  anti_join(planes, by = "tailnum") |> 
+  distinct(tailnum)
+```
+
+## Wie funktionieren Joins?
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1, "x1",
+     2, "x2",
+     3, "x3"
+)
+y <- tribble(
+  ~key, ~val_y,
+     1, "y1",
+     2, "y2",
+     4, "y3"
+)
+x
+y
+```
+
+Beim *Inner Join* matchen Reihen, wenn die Schlüssel gleich sind. Also enthält der Output nur Reihen mit Schlüsseln, die in `x` und `y` enthalten sind. 
+
+```{r}
+inner_join(x, y)
+```
+
+Ein *Outer Join* behält Beobachtungen, die in mindestens einem der *Data Frames* auftauchen. Diese Beobachtung hat einen Schlüsel, der matcht, wenn es kein anderer Schlüssel tut. Ein `NA` wird dann erstellt. Drei *Outer Joins* existieren:
+
+* *Left Join* behält alle Beobachtungen in `x`. Jede Reihe von `x` wird beibehalten im Output. 
+
+```{r}
+left_join(x, y)
+```
+
+*  *Right Join* behält alle Beobachtungen in `y`. 
+
+```{r}
+right_join(x, y)
+```
+
+* *Full Join* behält alle Beobachtungen, die in `x` oder `y` anfallen. Jede Reihe von `x` und `y` ist im Output vorhanden. Der Output fängt mit allen Reihen von `x` an, dann folgen die verbliebenden von `y`.
+
+```{r}
+full_join(x, y)
+```
+
+### Row Matching
+
+Was passiert, wenn eine Reihe in `x` zu mehr als einer Reihe in `y` matcht?
+
+Es kann sein, dass eine Reihe in `x`:
+
+- nicht matcht. Sie entfällt.
+- zu einer Reihe matcht.
+- zu mehr als einer Reihe in `y` matcht. Sie wird dupliziert.
+
+__dplyr__ warnt uns, wann immer es multiple Matches gibt.
+
+```{r}
+df1 <- tibble(key = c(1, 2, 3), val_x = c("x1", "x2", "x3"))
+df2 <- tibble(key = c(1, 2, 4), val_y = c("y1", "y2", "y3"))
+df1
+df2
+df1 |> 
+  inner_join(df2, by = "key")
+```
+
+
+# Programmieren: Funktionen
+
+## Einleitung
+
+In unserem eraten Abschnitt haben wir schon Funktionen eingeführt. Hier noch ein wenig intensiver.
+Funktionen erlauben es dir gewöhnliche Aufgaben zu automatisieren. Gegenüber *copy-paste* hat es drei Vorteile:
+
+1. Verpasse deiner Funktion einen Namen, so dass er einfacher zu verstehen ist. 
+
+2. Verändern sich Voraussetzungen, so musst du Code nur an einem Ort aktualisieren, statt an vielen.
+
+3. Du verringerst die Chance gleiche Fehler wiederholt zu machen. 
+
+In diesem Abschnitt lernen wir drei Typen von Funktionen kennen:
+
+* Vektor-Funktionen, die einen oder mehrere Vektoren als Input nehmen und einen Vektor als Output ausgeben.
+
+* *Data Frame* Funktionen, die einen *Data Frame* als Input nehmen und einen *Data Frame* als Output ausgeben. 
+
+* Plot-Funktionen, die einen *Data Frame* als Input nehmen und einen Plot als Output. 
+
+### Voraussetzungen
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+## Vektor-Funktionen
+
+```{r}
+df <- tibble(
+  a = rnorm(5),
+  b = rnorm(5),
+  c = rnorm(5),
+  d = rnorm(5),
+)
+df
+```
+
+```{r}
+df |> mutate(
+  a = (a - min(a, na.rm = TRUE)) / 
+    (max(a, na.rm = TRUE) - min(a, na.rm = TRUE)),
+  b = (b - min(b, na.rm = TRUE)) / 
+    (max(b, na.rm = TRUE) - min(a, na.rm = TRUE)),
+  c = (c - min(c, na.rm = TRUE)) / 
+    (max(c, na.rm = TRUE) - min(c, na.rm = TRUE)),
+  d = (d - min(d, na.rm = TRUE)) / 
+    (max(d, na.rm = TRUE) - min(d, na.rm = TRUE)),
+)
+```
+
+Alle Vektoren sollten zwischen 0 und 1 liegen. Tun sie aber nicht. Copy-Paste hat für `b` zu einem Fehler geführt. Also besser Funktionen schreiben.
+
+### Funktionen schreiben
+
+Welche Teile des Codes sind jetzt konstant und welche variieren?
+
+```{r eval = F}
+(a - min(a, na.rm = TRUE)) / (max(a, na.rm = TRUE) - min(a, na.rm = TRUE))
+(b - min(b, na.rm = TRUE)) / (max(b, na.rm = TRUE) - min(b, na.rm = TRUE))
+(c - min(c, na.rm = TRUE)) / (max(c, na.rm = TRUE) - min(c, na.rm = TRUE))
+(d - min(d, na.rm = TRUE)) / (max(d, na.rm = TRUE) - min(d, na.rm = TRUE))  
+```
+
+In jeder Zeile sind es genau vier Buchstaben (jeweils: a, b, c, d). 
+
+```{r eval = F}
+(█ - min(█, na.rm = TRUE)) / (max(█, na.rm = TRUE) - min(█, na.rm = TRUE))
+```
+
+Um daraus eine Funktion zu machen, bedarf es drei Dinge:
+
+1. Name. Zum Beispiel `rescale01`, weil die Funktion einen Vektor in ein Intervall zwischen 0 und 1 packt. 
+2. Argumente. 
+3. *Body*. Der Code kommt hier herein.
+
+Ein Template sieht dann wie folgt aus:
+
+```{r eval = F}
+name <- function(arguments) {
+  body
+}
+```
+
+Er führt dann zu:
+
+```{r}
+rescale01 <- function(x) {
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+}
+rescale01(c(-10, 0, 10))
+rescale01(c(1, 2, 3, NA, 5))
+```
+
+Mithilfe von `mutate()`:
+
+```{r}
+df |> mutate(
+  a = rescale01(a),
+  b = rescale01(b),
+  c = rescale01(c),
+  d = rescale01(d),
+)
+```
+
+### Funktion weiterentwickeln
+
+Mithilfe von `range()` können wir schnell das Minimum und das Maximum berechnen. 
+
+```{r}
+rescale01 <- function(x) {
+  rng <- range(x, na.rm = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+```
+
+Liegt ein unendlicher Wert vor, so haben wir ein Problem.
+
+```{r}
+x <- c(1:10, Inf)
+rescale01(x)
+```
+
+Wir sagen also `range()` unendliche Werte bitte zu ignorieren. 
+
+```{r}
+rescale01 <- function(x) {
+  rng <- range(x, na.rm = TRUE, finite = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+
+rescale01(x)
+```
+
+### Mutate Funktionen
+
+Wir wollen den *z-Score* berechnen. `mutate()` bietet sich hier an, da sie dieselbe Länge (wie der Input) ausgeben.
+
+```{r}
+z_score <- function(x) {
+  (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+}
+z_score(c(2,3,3,4))
+```
+
+Mit `case_when()` können wir Werte ausgeben, die sich innerhalb eines Intervalls befinden.
+
+```{r}
+# .default = x funktioniert nicht, auch nicht mit 1:10
+clamp <- function(x, min, max) {
+  case_when(
+    x < min ~ min,
+    x > max ~ max,
+    .default = x
+  )
+}
+
+clamp(1:10, min = 3, max = 7)
+```
+
+
+```{r}
+clamp <- function(x, min, max) {
+  case_when(
+    x < min ~ 3,
+    x > max ~ 7,
+    TRUE ~ x
+  )
+}
+
+clamp(seq(1, 10, 1), min = 3, max = 7)
+```
+
+Willst du Dollarzeichen, Prozentzeichen, Komma von einem *String* entfernen?
+
+```{r}
+clean_number <- function(x) {
+    is_pct <- str_detect(x, "%")
+    num <- x |> 
+    str_remove_all("[%]") |> 
+    str_remove_all(",") |> 
+    str_remove_all("[$]") |> 
+    as.numeric(x)
+  if_else(is_pct, num / 100, num)
+}
+
+clean_number("$12,300")
+clean_number("45%")
+```
+
+Ersetze einen Vektor durch `NA`, wenn bestimmte Zahlen vorkommen.
+
+```{r}
+fix_na <- function(x) {
+  ifelse(x %in% c(997, 998, 999), NA, x)
+}
+fix_na(seq(990,1001,1))
+```
+
+Unsere Funktion kann aber natürlich auch mehrere Vektoren als Argumente aufnehmen.
+
+```{r}
+haversine <- function(long1, lat1, long2, lat2, round = 3) {
+  # convert to radians
+  long1 <- long1 * pi / 180
+  lat1  <- lat1  * pi / 180
+  long2 <- long2 * pi / 180
+  lat2  <- lat2  * pi / 180
+  
+  R <- 6371 # Earth mean radius in km
+  a <- sin((lat2 - lat1) / 2)^2 + 
+    cos(lat1) * cos(lat2) * sin((long2 - long1) / 2)^2
+  d <- R * 2 * asin(sqrt(a))
+  
+  round(d, round)
+}
+```
+
+### Zusammenfassende Funktionen (Summary Functions)
+
+Summary Functions geben einen einzelnen Wert aus (`summarize()`).
+
+```{r}
+commas <- function(x) {
+  str_flatten(x, collapse = ", ", last = " and ")
+}
+
+commas(c("cat", "dog", "pigeon"))
+```
+
+Berechne den Variationskoeffizienten:
+
+```{r}
+cv <- function(x, na.rm = FALSE) {
+  sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm)
+}
+
+cv(runif(100, min = 0, max = 50))
+cv(runif(100, min = 0, max = 500))
+```
+
+Wieviele *Missing Values*? Verpasse immer einen Namen, an den du dich erinnern kannst.
+
+```{r}
+n_missing <- function(x) {
+  sum(is.na(x))
+} 
+n_missing(c(2,3,4,NA,NA,5))
+```
+
+Vergleiche zwei Vektoren miteinander.
+
+```{r}
+mape <- function(actual, predicted) {
+  sum(abs((actual - predicted) / actual)) / length(actual)
+}
+mape(c(1,2,3,2,3,4,2), c(2,3,2,3,4,4,2))
+```
+
+### Data Frame Funktionen
+
+Vektorfunktionen sind nützlich, um Code herauszuziehen, der innerhalb eines dplyr-Verbs wiederholt wird. Aber oft wiederholen Sie auch die Verben selbst, insbesondere in einer großen *Pipe*. Wenn Sie feststellen, dass Sie mehrere Verben mehrmals kopieren und einfügen, sollten Sie über das Schreiben einer *Data Frame* Funktion nachdenken. Sie funktionieren ähnlich wie dplyr-Verben: Sie nehmen einen *Data Frame* als erstes Argument, einige zusätzliche Argumente, die angeben, was damit gemacht werden soll, und geben einen *Data Frame* oder Vektor zurück.
+
+### Indirection and Tidy Evaluation
+
+Bei Verwendung von __dolyr__ Verben und Funktionen, stößt man schnell auf Probleme. 
+
+```{r}
+grouped_mean <- function(df, group_var, mean_var) {
+  df |> 
+    group_by(group_var) |> 
+    summarize(mean(mean_var))
+}
+```
+
+```{r eval = FALSE}
+diamonds |> grouped_mean(cut, carat)
+#> Error in `group_by()`:
+#> ! Must group by variables found in `.data`.
+#> ✖ Column `group_var` is not found.
+```
+
+Machen wir es ein wenig deutlicher. 
+
+```{r}
+df <- tibble(
+  mean_var = 1,
+  group_var = "g",
+  group = 1,
+  x = 10,
+  y = 100
+)
+
+df |> grouped_mean(group, x)
+#> # A tibble: 1 × 2
+#>   group_var `mean(mean_var)`
+#>   <chr>                <dbl>
+#> 1 g                        1
+df |> grouped_mean(group, y)
+#> # A tibble: 1 × 2
+#>   group_var `mean(mean_var)`
+#>   <chr>                <dbl>
+#> 1 g                        1
+```
+
+Egal wie wir `grouped_mean()` nennen, es macht `|> group_by(group_var)` `|> summarize(mean(mean_var))`, statt `df |> group_by(group)` `|> summarize(mean(x))`. __Embracing__ bedeutet, dass die Variable in geschweifte Klammern gepackt wird. 
+
+```{r}
+grouped_mean <- function(df, group_var, mean_var) {
+  df |> 
+    group_by({{ group_var }}) |> 
+    summarize(mean({{ mean_var }}))
+}
+
+df |> grouped_mean(group, x)
+```
+
+### Wann *Embrace*?
+
+Die Lösung findest du in der Dokumentation. 
+* __Data-masking__: `arrange()`, `filter()`, `summarize()`.
+* __Tidy-selection__: `select()`, `relocate()`, `rename()`.
+
+### Gewöhnliche Anwendungsfälle
+
+```{r}
+summary6 <- function(data, var) {
+  data |> summarize(
+    min = min({{ var }}, na.rm = TRUE),
+    mean = mean({{ var }}, na.rm = TRUE),
+    median = median({{ var }}, na.rm = TRUE),
+    max = max({{ var }}, na.rm = TRUE),
+    n = n(),
+    n_miss = sum(is.na({{ var }})),
+    .groups = "drop"
+  )
+}
+
+diamonds |> summary6(carat)
+```
+
+Das Schöne an dieser Funktion ist, dass wir sie auf gruppierten Daten verwenden können, da sie `summarize()` umschließt.
+
+```{r}
+diamonds |> 
+  group_by(cut) |> 
+  summary6(carat)
+```
+
+Berechnete Variablen können wir so auch mit `summarize` benutzen.
+
+```{r}
+diamonds |> 
+  group_by(cut) |> 
+  summary6(log10(carat))
+```
+
+Auch `count()` ist nützlich und berechnet Anteile.
+
+```{r}
+count_prop <- function(df, var, sort = FALSE) {
+  df |>
+    count({{ var }}, sort = sort) |>
+    mutate(prop = n / sum(n))
+}
+
+diamonds |> count_prop(clarity)
+```
+
+Nur das zweite Argument der drei: `df`, `var`, `sort` muss umklammert werden, da `count()` *data-masking* für alle Variablen benutzt. `sort` hat als *default* (Wert) `FALSE`. 
+
+```{r}
+unique_where <- function(df, condition, var) {
+  df |> 
+    filter({{ condition }}) |> 
+    distinct({{ var }}) |> 
+    arrange({{ var }})
+}
+
+# Find all the destinations in December
+flights |> unique_where(month == 12, dest)
+```
+
+
+Wenn du immer mit demselben Datensatz arbeitest, kann es Sinn machen den Datensatz fest einzuprogrammieren. Als Spalte kann eine Zahl entsprechend der Spaltenzahl dienen, oder der Name mit, oder ohne Anführungszeichen.
+
+```{r}
+subset_flights <- function(rows, cols) {
+  flights |> 
+    filter({{ rows }}) |> 
+    select(time_hour, carrier, flight, {{ cols }})
+}
+subset_flights(TRUE, "year")
+subset_flights(nrow(flights) <= 10, 1)
+```
+
+### Data-masking vs. Tidy-selection
+
+Manchmal möchtest du Variablen innerhalb einer Funktion auswählen, die Datenmaskierung verwendet
+
+```{r eval = FALSE}
+count_missing <- function(df, group_vars, x_var) {
+  df |> 
+    group_by({{ group_vars }}) |> 
+    summarize(
+      n_miss = sum(is.na({{ x_var }})),
+      .groups = "drop"
+    )
+}
+
+flights |> 
+  count_missing(c(year, month, day), dep_time)
+#> Error in `group_by()`:
+#> ℹ In argument: `c(year, month, day)`.
+#> Caused by error:
+#> ! `c(year, month, day)` must be size 336776 or 1, not 1010328.
+```
+
+*Tidy-selection* in einer *data-masking* Funktion lässt sich benutzen mit `pick()`. Der Code oben funktioniert nicht, da `group_by()` *data-masking*, nicht *tidy-selection* benutzt.
+
+```{r}
+count_missing <- function(df, group_vars, x_var) {
+  df |> 
+    group_by(pick({{ group_vars }})) |> 
+    summarize(
+      n_miss = sum(is.na({{ x_var }})),
+      .groups = "drop"
+  )
+}
+
+flights |> 
+  count_missing(c(year, month, day), dep_time)
+```
+
+```{r}
+count_wide <- function(data, rows, cols) {
+  data |> 
+    count(pick(c({{ rows }}, {{ cols }}))) |> 
+    pivot_wider(
+      names_from = {{ cols }}, 
+      values_from = n,
+      names_sort = TRUE,
+      values_fill = 0
+    )
+}
+
+diamonds |> count_wide(c(clarity, color), cut)
+```
+
+## Plot Funktionen
+
+Anstatt eines *Data Frames* wollen wir einen Plot ausgeben lassen. Du kannst dieselbe Technik mit `ggplot2` verwenden, da `aes()` eine *data-masking* Funktion ist.
+
+```{r}
+diamonds |> 
+  ggplot(aes(x = carat)) +
+  geom_histogram(binwidth = 0.1)
+
+diamonds |> 
+  ggplot(aes(x = carat)) +
+  geom_histogram(binwidth = 0.05)
+```
+
+Es wäre aber doch viel schöner, wenn du diesen Code in eine Histogramm Funktion packen könntest. 
+
+```{r}
+histogram <- function(df, var, binwidth = NULL) {
+  df |> 
+    ggplot(aes(x = {{ var }})) + 
+    geom_histogram(binwidth = binwidth)
+}
+
+diamonds |> histogram(carat, 0.1)
+```
+
+Du kannst natürlich noch durch `+` weitere Komponenten hinzufügen. 
+
+```{r}
+diamonds |> 
+  histogram(carat, 0.1) +
+  labs(x = "Size (in carats)", y = "Number of diamonds")
+```
+
+### Mehr Variablen 
+
+Mehr Variablen können natürlich hinzugefügt werden. 
+
+```{r}
+linearity_check <- function(df, x, y) {
+  df |>
+    ggplot(aes(x = {{ x }}, y = {{ y }})) +
+    geom_point() +
+    geom_smooth(method = "loess", formula = y ~ x, color = "red", se = FALSE) +
+    geom_smooth(method = "lm", formula = y ~ x, color = "blue", se = FALSE) 
+}
+
+starwars |> 
+  filter(mass < 1000) |> 
+  linearity_check(mass, height)
+```
+
+```{r}
+hex_plot <- function(df, x, y, z, bins = 20, fun = "mean") {
+  df |> 
+    ggplot(aes(x = {{ x }}, y = {{ y }}, z = {{ z }})) + 
+    stat_summary_hex(
+      aes(color = after_scale(fill)), # make border same color as fill
+      bins = bins, 
+      fun = fun,
+    )
+}
+
+diamonds |> hex_plot(carat, price, depth)
+```
+
+### Kombinieren mit `tidyverse`
+
+Wir wollen ein vertikales Säulendiagramm erstellen, bei dem die Reihenfolge fallend, statt aufsteigend ist. 
+
+```{r}
+sorted_bars <- function(df, var) {
+  df |> 
+    mutate({{ var }} := fct_rev(fct_infreq({{ var }})))  |>
+    ggplot(aes(y = {{ var }})) +
+    geom_bar()
+}
+
+diamonds |> sorted_bars(clarity)
+```
+
+Hier haben wir eine neuen Operator, `:=`. R erlaubt hier nur einen einfachen Wortnamen, wir wollen aber unsere Variable überschreiben. Von `tidy` wird er wie ein `=` bewertet. 
+
+Einen Plot für eine Teilmenge mithilfe von `filter()` in einer Funktion können wir auch leicht erstellen. 
+
+```{r}
+conditional_bars <- function(df, condition, var) {
+  df |> 
+    filter({{ condition }}) |> 
+    ggplot(aes(x = {{ var }})) + 
+    geom_bar()
+}
+
+diamonds |> conditional_bars(cut == "Good", clarity)
+```
+
+### Labeling
+
+```{r}
+histogram <- function(df, var, binwidth = NULL) {
+  df |> 
+    ggplot(aes(x = {{ var }})) + 
+    geom_histogram(binwidth = binwidth)
+}
+```
+
+Warum nicht hier eine Überschrift hinzufügen? Dazu benutzen wir das `rlang` Paket. Dazu benutzen wir `rlang::englue()`. Jeder Wert in `{}` wird in den *String* eingeführt. In `{{}}` wird der Variablenname eingesetzt. 
+
+```{r}
+histogram <- function(df, var, binwidth) {
+  label <- rlang::englue("A histogram of {{var}} with binwidth {binwidth}")
+  
+  df |> 
+    ggplot(aes(x = {{ var }})) + 
+    geom_histogram(binwidth = binwidth) + 
+    labs(title = label)
+}
+
+diamonds |> histogram(carat, 0.1)
+```
+
+## Style
+R ist es egal wie du deine Funktionen oder Namen benennst. Kurz sollten sie sein, aber auch sollte man eine Idee bekommen wie sich die Funktion verhält. Funktionsnamen sind meist verben und Argumente Nomen.  
+
+```{r eval = FALSE}
+# Too short
+f()
+
+# Not a verb, or descriptive
+my_awesome_function()
+
+# Long, but clear
+impute_missing()
+collapse_years()
+```
+
+Einrücken der Zeilen nicht vergessen.
+
+```{r eval = FALSE}
+# Missing extra two spaces
+density <- function(color, facets, binwidth = 0.1) {
+diamonds |> 
+  ggplot(aes(x = carat, y = after_stat(density), color = {{ color }})) +
+  geom_freqpoly(binwidth = binwidth) +
+  facet_wrap(vars({{ facets }}))
+}
+
+# Pipe indented incorrectly
+density <- function(color, facets, binwidth = 0.1) {
+  diamonds |> 
+  ggplot(aes(x = carat, y = after_stat(density), color = {{ color }})) +
+  geom_freqpoly(binwidth = binwidth) +
+  facet_wrap(vars({{ facets }}))
+}
+```
+
+# Iteration
+
+## Einleitung und Voraussetzung
+
+Willst du einen numerischen Vektor verdoppeln, so reicht es einfach `2 * x` zu schreiben. Ähnliche Werkzeuge für Wiederholungen haben wir schon kennengelernt:
+
+- `facet_wrap()` und `facet_grid` zeichnet einen Plot für jede Teilmenge.
+- `group_by` mit `summarize()` berechnet zusammenfassende Statistiken für Untergruppen.
+- `unnest_wider()` und `unnest_longer()` erstellen neue Zeilen und Spalten.
+
+Jetzt lernen wir generelle Werkzeuge, __functional programming__ Werkzeuge kennen. Sie werden so genannt, da sie um Funktionen gebaut werden, die andere Funktionen als Input nehmen.
+
+```{r}
+library(tidyverse)
+```
+
+Wir brauchen das bekannte __dplyr__ und das neue __purrr__. Ein hervorrangendes Paket.
+
+## Modyfying Multiple Columns
+
+Wir schauen uns ein simplen `tibble` an und wollen Anzahl der Beobachtungen, sowie Median, jeder Spalte berechen.
+
+```{r}
+df <- tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+df
+
+df |> summarize(
+  n = n(),
+  a = median(a),
+  b = median(b),
+  c = median(c),
+  d = median(d),
+)
+```
+
+Wir können es mit *copy-paste* erledigen. Das kann sehr mühsam sein, Oder wir benutzen `across()`:
+
+```{r}
+df |> summarize(
+  n = n(),
+  across(a:d, median),
+)
+```
+
+Es hat drei wichtige Argumente, wobei die ersten beiden elementar sind: `.cols` bestimmt die Spalten über die iteriert werden soll und `.fns` was mit jeder Spalte gemacht werden soll. Das `.names` Argument benutzt du, wenn du zusätzlich Kontrolle über über die Namen des Outputs gewinnen willst.
+
+### Auswahl von Spalten mit `.cols`
+Das erste Argument sucht die zu transformierenden Spalten aus. Es benutzt dieselbe Spezifikation wie `select()`, sodass du auch `starts_with()` und `ends_with()` benutzen kannst. 
+```{r}
+dfs <- tibble( w1 = rnorm(4), w2 = rnorm(4) + 5, s2 = rnorm(4) * 100)
+dfs
+dfs|>
+  select(starts_with("w"))
+```
+
+```{r}
+dfs|>
+  summarize(
+    n = n(),
+    across(c(w1, w2, s2), median)
+  )
+```
+
+Zwei weitere Auswahltechniken sind sehr nützlich für `across()`: `everything` und `where()`. `everything` ist *straightforward*: es wählt jede nicht-gruppierte Spalte.
+
+```{r}
+df <- tibble(
+  grp = sample(2, 10, replace = TRUE),
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+
+df |> 
+  group_by(grp) |> 
+  summarize(across(everything(), median))
+```
+
+`where()` erlaubt es Spalten aufgrund ihres Types auszuwählen:
+- `where(is.numeric)`
+- `where(is.Date)`
+- ...
+
+Du kannst die Selektoren miteinander kombinieren: `starts_with("a") & where(is.logical)`.
+Hier werden alle logischen Vektoren ausgewählt, deren Namen mit "a" starten.
+
+### Eine einfach Funktion aufrufen
+
+Wir übergeben eine Funktion an eine andere. Wir übergeben diese Funktion an `across()`. Wir rufen sie nicht selbst auf. Dem Funktionsnamen folgt kein `()`. Sonst gibt es eine Fehlermeldung. Besser also ohne. 
+
+```{r}
+k =  function(x) mean(x)
+df|>
+  group_by(grp)|>
+  summarize(across(everything(), k))
+```
+
+### Multiple Funktionen aufrufen
+
+Haben wir *Missing Values* in unserem Datensatz, so wollen wir diese natürlich entfernen.
+
+```{r}
+rnorm_na <- function(n, n_na, mean = 0, sd = 1) {
+  sample(c(rnorm(n - n_na, mean = mean, sd = sd), rep(NA, n_na)))
+}
+
+df_miss <- tibble(
+  a = rnorm_na(5, 1),
+  b = rnorm_na(5, 1),
+  c = rnorm_na(5, 2),
+  d = rnorm(5)
+)
+df_miss |> 
+  summarize(
+    across(a:d, median),
+    n = n()
+  )
+```
+
+Das können wir natürlich leicht mithilfe von `na.rm = T`. Statt den Median durch `median()` aufzurufen, müssen wir eine neue Funktion kreieren. 
+
+```{r}
+df_miss |> 
+  summarize(
+    across(a:d, function(x) median(x, na.rm = TRUE)),
+    n = n()
+  )
+```
+
+Es geht aber noch ein wenig kürzer, indem man `function` durch `\` ersetzt. 
+
+```{r}
+df_miss |> 
+  summarize(
+    across(a:d, \(x) median(x, na.rm = TRUE)),
+    n = n()
+  )
+```
+
+Was geht wohl schneller?
+
+```{r}
+df_miss |> 
+  summarize(
+    a = median(a, na.rm = TRUE),
+    b = median(b, na.rm = TRUE),
+    c = median(c, na.rm = TRUE),
+    d = median(d, na.rm = TRUE),
+    n = n()
+  )
+```
+
+Wir können jetzt sogar noch eine weitere Funktion hinzufügen. In eine Liste.
+
+```{r}
+df_miss |> 
+  summarize(
+    across(a:d, list(
+      median = \(x) median(x, na.rm = TRUE),
+      n_miss = \(x) sum(is.na(x))
+    )),
+    n = n()
+  )
+```
+
+Achte auf die neuen Spaltennamen. Das ist kein Zufall: `{.col}_{.fn}`.
+Der Name ist eine Kombination aus Spaltenname und Funktion.
+
+### Spaltennamen
+
+Die können wir jetzt selber festlegen, wenn wir z.B. zuerst den Namen der Funktion uns wünschen.
+
+```{r}
+df_miss |> 
+  summarize(
+    across(
+      a:d,
+      list(
+        median = \(x) median(x, na.rm = TRUE),
+        n_miss = \(x) sum(is.na(x))
+      ),
+      .names = "{.fn}_{.col}"
+    ),
+    n = n(),
+  )
+```
+
+Das `.names` Argument ist besonders wichtig, wenn du `across()` zusammen mit `mutate()` benutzt. `across()` innerhalb von `mutate()` ersetzt existierende Spalten. In unserem Fall ersetzt `coalesce()` `NA` durch `0`. 
+
+```{r}
+df_miss |> 
+  mutate(
+    across(a:d, \(x) coalesce(x, 0))
+  )
+```
+
+Du kannst aber auch neue Spalten kreieren, indem du durch `.names` dem Output neue Namen verpasst.
+
+```{r}
+df_miss |> 
+  mutate(
+    across(a:d, \(x) abs(x), .names = "{.col}_abs")
+  )
+```
+
+### Filtern
+
+`across()` funktioniert sehr gut mit `summarize()` und `mutate()`, aber nicht wirklich mit `filter()`. __dplyr__ bietet zwei Varianten von `across()`an: `if_any()` und `if_all()`.
+
+```{r}
+# same as df_miss |> filter(is.na(a) | is.na(b) | is.na(c) | is.na(d))
+df_miss |> filter(if_any(a:d, is.na))
+```
+
+Jede Zeile wird übernommen, in der mindestens ein `NA` Wert ist. Oder in der nur `NA` Werte sind. 
+
+```{r}
+# same as df_miss |> filter(is.na(a) & is.na(b) & is.na(c) & is.na(d))
+df_miss |> filter(if_all(a:d, is.na))
+```
+
+### `across()` in Funktionen
+
+`across()` ist sehr nützlich, da es einem erlaubt auch auf multiplen Spalten zu operieren. 
+
+```{r}
+expand_dates <- function(df) {
+  df |> 
+    mutate(
+      across(where(is.Date), list(year = year, month = month, day = mday))
+    )
+}
+
+df_date <- tibble(
+  name = c("Amy", "Bob"),
+  date = ymd(c("2009-08-03", "2010-01-16"))
+)
+
+df_date |> 
+  expand_dates()
+```
+
+Berechne das arithmetische Mittel von numerischen Spalten.
+
+```{r}
+summarize_means <- function(df, summary_vars = where(is.numeric)) {
+  df |> 
+    summarize(
+      across({{ summary_vars }}, \(x) mean(x, na.rm = TRUE)),
+      n = n()
+    )
+}
+diamonds |> 
+  group_by(cut) |> 
+  summarize_means()
+
+diamonds |> 
+  group_by(cut) |> 
+  summarize_means(c(carat, x:z))
+```
+
+### vs. `pivot_longer()`
+
+Mithilfe von `pivot_longer` konnten wir aus einer Kreuztabelle, eine lange Tabelle machen. Oftmals wird erst `pivot_longer()` auf die Tabelle angesetzt, dann folgt `group_by()`.
+
+```{r}
+df |> 
+  summarize(across(a:d, list(median = median, mean = mean)))
+```
+
+Dieselben Werte erhalten wir natürlich, indem wir `pivot_longer()` benutzen und dann `summarize()`. 
+
+```{r}
+long <- df |> 
+  pivot_longer(a:d) |> 
+  group_by(name) |> 
+  summarize(
+    median = median(value),
+    mean = mean(value)
+  )
+```
+
+Benutze `pivot_wider()` um wieder zur alten Struktur zurückzukehren. 
+
+```{r}
+long |> 
+  pivot_wider(
+    names_from = name,
+    values_from = c(median, mean),
+    names_vary = "slowest",
+    names_glue = "{name}_{.value}"
+  )
+```
+
+Es ist eine nützliche Technik, auch wenn die Namen der Variablen "schwierig" sind.
+
+```{r}
+df_paired <- tibble(
+  a_val = rnorm(10),
+  a_wts = runif(10),
+  b_val = rnorm(10),
+  b_wts = runif(10),
+  c_val = rnorm(10),
+  c_wts = runif(10),
+  d_val = rnorm(10),
+  d_wts = runif(10)
+)
+```
+
+Keine Chance mit `across()`, aber mit `pivot_longer()`.
+
+```{r}
+df_long <- df_paired |> 
+  pivot_longer(
+    everything(), 
+    names_to = c("group", ".value"), 
+    names_sep = "_"
+  )
+df_long
+
+
+df_long |> 
+  group_by(group) |> 
+  summarize(mean = weighted.mean(val, wts))
+```
+
+# Reading Multiple Files
+
+Hier geht es darum `purrr::map()` zu benutzen, dass Transformationen nicht in multiplen Spalten vornimmt, sondern in jedem Ordner deiner *directory*. Da das Thema sehr speziell ist, schieben wir es mal nach hinten. Genauso wie das nächste.
+
+# Saving Multiple Outputs
+
+Speziell, da geschoben.
+
+# Base R - R Funktionen 
+
+## Einleitung
+
+Wir haben viel __tidyverse__ benutzt, aber es geht auch ohne Pakete. Trotzdem laden wir unser Standardpaket.
+
+```{r}
+library(tidyverse)
+```
+
+## Auswahl multipler Elemente mit `[`
+
+Eckige Klammern werden benutzt, um Teilmengen aus Vektoren oder *Data Frames* zu gewinnen. Viele __dplyr__ Verben sind Spizialfälle von `[`. 
+
+### Subsetting Vectors
+
+Es gibt 5 Möglichkeiten einen Vektor zu unterteilen. `x[i]` wäre ein Beispiel:
+
+1. __Ein Vektor mit positiven, ganzen Zahlen.__ Ein Vektor, oder eine einfache Zahl werden gewählt. Sie bestimmen die Position des Elements im Vektor, das ausgegeben wird. Ein Beispiel zeigt es schnell. Mehrere Zahlen können wiederholt werden, so dass der Output länger ist als der Input. In __tidyverse__ können wir mit `slice(1:2)` z.B. Zeilen auswählen.
+
+```{r}
+x <- c("one", "two", "three", "four", "five")
+x[c(3, 2, 5)]
+x[2]
+x[c(1, 1, 5, 5, 5, 2)]
+```
+
+2. __Ein Vektor mit negativen Zahlen.__ Sie entfernen die Zahlen hinter dem `-`. Bitte nicht `+` und `-` mischen:
+
+```{r}
+x[c(-1, -3, -5)]
+```
+
+3. __Ein logical vector__. Sehr wichtig. Der Vektor behält die Elemente, die mit einem `TRUE` korrespondieren. Bei Vergleichen wird es oft gebraucht.
+
+```{r}
+x <- c(10, 3, NA, 5, 8, 1, NA)
+
+# All non-missing values of x
+x[!is.na(x)]
+# All even (or missing!) values of x
+x[x %% 2 == 0]
+```
+
+4. __Ein Character Vector.__ Hast du einen benannten Vektor, so kannst du ihn mit seinem Namen ansprechen. 
+
+```{r}
+x <- c(abc = 1, def = 2, xyz = 5)
+x[c("xyz", "def")]
+```
+
+5. __Nothing.__ Klingt unlogisch, spielt aber später bei 2d Strukturen wie *tibbles* eine Rolle.
+
+### Subsetting Data Frames
+
+`df[rows, cols]` wählt den Wert eines *Data Frames* aus. Lasse ich eine Seite weg, so werden ALLE Werte der Zeile oder Spalte weggelassen.
+
+```{r}
+df <- tibble(
+  x = 1:3, 
+  y = c("a", "e", "f"), 
+  z = runif(3)
+)
+df
+# Select first row and second column
+df[1, 2]
+# Select all rows and columns x and y
+df[, c("x" , "y")]
+# Select rows where `x` is greater than 1 and all columns
+df[df$x > 1, ]
+```
+
+`$` bei `df$x` wählt die Variable `x` von `df` aus. Es gibt einen Unterschied zwischen *tibbles* und *Data Frames* bzgl `[`. Bei einem *Data Frame* wird ein Vektor erzeugt, wenn nur eine Variable ausgewählt wird. Bei einem *tibble* wird immer wieder ein *tibble* erzeugt.
+
+```{r}
+df1 <- data.frame(x = 1:3)
+df1[, "x"]
+df2 <- tibble(x = 1:3)
+df2[, "x"]
+```
+
+Verhindere es mit:
+
+```{r}
+df1[, "x" , drop = FALSE]
+```
+
+### Äquivalente zu __dplyr__
+
+1. `filter()` ist äquivalent zu *Subsetting* die Reihen mithilfe eines logischen Vektors. 
+
+```{r}
+df <- tibble(
+  x = c(2, 3, 1, 1, NA), 
+  y = letters[1:5], 
+  z = runif(5)
+)
+df |> filter(x > 1)
+
+# same as
+df[!is.na(df$x) & df$x > 1, ]
+which(df$x > 1)
+df[which(df$x > 1), ]
+```
+
+2. `arrange()` zu `order()`:
+
+```{r}
+df |> arrange(x, y)
+df |> arrange(x, y, decreasing = TRUE)
+# same as
+df[order(df$x, df$y), ]
+df[order(df$x, df$y), decreasing = TRUE, ]
+```
+
+Umgedrehte Reihenfolge mit `order(decreasing = TRUE)`, oder `-rank(col)`
+
+3. `select()` und `relocate()` zu einem *Character Vector*.
+
+```{r}
+df |> select(x, z)
+
+# same as
+df[, c("x", "z")]
+```
+
+In R Base kann man auch `filter()` und `select()` kombinieren, durch `subset()`.
+
+```{r}
+df |> 
+  filter(x > 1) |> 
+  select(y, z)
+
+df |> subset(x > 1, c(y, z))
+```
+
+## Auswahl einzelner Elementen durch `$` und `[[`
+
+Hier zeige ich dir wie du `[[` und `$` benutzt, um aus *Data Frames* Spalten zu ziehen. Unterschiede zwischen `[` und `[[` werden wir in Listen kennenlernen und Unterschiede zwischen `data.frames` und *tibbles*.
+
+### Data Frames
+
+`[[` und `$` können benutzt werden, um Spalten aus einem *Data Frame* zu ziehen. Hier könen Position oder Name bzw. der Name der Spalte stehen. 
+
+```{r}
+tb <- tibble(
+  x = 1:4,
+  y = c(10, 4, 1, 21)
+)
+
+# by position
+tb[[1]]
+
+# by name
+tb[["x"]]
+
+tb$x
+```
+
+Wir können auch neue Spalten kreieren., so wie wir es durch `mutate()` schon kennen. 
+
+```{r}
+tb$z <- tb$x + tb$y
+tb
+```
+
+Weitere Beispiele mit `transform()`, `with()` und `within()`:
+
+```{r}
+data(diamonds, package = "ggplot2")
+
+# Most straightforward
+diamonds$ppc <- diamonds$price / diamonds$carat
+
+# Avoid repeating diamonds 
+diamonds$ppc <- with(diamonds, price / carat)
+
+# The inspiration for dplyr's mutate
+diamonds <- transform(diamonds, ppc = price / carat)
+diamonds <- diamonds |> transform(ppc = price / carat)
+
+# Similar to transform(), but uses assignment rather argument matching
+# (can also use = here, since = is equivalent to <- outside of a function call)
+diamonds <- within(diamonds, {
+  ppc <- price / carat
+})
+diamonds <- diamonds |> within({
+  ppc <- price / carat
+})
+
+# Protect against partial matching
+diamonds$ppc <- diamonds[["price"]] / diamonds[["carat"]]
+diamonds$ppc <- diamonds[, "price"] / diamonds[, "carat"]
+```
+
+`$` direkt zu benutzen ist bequem, wenn man schnelle Zusammenfassungen braucht. Dann gibt es keine Notwendigkeit `summarize()` zu benutzen.
+
+```{r}
+max(diamonds$carat)
+
+levels(diamonds$cut)
+```
+
+__dplyr__ hat auch ein Äquivalent zu `[[/$` im Angebot: `pull()`. Es nimmt entweder einen Variablennmanen oder die Position einer Variable und gibt gerade diese Spalte aus. So können die __Pipe__ benutzen:
+
+```{r}
+diamonds |> pull(carat) |> max()
+
+diamonds |> pull(cut) |> levels()
+```
+
+### Tibbles
+
+In Bezug auf `$` unterscheiden sich *tibbles* und *base* `data.frame()`. Im Gegensatz zu `tibble()` wird bei `sata.frame()` keine Fehlermeldung ausgegeben. 
+
+```{r}
+df <- data.frame(x1 = 1)
+df$x
+df$z
+```
+
+```{r}
+tb <- tibble(x1 = 1)
+tb$x
+tb$z
+```
+
+### Listen
+
+Der Unterschied bei Listen zu `[` ist sehr wichtig zu verstehen.
+
+```{r}
+l <- list(
+  a = 1:3, 
+  b = "a string", 
+  c = pi, 
+  d = list(-1, -5)
+)
+```
+
+`[` extrahiert eine Subliste.
+
+```{r}
+str(l[1:2])
+str(l[1])
+str(l[4])
+```
+
+Bestimme die Subliste mit *logical*, *integer* oder *character vector*.
+
+`[[` und `$` extrahieren eine einzige Komponente von einer Liste.
+
+```{r}
+str(l[[1]])
+str(l[[4]])
+str(l$a)
+```
+
+## Apply family
+
+Das wichtigste Mitglied der Familie ist `lapply()`, welches sehr ähnlich zu `purrr::map()` ist. Du kannst jeden `map()` *call* durch `lapply()` ersetzen. 
+
+Es gibt kein Äquivalent zu `across()`, aber in __R Base__ kommst du durch `[` mit `lapply()` nah dran. `lapply()` auf einem *Data Frame* wendet die Funktion auf jeder Spalte an. 
+
+```{r}
+df <- tibble(a = 1, b = 2, c = "a", d = "b", e = 4)
+# First find numeric columns
+num_cols <- sapply(df, is.numeric)
+num_cols
+
+# Then transform each column with lapply() then replace the original values
+df[, num_cols] <- lapply(df[, num_cols, drop = FALSE], \(x) x * 2)
+df
+```
+
+`sapply()` steckt den Output in einen Vektor, `lapply()` in eine Liste. 
+
+R bietet eine striktere Version von `sapply()` an: `vapply()`. Es nimmt ein weiteres Argument auf, dass den Typ spezifiziert. 
+
+```{r}
+vapply(df, is.numeric, logical(1))
+vapply(df, is.numeric, numeric(1))
+```
+
+Die Ausgabe hat einen logischen Wert bzw. einen numerischen.
+
+`tapply()` berechnet eine gruppierte Zusammenfassung durch eine Funktion wie `mean()`.
+
+```{r}
+diamonds |> 
+  group_by(cut) |> 
+  summarize(price = mean(price))
+tapply(diamonds$price, diamonds$cut, mean)
+```
+
+Abschließend gibt es noch `apply()`, welches mit Matrizen und *Arrays* arbeitet. Wir arbeiten aber häufiger mit *Data Frames*. Mehr darüber ist aber online schnell zu finden.
+
+## `for` loops
+
+`for` Schleifen sind mächtig und wichtig und werden von Fortgeschrittenen häufig angewendet. Die Struktur sieht wie folgt aus:
+
+```{r eval = FALSE}
+for (element in vector) {
+  # do something with element
+}
+```
+
+Ein einfaches Beispiel.
+
+```{r}
+k <- numeric(20)
+for (i in seq(1,20)) {
+  k[i] <- i*10
+}
+k
+```
+
+## while-Schleifen
+
+Sie funktionieren ähnlich.
+
+```{r}
+n = numeric(0)
+p = 5
+while(p < 10){
+ n = c(n, p)
+ p = p + 1
+}
+p
+n
+```
+
+## Plots
+
+Kurz und schnell ohne Pakete.
+
+```{r}
+# Left
+hist(diamonds$carat)
+
+# Right
+plot(diamonds$carat, diamonds$price)
+```
+
+
+

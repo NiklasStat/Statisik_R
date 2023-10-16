@@ -1,0 +1,3543 @@
+---
+title: "Die Welt von R - Kapitel 1"
+---
+
+# Grundlagen 
+
+Hier in diesem Abschnitt findest du die grundlegenden Konzepte von R. Wir gehen hier nicht ins Detail und auch der Bezug zur Statistik ist überschaubar. Das folgt in den anderen Abschnitten. Lerne erst einmal **R** und die Programmierung kennen.
+
+## Die Benutzeroberfläche
+
+Um mit R zu arbeiten, lade R und ggf. RStudio online kostenfrei herunter. Um R auszuführen, schreibe deinen Code in die Console unten links. Um es auszuführen drücke Enter. Oben links kannst du ein neues R Script öffnen und so als Editor nutzen. Um den geschriebenen Code in die Console zu schicken, setze den Cursor an das Ende der Zeile, die du schreiben willst und drücke in der Leiste darüber Run. Für alle Zeilen markiere diese und drücke Run.  
+Führe jetzt deinen ersten Code aus, z.B. die Summe zweier Zahlen. Benutze R also als Taschenrechner.
+
+```{r}
+6 + 4
+```
+
+Die Zeile beginnt mit dem erste Wert [1] deines Ergebnisses. Es gibt natürlich Befehle, die mehr als einen Wert ausgeben. So geben wir z.B. die Werte von 10 bis 13 wie folgt aus.
+
+```{r}
+10:13
+```
+
+Die Ausgabe erfolgt. Die Zahlen in den eckigen Klammern sind also zu vernachlässigen, helfen aber natürlich. Du weißt aber wahrscheinlich schon was ein Index ist.  
+Auch wissen wir jetzt schon wie man alle ganzen Zahlen zwischen zwei Zahlen widergibt. Hurra.  
+  
+Auch über mehrere Zeilen können wir schreiben. Lücken zwischen den Zahlen und Operatoren sind dabei erlaubt. 
+
+```{r}
+99 -
++
++ 98
+```
+
+Fehlermeldungen sind nicht ungewöhnlich und auch nicht zu vermeiden. Lerne aus ihnen.  
+Einfache arithmetische Rechnungen können wir schon intuitiv berechnen lassen. Hier gilt natürlich auch Punkt vor Strich. Komma müssen, falls notwendig, natürlich schon gesetzt werden. Der Code steht dabei in der Console immer nach dem `>`. Ohne lässt sich der Code aber einfacher kopieren.
+
+```{r}
+4 + 44
+44 - 45
+33 / (4   -    1)
+```
+
+
+Kommentare kannst du nach einem Hastag # schreiben. Sehr sinnvoll und zu empfehlen. Danach wird der Code nicht interpretiert. Ergebnisse, die R ausgibt, werden hier nach einem `##` angegeben. 
+
+## Objekte
+
+Jetzt wollen wir aber natürlich nicht nur Werte ausgeben, sondern diese auch speichern. Willst du z.B. einen Vektor benutzen, speichern und dann wieder benutzen, erstelle ein R Objekt. Daten kannst du z.B. als Objekt a oder b abspeichern und dann jederzeit benutzen. 
+
+```{r}
+a <- 5
+a
+a + 5
+```
+
+Die Zahlen 1 bis 6 können auch in einem Objekt abgespeichert werden und dann natürlich auch aufgerufen werden.
+
+```{r}
+die <- 1:6
+die
+```
+
+Wenn du ein Objekt erstellst, erscheint es rechts oben im Fenster Environment. Alle in der aktuellen Sitzung erstellten Objekte sind also einzusehen. Sehr praktisch.  
+Bei der Erstellung von Objekten ist auf den Namen zu achten. Viele, aber nicht alle Namen, sind erlaubt. Ein Name kann nicht beginnen mt ^, !, $, @, +, -, /, oder *. Auch auf Groß- und Kleinschreibung ist zu achten.  
+
+gute Namen   | Problemnamen
+------------ | -------------
+a            | 1versuch
+b            | ^mean
+Auto         | $
+my_variable  | 3rd
+.heute       | !nicht_gut
+
+Schon benutzte Namen werden ohne Nachfrage einfach überschrieben. Also aufpassen!
+
+```{r}
+my_zahl <-1
+my_zahl
+my_zahl <- 999
+my_zahl
+```
+
+Deine Objektnamen kannst du mithilfe von `ls` abrufen.
+
+```{r}
+ls()
+```
+
+Zahlen können wir manipulieren, aber auch unseren Vektor der Zahlen 1 bis 6. Und abspeichern natürlich nie vergessen.
+
+```{r}
+die - 6
+die / 2
+die * die
+die_zwei <- die * die
+```
+
+Hierbei multiplizieren wir die Vektoren elementenweise. Also erstes Element von Vektor 1 wird mit dem ersten Element von Vektor 2 mutipliziert usw. Es geht natürlich auch anders. Aber dazu erst später mehr.  
+Wir können aber auch zwei Vektoren unterschiedlicher Länge multiplzieren oder addieren. Hierbei wird dann der kürzere Vektor so lange wiederholt bis die Anzahl der Elemente beider gleich ist.
+
+```{r}
+1:2
+1:4
+die
+die + 3:6
+die + 1:3
+```
+
+Eine Warnung wird ausgegeben, wenn die Länge des längeren Objektes kein Vielfaches des kürzeren Objektes ist.  
+  
+Inneres `%*%` und äußeres Produkt `%o%` ergeben natürlich zwei komplett verschiedene Ergebnisse. 
+
+```{r}
+die %*% die
+die %o% die 
+```
+
+## Funktionen
+
+R kommt mit einer Menge an Funktionen daher. Wir können z.B. mit Hilfe der `round` Funktion runden,  oder die Fakultät berechnen `factorial`. Eine Funktion anzuwenden ist sehr leicht. Schreibe einfach den Namen der Funktion und lasse dann die Daten folgen.
+
+```{r}
+round(3.14)
+factorial(4)
+```
+
+Die Daten in den Klammern werden *Argumente* genannt. Diese können rohe Daten sein, ein R Objekt oder sogar das Ergebnis einer anderen R Funktion. Dabei kämpft sich R von innen nach außen vor (letztes Beispiel). 
+
+```{r}
+mean(1:8)
+mean(die)
+round(mean(die))
+```
+
+Die Funktion `sample` gibt uns eine Zufallsstichprobe beliebiger Länge wider. Hierbei müssen wir zwei Argumente angeben.  
+`sample` gibt uns `size` Elemente des Vektors wider.
+
+```{r}
+sample(x = 1:6, size = 3)
+```
+
+Wir können so einen Würfelwurf simulieren, auch ohne Würfel.
+
+```{r}
+sample(x = die, size = 1)
+sample(x = die, size = 1)
+sample(x = die, size = 1)
+sample(x = die, size = 1)
+```
+
+Jeder Würfelwurf gibt uns ein zufälliges Ergebns wider.  
+Du kannst soviele Argumente wie du willst und wie nötig sind einer Funktion übergeben, getrennt durch ein Komma natürlich. Oftmals wird das erste Argument in den Klammern nicht extra benannt, da es sich meist um die Daten handelt.
+
+```{r}
+sample(die, size = 2)
+sample(die, size = 2)
+sample(size = 2, x = die)
+```
+
+Die Reihenfolge kann vertauscht werden. Es ist aber nicht zu empfehlen.  
+Wenn du dir nicht sicher bist, welcher Name zu welcher Funktion passt, benutze den Befehl `args`. Er zeigt dir die benötigten Argumente der Funktion an.
+
+```{r}
+args(round)
+```
+
+Hier siehst du auch, dass die Anzahl der Nachkommastellen auf 0 gesetz sind. Das is der *Default* Wert. Gibst du kein Argument für die Anzahl der Nachkommastellen hier an, so wird auf eine ganze Zahl gerundet.
+
+```{r}
+round(3.1415)
+round(3.1415, digits = 2)
+```
+
+Um den Code besser zu verstehen, schreibe einfach die Namen aus. Nicht für immer, aber am Anfang hilft es. Dann ist wie oben erfolgt auch die Reihenfolge der Argumente vertauschbar.
+
+### Sample (Replacement)
+
+Wir wollen jetzt einen doppelten Würfelwurf simulieren, also einen Wurf mit 2 Würfeln. Probiere es aus.
+
+```{r}
+sample(die, size = 2)
+```
+
+So oft wir wollen werden zwei Würfel geworfen. Was fällt auf?  
+Als Default wird bei `sample` ohne Zurücklegen (Replacement) geworfen. Das ist kein echter Wurf mit zwei Würfeln!  
+Wir müssen noch ein weiteres Argument hinzufügen: `replace = TRUE`.
+
+```{r}
+sample(die, size = 2, replace = TRUE)
+```
+
+
+Ohne bzw. mit `replace = FALSE` erhalten wir niemals zweimal dieselbe Augenzahl.  
+Die Augensumme lässt sich berechnen.
+
+```{r}
+dice <- sample(die, size = 2, replace = TRUE)
+sum(dice)
+```
+
+In `dice` ist jetzt das Ergebnis gespeichert. Egal wie oft wir den Befehl aufrufen. Es wird nicht neu gewürfelt. Das beruhigt.
+
+## Eigene Funktionen schreiben
+
+Wir haben unseren Würfelwurf mit R Code geschrieben. 
+
+```{r}
+die <- 1:6
+dice <- sample(die, size = 2, replace = TRUE)
+sum(dice)
+```
+
+Bei jedem Würfelwurf können wir den Code also aufs neue verwenden und erhalten ein valides Ergebnis.  
+Einfacher wäre es aber eine neue, eigene Funktion zu schreiben. Das machen wir jetzt.  
+  
+Unsere Funktion soll `roll()` heißen, so dass immer ein Ergebnis zwischen 2 und 12 erscheint: die Augensumme.
+
+### Funktionen konstruieren
+
+Jede Funktion in R besteht aus drei Teilen: Name, Body, Code.  
+Diese drei Teile packen wir in ein R Objekt, welches mit der `function` Funktion erfolgt, gefolgt von geschweiften Klammern:   
+`my_function <- function() {}`. In die geschweiften Klammern kommt der Body. Hier sagen wir R was es zu tun hat.
+
+```{r}
+roll <- function(){
+  die <- 1:6
+  dice <- sample(die, size = 2, replace = TRUE)
+  summe_würfel <- sum(dice)
+  return (summe_würfel)
+}
+```
+
+`return` könnten wir hier auch weglassen und stattdessen bloß `summe_würfel` schreiben. 
+Jetzt wird mit `return` die Augensumme der Würfel widergegeben. Der Output soll natürlich gespeichert werden. Nicht vergessen. Zum Aufrufen verwenden wir `roll()`. Die Klammern sind der Trigger, um die Funktion auszuführen. Ohne die Klammern wird bloß der Code ausgegeben.
+
+```{r}
+roll()
+roll()
+roll()
+roll
+```
+
+R führt den ganzen Code im Body aus und gibt als Resultat die letzte Zeile Code wider. Überlege also was passiert, wenn du Zeile für Zeile des Bodys in die Command Zeile eingibst. Würde R ein Resultat nach der letzten Zeile ausgeben?
+
+## Argumente
+
+Eine Fehlermeldung erhalten wir, da wir etwas vergessen haben und falschen Namen verwendet haben.
+
+```{r}
+roll2 <- function() {
+  dice <- sample(bones, size = 2, replace = TRUE)
+  sum(dice)
+}
+```
+
+Die Funktion braucht das Objekt `bones`. Aber er wird hier nicht gefunden.  
+`roll2()` erzeugt einen Fehler. Wir können aber `bones` verwenden, wenn wir `bones` zu einem Argument der Funktion machen. `bones` kommt also in die Klammern der Funktion. 
+
+```{r}
+roll2 <- function(bones) {
+  dice <- sample(bones, size = 2, replace = TRUE)
+  sum(dice)
+}
+```
+
+Jetzt funktioniert `roll2` solange `bones` in der Funktion aufgerufen wird. Dadurch sind wir auch deutlich flexibler, sodass unser Würfel nicht nur 6 Seiten haben muss, sondern beliebig viele. 
+
+```{r}
+roll2(bones = 1:4)
+roll2(bones = 1:6)
+roll2(1:20)
+```
+
+Gibst du keinen Wert für das Argument an, so erscheint eine Fehlermeldung. Um eine Fehlermeldung zu vermeiden, kannst du einen Defaultwert angeben.
+
+```{r}
+roll2 <- function(bones = 1:6) {
+  dice <- sample(bones, size = 2, replace = TRUE)
+  sum(dice)
+}
+```
+
+Ein neuer Wert als Arument liefert gewünschte Ergebnisse. Wird er vergessen übernimmt der Defaultwert seinen Job.  
+Du kannst deiner Funktion soviele Argumente wie du willst übergeben. Nenne diese und liste sie durch Komma getrennt in den Klammern auf.  
+Jeder Argumentname in der Funktion wird beim Laufen jetzt durch die gegebenen Werte ersetzt. Sind Defaultwerte gegeben, so liefern diese bei Nichtnennung eigener Werte, die Daten für die Funktion.  
+  
+Baue dir also eigene Funktionen! Einmal konstruiert behandelt R deine Funktion wie jede andere Funktion in R, z.B. `mean`, `round`, `max`, etc. Und denke daran. Die Funktion gibt das Ergebnis der letzten Zeile des Body aus. Die Zeile vor der schließenden geschweiften Klammer.
+
+# Pakete und Hilfspakete
+
+Wir haben einen Würfelwurf kostruiert und können jetzt überprüfen, ob dieser faire Ergebnisse liefert. Zwei Werkzeuge helfen uns dabei: Wiederholung und Visualisierung. Wir werden unsere Würfelwürfe wiederholen und anschaulich visualisieren. Hierzu brauchen wir Pakete, die uns dabei helfen. Sie sind noch nicht in unserem Download enthalten. Viele der mächtigsten Werkzeuge sind in R Paketen enthalten. Lass uns schauen was R Pakete sind und wie wir sie benutzen können.
+
+## Pakete
+
+Wir sind nicht die einzigen Personen, die in R Funktionen schreiben. Viele schlaue Köpfe benutzen R und entwickeln Werkzeuge, die uns bei der Datenanalyse helfen können.  
+Sie werden kostenfrei bereitgestellt, nur anwenden müssen wir sie noch selber. Sie kommen als vormontierte Sammlung von Funktionen und Objekte: Pakete.  
+  
+Um ein paar schnelle Plots zu erhalten benutzen wir die `qplot` Funktion im **ggplot2** Paket. Zuvor muss es gedownloaded und installiert werden.
+
+### install.packages
+
+Jedes R Paket ist zu finden auf [link](http://cran.r-project.org). Herunterladen können wir **ggplot2** über die Command Line durch: `install.packages("ggplot2")`.   
+
+### library
+
+Mit dem Befehl `library("ggplot2")` können wir es zugänglich machen. Ersetze ggplot2 natürlich beliebig. 
+
+`qplot` erstellt schnelle Plots. Zwei Vektoren derselben Länge und schon haben wir einen Scatterplot erstellt. Hierbei wird ein Vektor mithilfe der `c` Funktion erstellt. In den Klammern getrennt durch Komma stehen die einzelnen Werte.
+
+
+
+
+
+```{r}
+library(ggplot2)
+x <- c(12,14,16,17,12,13,14,10,-5,-2)
+y <- x^2
+y
+qplot(x,y)
+```
+
+Elementenweise werden die Punktepaare erzeugt. Übergeben wir `qplot` nur einen Vektor, erzeugt R ein Histogramm.  
+
+```{r}
+x <- c(1,2,2,2,3,3)
+qplot(x, binwidth = 1)
+```
+ 
+
+Unsere Intervalle gehen jeweils +- 0.5, da die Bandbreite (binwidth) = 1 ist. 
+
+```{r}
+x <- c(1,2,2,2,3,3)
+barplot(table(x), horiz = TRUE)
+```
+
+Ein wenig anschaulicher ist ein Barplot.  
+Kommen wir auf unser Würfelexperiment zurück. Wollen wir den Würfelwurf, den wir simuliert haben, beliebig oft wiederholen, können wir die mit `replicate` tun.
+Zuerst steht in der Klammer die Anzahl der Wiederholungen, dann was wiederholt werden soll. In unserem Fall der zweimalige Würfelwurf mit Zurücklegen. Die Summe ergibt Zahlen zwischen 2 und 12.
+
+
+```{r}
+replicate(5, 2)
+replicate(10, roll())
+```
+
+
+Jetzt können wir die beiden Würfel aber auch 10 000 mal werfen und die Augensumme notieren. Also simulieren wir mal. Welche Grafik ist wohl sinnvoller?
+
+```{r}
+rolls <- replicate(10000, roll())
+qplot(rolls, binwidth = 1)
+barplot(table(rolls), horiz = F)
+```
+
+Es sieht alles nach einem fairen Würfel aus. Um ihn unfair zu machen könnten wir die Wahrscheinlichkeiten ändern:
+
+Zahl         | faire WKT   | gewichtete WKT
+------------ | ----------  | ---------------
+1            | 1/6         |  1/8
+2            | 1/6         |  1/8
+3            | 1/6         |  1/8
+4            | 1/6         |  1/8
+5            | 1/6         |  1/8
+6            | 1/6         |  3/8
+
+Die Wahrscheinlichkeiten können wir ändern, indem wir der `sample` Funktion ein Argument hinzufügen. Mache dies mithilfe der Hilfeseite. 
+
+## Hilfe suchen mit Hilfeseiten
+
+Hilfeseiten können über ein Fragezeichen vor der Funktion aufgerufen werden: `?sqrt`, `?log10` und `?sample` sind Beispiele. Sie enthalten Informationen über das, was jede Funktion macht. Am Ende von ihnen findet man meist anschauliche Beispiele.  
+Kommt die Funktion in einem R Paket daher, muss dieses natürlich zuvor geladen werden. 
+
+### Abschnitte der Hilfeseiten
+
+Folgende Themen sind meist zu finden:  
+  
+  
+__Beschreibung__ Eine Beschreibung was die Funktion macht.  
+  
+    
+__Usage__ Ein Beispiel wie du die Funktion schreiben würdest.  
+
+
+__Argumente__ Eine Liste der Argumente. Welche Art von Argumenten erwartet R und was macht die Funktion mit den Informationen.  
+
+
+__Details__ Eine tiefere Beschreibung der Funktion.  
+
+
+__Value__ Was gibt die Funktion dir wider?  
+
+
+__See Also__ Verwandte R Funktionen.  
+
+
+__Examples__ Beispiele.  
+
+
+Hast du die Funktion vergessen bzw. den Namen, gib zwei Fragezeichen und dann das Keywort an. Es ist eine Hilfeseite für eine Hilfeseite (z.B. `??log`).  
+
+Wir rufen also `?sample` auf. Hier stehen viele wichtige Infos, die wir zum bauen unserer Funktion brauchen. 
+```{r eval = FALSE}
+sample(x, size, replace = FALSE, prob = NULL)
+```
+
+Unsere `roll()` Funktion rufen wir uns in Erinnerung.
+
+```{r}
+roll <- function() {
+  die <- 1:6
+  dice <- sample(die, size = 2, replace = TRUE)
+  sum(dice)
+}
+```
+
+Um unsere Wahrscheinlichkeiten anzupassen, fügen wir ein weiteres Argument hinzu: `prob` mit einem Vektor von Gewichten. 
+
+```{r}
+roll <- function() {
+  die <- 1:6
+  dice <- sample(die, size = 2, replace = T,
+     prob = c(1/8, 1/8, 1/8, 1/8, 1/8, 3/8))
+  sum(dice)
+}
+roll()
+```
+
+Wir überschreiben unsere Ergebnisse.
+
+```{r}
+rolls <- replicate(10000, roll())
+qplot(rolls, binwidth = 1)
+barplot(table(rolls), horiz = F)
+```
+
+### Noch mehr Hilfe
+
+Stack Overflow  
+Google  
+RStudio [link](www.community.rstudio.com)
+
+# R Objekte
+
+## Vektoren
+
+Ein Vektor ist schnell gebildet aus ein paar Werten und einem `c`.
+
+```{r}
+die <- c(1,2,3,4,5,6)
+die
+is.vector(die)
+```
+
+Wir erstellen einen Vektor und überprüfen, ob es wirklich einer ist. Die möglichen Ergebnisse sind natürlich TRUE oder FALSE. Auch aus einem Wert ist ein Vektor zu bilden. Mit der Länge 1 natürlich.
+
+```{r}
+five <- 5
+is.vector(five)
+length(five)
+length(die)
+```
+
+Ein eindimensionaler Vektor kann nur einen Datentyp beinhalten. Insgesamt gibt es sechs verschiedene Typen von Vektoren:  
+doubles  
+integers  
+characters  
+logicals  
+complex  
+raw.  
+  
+    
+Wir wollen jetzt ein 52er Kartendeck erstellen. Dafür brauchen wir natürlich verschiedene Datentypen (Text und Zahlen). Bei der Dateneingabe werden sie durch gewisse Konventionen angegeben. Bei der Dateneingabe kann ein `L` mit angegeben werden für **integer** und Anführungszeichen für **character**.
+
+```{r}
+int <- 1L
+text <- "ace"
+```
+
+Vektoren mit mehr als einem Element können natürlich auch erstellt werden. 
+
+```{r}
+int <- c(1L, 5L)
+text <- c("ace", "hearts")
+```
+
+Verschiedene Typen sind notwendig, da sie auf Funktionen verschiedenartig reagieren.
+
+```{r}
+sum(int)
+# sum(text) Fehlermeldung
+```
+
+### Doubles
+
+Ein double Vektor enthält reguläre Zahlen: positive Zahlen, negative Zahlen, große oder kleine, Zahlen mit oder ohne Nachkommastellen.  
+R speichert jede Zahl, die du eintippst, als double ab. Abfragen kannst du diesen Typ leicht mit `typeof`.
+
+```{r}
+die <- c(1,2,3,4,5,6)
+die
+typeof(die)
+```
+
+Einige R Funktionen deklarieren doubles als **numerics**. 
+
+### Integers
+
+Da du Integers als doubles abspeichern kannst, benutzt du diesen Datentypen nicht sehr oft. Erst folgt eine ganze Zahl, dann ein `L`.
+
+```{r}
+int <- c(-1L, 2L, 4L)
+int
+typeof(int)
+```
+
+R speichert eine Zahl nur mit einem `L` so ab, ansonsten als doubles.  
+
+### Characters
+
+Hier wird Text abgespeichert. In Anführungszeichen.
+
+```{r}
+text <- c("Hello", "World")
+text
+typeof(text)
+typeof("Hello")
+```
+
+Die individuellen Elemente eines Character Vektors sind als **strings** bekannt. Ein *String* kann mehr als nur Buchstaben enthalten! Auch `"1"` ist ein *Character String*.  
+
+### Logicals
+
+Diese Vekoren beinhalten `TRUE` oder `FALSE`. Auch die Abkürzungen sind möglich: `T` oder `F`. Sie sind wichtig!  
+
+```{r}
+3 > 4
+```
+
+Jedes mal, wenn du `TRUE` oder `FALSE` in großen Buchstaben in R eingibst, wird es als logischer Wert wahrgenommen. 
+
+```{r}
+logic <- c(TRUE, TRUE, TRUE)
+logic
+typeof(logic)
+typeof(F)
+```
+
+`T` und `F` können auch als Zahlen wahgenommen werden: 1 und 0. Dazu später mehr.
+
+### Complex und Raw
+
+Bei der Datenanalyse werden sie selten gebraucht. Complex Vektors beihalten komplexe Zahlen. Um so einen Vektor zu erzeugen, füge einen imaginären Term zu einer Zahl mit `i`. 
+
+```{r}
+comp <- c(1 + 1i, 1 + 2i,1 + 3i)
+comp
+typeof(comp)
+```
+
+Raw Vektoren beinhalten Datenbytes. 
+
+```{r}
+raw(3)
+typeof(raw(3))
+```
+
+__Beispiel__ für einen Character Vektor. Karten: Ein Royal Flush hat welche 5 Symbole auf den Karten?
+
+```{r}
+hand <- c("Ass", "König", "Dame", "Bube", "Zehn") 
+hand
+typeof(hand)
+```
+
+## Attribute
+
+Ein Atribut ist eine Zusatzinformation, die du an einen Vektor anhängen kannst. Es beeinflusst weder den Wert noch wird es angezeigt, wenn du dein Objekt ausgibst. Es ist vergleichbar mit Metadaten. R ignoriert normalerweise diese Metadaten, sie können aber durch Funktionen angezeigt werden. Über `attributes` kannst du dir diese anzeigen lassen. Hat ein Objekt kein Attribut, so wird `NULL` ausgegeben.
+
+```{r}
+attributes(die)
+```
+
+
+### Namen
+
+Die populärsten Attribute eines Vektors sind Namen, Dimensionen und Klassen.  
+Du kannst mit speziellen Funktionen dir dieses Attribut ausgeben lassen. Zum Beispiel kannst du nach dem Namen fragen mit `names`. 
+
+```{r}
+names(die)
+```
+
+`NULL` heißt, dass es kein names Attribut für `die` gibt. Das kannst du selbst zuordnen. Der Vektor enthält einen Namen für jedes Element in `die`.
+
+```{r}
+names(die) <- c("one", "two", "three", "four", "five", "six")
+names(die)
+attributes(die)
+die
+die + 1
+```
+
+Die Namen affektieren nicht die aktuellen Werte, auch nicht bei Manipulation der Werte. Das Attribut kannst du natürlich auch wieder ändern.
+
+```{r}
+names(die) <- c("uno", "dos", "tres", "quatro", "cinco", "seis")
+die
+```
+
+Das Namensattribut kann auch ganz entfernt werden.
+
+```{r}
+names(die) <- NULL
+die
+```
+
+### Dimension
+
+Ein Vektor kann in einen n-dimensionalen Array transformiert werden, indem man ihm die Dimensinsattribute mit `dim` zuweist. So kannst du einen Vektor der Länge 6 in eine $2\times3$ - Matrix umwandeln mit zwei Zeilen und drei Spalten.  
+
+```{r}
+dim(die) <- c(2, 3)
+die
+dim(die) <- c(3, 2)
+die
+```
+
+R füllt die Matrizen spaltenweise. Um diesen Prozess zu beeinflussen, schau in die Hilfsfunktionen `matrix` oder `array`. 
+
+## Matrizen
+
+Matrizen enthalten Werte in einem 2-dimensionalen Array. Nach `matrix` folgt in den Klammern der Datensatz, dann die Anzahl der Zeilen `nrow` oder die Anahl der Spalten `ncol`. 
+
+```{r}
+m <- matrix(die, nrow = 2)
+m
+```
+
+`matrix` füllt die Matrix Spalte für Spalte (default). Du kannst sie aber reihenweise befüllen lassen mit dem Argument `byrow = T`.
+
+```{r}
+m <- matrix(die, nrow = 2, byrow = TRUE)
+m
+```
+
+## Arrays
+
+Die `array` Funktion erzeugt einen n-dimensionalen Array. Es wird nach einem Vektor als erstes Argument gefragt, dann folgt ein Vektor der Dimensionen `dim`.
+
+```{r}
+ar <- array(c(11:14, 21:24, 31:34), dim = c(2, 2, 3))
+ar 
+```
+
+Bilde z.B. eine Matrix mit den Namen und Farbe eines Royal Flush.
+
+```{r}
+hand1 <- c("ace", "king", "queen", "jack", "ten", "spades", "spades", "spades", "spades", "spades")
+matrix(hand1, nrow = 5)
+matrix(hand1, ncol = 2)
+dim(hand1) <- c(5, 2)
+hand1
+```
+  
+Auch kannst du Zeilenweise einlesen aus:
+
+```{r}
+hand2 <- c("ace", "spades", "king", "spades", "queen", "spades", "jack", "spades", "ten", "spades")
+matrix(hand2, ncol = 2, byrow = T)
+```
+
+## Klassen
+
+Änderst du die Dimension deines Objektes, so ändert sich nicht der Typ des Objektes, aber seine Klasse.
+
+```{r}
+dim(die) <- c(2, 3)
+die
+typeof(die) 
+class(die)
+```
+
+Jedes Element der Matrix ist immer noch ein double, aber es hat eine neue Struktur angenommen. R hat ein `class` Attribut hinzugefügt, nachdem du seine Dimension geändert hast.  
+Viele Funktionen suchen nach einem bestimmten `class` Attribut, um dann gemäß seiner Eigenschaft sich zu verhalten. Die Klasse von einem double ist numerisch, von einem *String* *character*.
+
+### Datum und Zeit
+
+Die Zeit sieht wie ein *Character String* aus, ist aber normalerweise ein `double` und seine Klasse ist `POSIXct` `POSIXT`.
+
+```{r}
+now <- Sys.time()
+now
+typeof(now)
+class(now)
+```
+
+Jede Zeit wird im *POSIXct Framework* durch Sekunden nach dem 1.1.1970, 0 Uhr dargestellt. R stellt das Zeitobjekt als *double* mit einem Element dar. 
+
+```{r}
+unclass(now) # Sekunden seit dem 1.1.1970
+```
+
+### Faktoren
+
+Mit Faktoren kann R kategorielle Informationen wie z.B. Augenfarbe oder ethnische Zugehörigkeit, abspeichern. Ein Faktor kann nur eine bestimmte Anzahl an Werten annehmen (z.B. m/w als Geschlecht) und diese Werte haben ihre eigene Anordnung.  
+Kategorische Variablen sind hier also zuhause. Um einen Faktor anzuwenden, stecke einen Vektor in die `factor` Funktion. R recodiert die Daten in dem Vektor als *Integers*. R fügt auch noch ein `levels` Attribut hinzu, welches ein Set von Labels für die Darstellung der Faktorwerte enthält. Außerdem noch ein `class` Attribut, welches die Klasse `factor` enthält. R ordnet deinen Faktor mit `unclass`.
+
+
+```{r}
+gender <- factor(c("male", "female", "female", "male"))
+typeof(gender)
+attributes(gender)
+unclass(gender)
+gender
+```
+
+R stellt jede `1` als `female` und jede `2` als `male` dar. 
+Faktoren machen es leicht, kategorielle Variablen in ein statistisches Modell zu stecken, weil die Variablen bereits als Zahlen codiert sind. Faktoren sehen wie *Character Strings* aus, aber verhalten sich wie Integers.  
+R versucht oft *Character Strings* zu Faktoren zu konvertieren, wenn du Daten einliest. Dazu später mehr. Einen Faktor kannst du zu einem *Character String* konvertieren mithilfe der `as.character` Funktion. 
+
+```{r}
+as.character(gender)
+```
+
+__Beispiel__ Kartenspiel.  
+Manche Kartenspiele ordnen einer Karte einen numerischen Wert zu, wie z.B. Blackjack. Wir kombinieren jetzt Ass, Herz und 1 in einem Vektor. Welcher Typ eines Vektors entsteht jetzt?
+**Lösung**  Diese Übung geht nicht klar. Jeder Vektor kann nur einen Datentypen annehmen. R zwingt all deine Werte zu einem *Character String*. Unser Vektor beantwortet also die Frage `is.character(card)` mit `TRUE`.
+
+```{r}
+card <- c("Ass", "Herz", 1)
+card
+is.character(card)
+```
+
+
+Jetzt wird das berechnen von Punkten mit Mathematik schwierig. Multiple Datentypen werden zu einem Datentypen zusammengefasst.  
+
+
+## Coercion 
+
+Ist ein *Character Strings* in einem Vector vorhanden, so zwingt R alle anderen Elemente ebenfalls in einen *Character Strings*. Sind Zahlen und boolsche Werte (T und F) vorhanden, so konvertiert R diese zu Zahlen. `TRUE` wird zu 1 und `FALSE` wird zu 0.  
+So kannst du leicht mathematische Operatoren auf Boolsche Werte anwenden.
+
+```{r}
+sum(c(TRUE, TRUE, FALSE, FALSE))
+sum(c(T, T, F, F))
+sum(c(1, 1, 0, 0))
+```
+
+`sum` zählt also die Anzahl von `TRUE` in einem *logical Vektor*.  
+Mit der `as` Funktion kanst du R zwingen Daten zu konvertieren. Natürlich nur, wenn es Sinn macht.
+
+```{r}
+as.character(1)
+as.logical(1)
+as.numeric(FALSE)
+```
+
+Es gibt aber einen Weg *Coercion* zu vermeiden. Nicht immer wollen wir nämlich Daten zwingen einen anderen Datentypen anzunehmen. Listen helfen hier. Vektoren, Matrizen und Arrays helfen hier nicht mehr.  
+  
+## Listen
+
+Listen sind Vektoren nicht unähnlich. Sie stecken Daten in eine eindimensionale Reihe. Sie gruppieren allerdings nicht individuelle Werte, sondern R Objekte wie Vektoren und andere Listen.  
+Zum Beispiel kannst du eine Liste erstellen aus einem numerischen Vektor der Länge 31 als erstes Element, einem *Character Vektor* der Länge 1 als zweites Element und einer neuen Liste der Länge 2.
+
+```{r}
+list1 <- list(100:130, "R", list(TRUE, FALSE))
+list1
+```
+
+`100` ist das erste Unterelement des ersten Element. `"R"` das erste Unterelement des zweiten Elements.  
+Die Struktur von Listen kann sehr kompliziert und lang werden. Aber die Flexibilität macht Listen zu einem sehr nützlichen Ablageort für verschiedenste Daten und Informationen. **Mit Listen kannst du alles zusammen lagern.**  
+
+__Beispiel__ Liste für Kartenbeispiel.
+
+Eine Spielkarte mit Wert können wir so leicht speichern. Aus *Character Vektor*, *Character Vektor* und numerischem Vektor. Alle mit Länge 1.
+
+```{r}
+card <- list("ace", "hearts", 1)
+card
+```
+
+Ein ganzes Deck Karten kannst du auch so speichern. Als Liste mit Unter-/Sublisten. Du kannst aber einfach eine spezielle Klasse von Listen benutzen. Einen *Data Frame*.
+
+## Data Frames
+
+Data Frames sind die 2-dimensionale Version von Listen. Sie speichern Daten ähnlich wie Excel in einer 2-dim Tabelle. Aus Vektoren werden Spalten, so dass jede Spalte aus einem anderen Datentyp bestehen kann. Innerhalb der Spalte natürlich nicht. 
+
+numeric      | character   | logical
+------------ | ----------  | ---------------
+1            | "R"         |  TRUE
+2            | "ist"       |  TRUE
+3            | "doch"      |  TRUE
+4            | "eigentlich"|  FALSE
+5            | "ganz"      |  FALSE
+6            | "cool"      |  TRUE
+
+Die Spalten müssen natürlich alle gleich lang sein. 
+
+```{r}
+df <- data.frame(Kartenwert = c("ass", "zwei", "sechs"), Farbe = c("kreuz", "kreuz", "kreuz"), Zahlenwert = c(1, 2, 6))
+df
+```
+
+Die Spalten kannst du natürlich beliebig benennen.  
+Der Typ (type) eines *Data Frames* ist eine Liste. Du kannst sehen aus welchen Typen der Objekte die Liste/*Data Frame* zusammen gesetzt wurde, mithilfe der `str` Funktion.
+
+```{r}
+typeof(df)
+class(df)
+str(df)
+```
+
+R hat die *Character Strings* als Faktoren abgespeichert. Du kannst dies verhindern durch das Argument `stringsAsFactors = FALSE`. Wenn du `T` wählst, ändert sich `chr`zu `Factor` in der Ausgabe.
+
+```{r}
+df <- data.frame(Kartenwert = c("ass", "zwei", "sechs"), Farbe = c("kreuz", "kreuz", "kreuz"), Kartenzahl = c(1, 2, 6), stringsAsFactors = FALSE)
+```
+
+Unser Kartendeck kann jetzt also gebaut werden. Zeilen sind die Karten. Spalten sind die Typen der Werte: 52 Zeilen und 3 Spalten haben wir. Auf englisch komplett.
+
+```{r}
+deck <- data.frame(
+  face = c("king", "queen", "jack", "ten", "nine", "eight", "seven", "six",
+    "five", "four", "three", "two", "ace", "king", "queen", "jack", "ten", 
+    "nine", "eight", "seven", "six", "five", "four", "three", "two", "ace", 
+    "king", "queen", "jack", "ten", "nine", "eight", "seven", "six", "five", 
+    "four", "three", "two", "ace", "king", "queen", "jack", "ten", "nine", 
+    "eight", "seven", "six", "five", "four", "three", "two", "ace"),  
+  suit = c("spades", "spades", "spades", "spades", "spades", "spades", 
+    "spades", "spades", "spades", "spades", "spades", "spades", "spades", 
+    "clubs", "clubs", "clubs", "clubs", "clubs", "clubs", "clubs", "clubs", 
+    "clubs", "clubs", "clubs", "clubs", "clubs", "diamonds", "diamonds", 
+    "diamonds", "diamonds", "diamonds", "diamonds", "diamonds", "diamonds", 
+    "diamonds", "diamonds", "diamonds", "diamonds", "diamonds", "hearts", 
+    "hearts", "hearts", "hearts", "hearts", "hearts", "hearts", "hearts", 
+    "hearts", "hearts", "hearts", "hearts", "hearts"), 
+  value = c(13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 13, 12, 11, 10, 9, 8, 
+    7, 6, 5, 4, 3, 2, 1, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 13, 12, 11, 
+    10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+)
+deck
+```
+
+Lange Tipparbeit ist zu vermeiden, wenn möglich durch Einlesen von Daten. 
+
+
+## Daten laden
+
+Rechts oben im Fenster unter **Environment** kannst du Daten aus verschiedenen Quellen einlesen. *From text* und dann die .csv einlesen oder direkt unter `read.csv`. Dann folgt unter "..." die Quelle. Unter `head(deck)` kannst du dir dann die ersten Zeilen ausgeben lassen. Die bekannten Hilfeseiten helfen auch hier weiter, falls es Probleme gibt.
+
+## Daten speichern
+
+Eine Kopie von `deck` können wir als neue *.csv* Datei speichern, wenn wir wollen.  
+```{r eval = FALSE}
+write.csv(deck, file = "cards.csv", row.names = FALSE)
+```
+
+    
+R speichert deine Datei in deiner working directory. Um den Ort zu sehen, gib `getwd()` ein. Den Speicherprozess kannst du deinen Ansprüchen natürlich noch anpassen, siehe Hilfe.  
+Zuerst gibst du aber `write.csv` den Namen des Data Frames, den du speichern willst. Dann folgt der Name der Datei. `row.names = FALSE` verhindert das Speichern einer Zählvariable als erste Spalte. 
+
+# R Notation
+
+Jetzt wollen wir unser Kartendeck mischen oder Karten ausgeben. 
+
+## Werte auswählen
+
+Wollen wir jetzt Wert(e) von unserem Objekt auswählen, z.B. unserem *Data Frame*, so nehmen wir den Namen des *Data Frames*, gefolgt von eckigen Klammern.  
+  
+  `deck[ , ]`  
+    
+Indices durch ein Komma getrennt, packen wir in die Klammer. Die Indices sagen R, welchen Wert es zu wählen hat. Oder welche Werte. Der erste Wert steht für die Zeilen und der zweite für die Spalten. Ein Index kann auf sechs verschiedene Arten erzeugt werden.
+
+* Positive ganze Zahlen
+* Negative ganze Zahlen
+* Null
+* Leerer Raum
+* Logical Values
+* Namen
+
+### Positive ganze Zahlen
+
+In R werden positive ganze Zahlen wie die *ij* Notation in der Linearen Algebra gehandhabt: `deck[i, j]` gibt den Wert von `deck` zurück, der sich in der Reihe i und Spalte j befindet. 
+
+```{r}
+head(deck)
+deck[1, 1]
+```
+
+Um mehr als einen Wert auszugeben, benutze einen Vektor bestehend aus positiven ganzen Zahlen. Zweimal können wir die erste Zeile auch ausgeben, durch Wiederholung des Index.
+
+```{r}
+deck[1, c(1, 2, 3)]
+deck[1, 1:3]
+new <- deck[1, c(1, 2, 3)]
+new
+deck[c(1,1), c(1, 2, 3)]
+```
+
+Das Notationssystem von R ist nicht nur auf *Data Frames* beschränkt. Solange du einen Index für jede Dimension anbietest. 
+
+```{r}
+vec <- c(6, 1, 3, 6, 10, 5)
+vec[1:3]
+```
+
+Ab 2 Spalten erhälst du natürlich wieder einen *Data Frame*. Eine Spalte liefert einen Vektor. Wenn du stattdessen einen *Data Frame* haben willst, füge das optionale Argument `drop = FALSE` hinzu. 
+
+
+```{r}
+deck[1:2, 1:2]
+deck[1:2, 1]
+deck[1:2, 1, drop = FALSE]
+```
+
+### Negative ganze Zahlen
+
+Negative ganze Zahlen machen genau das Gegeteil von positiven ganzen Zahlen. R gibt jedes Element bis auf Elemente in negativem Index wider.  
+Alles bis auf die erste Zeile wird ausgegeben: `deck[-1, 1:3]`. Oder nur die erste Zeile.
+
+```{r}
+deck[-(2:52), 1:3]
+```
+
+Willst du die Mehrheit deines Data Frames ausgeben, können negative Integers ein effizienterer Weg sein. Im selben Index können jedoch nicht positive und negative ganze Zahlen gemeinsam stehen: `deck[c(-1, 1), 1]`. in verschiedenen Indices ist es aber möglich: `deck[-1, 1]`. 
+
+### Null
+
+Null als Index? Leeres Objekt!
+
+```{r}
+deck[0, 0]
+```
+
+Irgendwie sinnlos, aber möglich.
+
+### Leerer Raum (Blank Spaces)
+
+Wähle jeden Wert der Dimension. 
+
+```{r}
+deck[1, ]
+```
+
+### Logical Values
+
+R gibt jede Reihe wider, die mit einem `TRUE` korrespondiert.
+
+```{r}
+deck[1, c(TRUE, TRUE, FALSE)]
+rows <- c(TRUE, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, 
+  F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, 
+  F, F, F, F, F, F, F, F, F, F, F, F, F, F)
+deck[rows, ]
+```
+
+### Namen
+
+Die Elemente kannst du natürlich auch beim Namen nennen, wenn sie welche haben. Bei *Data Frames* meist.
+
+```{r}
+deck[1, c("face", "suit", "value")]
+deck[ , "value"]
+```
+
+
+## Karten ausgeben
+
+__Aufgabe__ Karte ausgeben. Mithilfe von `function(){}`.
+
+```{r}
+deal <- function(cards) {
+  cards[1, ]
+}
+deal(deck)
+```
+ 
+Bei Wiederholung wird allerdings immer bloß die erste Zeile ausgegeben. Langweilig. Mische die Karten nach jeder Ausgabe.
+
+## Mische das Deck
+
+In unserem Deck ist jede Zeile eine Karte des Decks. Sortiere also die Zeilen neu. 
+
+```{r}
+deck2 <- deck[1:52, ]
+head(deck2)
+```
+
+Bisher hat sich nichts verändert. Jetzt schon.
+
+```{r}
+deck3 <- deck[c(2, 1, 3:52), ]
+head(deck3)
+```
+
+Wir wollen aber doch eine zufällige Anordung! Benutze die `sample` Funktion.
+
+```{r}
+random <- sample(1:52, size = 3)
+random
+random <- sample(1:52, size = 52)
+random
+deck4 <- deck[random, ]
+head(deck4)
+```
+
+__Aufgabe__ In einer Funktion.   
+Schreibe die `shuffle` Funktion. Nimm einen Data Frame und gib eine gemischte Kopie wider.  
+  
+```{r}
+shuffle <- function(cards) {
+  random <- sample(1:52, size = 52)
+  deck[random, ]
+}
+```
+
+Mische jetzt nach jedem Aufdecken.
+
+```{r}
+deal(deck)
+deck2 <- shuffle(deck)
+deal(deck2)
+```
+
+## Dollarzeichen und doppelte Klammern
+
+Du kannst, um eine Spalte von einem *Data Frame* auszuwählen, die `$` Syntax benutzen. Schreibe den Namen des *Data Frames* und dann den Spaltennamen nach dem Dollarzeichen `$`.
+
+```{r}
+deck$value
+```
+
+Als Vektor erfolgt die Ausgabe, mit der du dann weiterarbeiten kannst. 
+
+```{r}
+mean(deck$value)
+median(deck$value)
+```
+
+Dieselbe Notation kannst du bei Listen benutzen. 
+
+```{r}
+lst <- list(numbers = c(1, 2), logical = TRUE, strings = c("a", "b", "c", "d"))
+lst
+lst[1]
+```
+
+Eine kleinere Liste mit nur einem Element ist die Ausgabe, wobei du auf diese Liste leider keine Funktion wie `sum` anwenden kannst.  
+Benutzt du die `$` Notation, R gibt die ausgewählten Werte wider, wie sie sind, ohne Listenstruktur.
+
+```{r}
+lst$numbers
+sum(lst$numbers)
+```
+
+Wenn die Elemente deiner Liste keine Namen haben, kannst du doppelte, eckige Klammern benutzen. Es macht das gleiche wie die `$` Notation.
+
+```{r}
+lst[[1]]
+```
+
+* eine eckige Klammer bei Liste: kleinere Liste  
+* doppelte eckige Klammer bei Liste: Werte, die in Listenelement waren.
+
+```{r}
+lst["numbers"]
+lst[["numbers"]]
+```
+
+Denke an einen Güterzug. Aus einem großen Zug mit vielen Wagons wird ein kleiner Zug mit einem Wagon bei eckigen Klammern. Bei doppelten eckigen Klammern wird der Inhalt des Wagons entladen.  
+
+
+# Werte modifizieren
+
+Manchmal muss ein Wert geändert werden. Bei unserem Spiel zum Beispiel kann es sein, das ein Ass einen höheren Wert hat, je nach Spiel.  
+Wir beginnen mit einer Kopie von unserem Kartendeck, sodass wir manipulieren können. 
+```{r}
+deck2 <- deck
+```
+
+## Werte verändern vor Ort
+
+Werte können innerhalb eines Objektes modifiziert werden. Welchen Wert wollen wir modifizieren? Dann wird überschrieben. R aktualisiert den gewählten Wert im originalen Objekt vor Ort (so nenn ich das mal). Modifizieren ist einfach.
+
+```{r}
+vec <- c(0, 0, 0, 0, 0, 0)
+vec
+vec[1]
+vec[1] <- 1000
+vec
+```
+
+Mehrere Werte kannst du auf einmal ersetzen. Die Anzahl muss natürlich gleich sein.
+
+```{r}
+vec[c(1, 3, 5)] <- c(1, 1, 1)
+vec
+vec[4:6] <- vec[4:6] + 1
+vec
+```
+
+Auch kannst du Werte setzen, die noch gar nicht in deinem Vektor vorhanden sind. Das Objekt wird so automatisch erweitert.
+
+```{r}
+vec[7] <- 0
+vec
+```
+
+So kann eine ganz neue Variable deinem *Data Frame* hinzugefügt werden.
+
+```{r}
+deck2$new <- 1:52
+head(deck2)
+```
+
+Spalten können leicht von einem *Data Frame* entfernt werden durch `NULL`. 
+
+```{r}
+deck2$new <- NULL
+head(deck2)
+```
+
+Wir wollen die Kartenzahl aller Asse auf 14 ändern, also müssen wir erst einmal die Ass-Karten ausfindig machen.
+
+```{r}
+deck2[c(13, 26, 39, 52), ]
+deck2[c(13, 26, 39, 52), 3]
+deck2$value[c(13, 26, 39, 52)]
+```
+
+Ersetzen ist jetzt ziemlich einfach. Ersetzen vor Ort und dann schauen wir uns die ersten 14 Karten an.
+
+```{r}
+deck2$value[c(13, 26, 39, 52)] <- c(14, 14, 14, 14)
+#oder
+deck2$value[c(13, 26, 39, 52)] <- 14
+head(deck2, 13)
+```
+
+Hier wussten wir natürlich genau wo sich die Asse befinden. Aber wenn wir das Deck mischen, nicht mehr. Schauen wir uns die ersten 20 Karten an.
+
+```{r}
+deck3 <- shuffle(deck)
+head(deck3, 20)
+```
+
+Aber warum nicht R einfach nach den Assen fragen? Mit *logical Subsetting*.
+
+
+## Logical Subsetting
+
+Wir erinnern uns an Vektoren mit `TRUE` und `FALSE`.
+
+```{r}
+vec
+vec[c(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE)]
+```
+
+Einen langen Vektor mit `T` und `F` zu füllen, hört sich aufwändig an. Aber das müssen wir nicht selbst erstellen. Ein *logical test* kann hier helfen.
+
+### Logical Test
+
+Ein *logical test* ist ein Vergleich wie z.B. "ist 1 kleiner als 2?", `1 < 2`, oder `3 > 4`. R liefert sieben logische Operatoren.
+
+Operator        | Syntax            | Test
+-------------   | ----------        | ---------------
+`>`             | `a > b`           | Ist a größer als b?
+`>=`            | `a >= b`          | Ist a größer gleich b?
+`<`             | `a < b`           | Ist a kleiner als b?
+`<=`            | `a <= b`          | Ist a kleiner gleich b?
+`==`            | `a == b`        | Ist a gleich b?
+`!=`            | `a != b`          | Ist a nicht gleich b?
+`%in%`          | `a %in% c(a,b,c)` | Ist a in der Gruppe von a,b,c?
+
+Jeder Operator gibt ein `TRUE` oder `FALSE` zurück. Vergleichst du Vektoren, nimmt R elementenweise Vergleiche vor.
+
+```{r}
+1 > 2
+1 > c(0, 1, 2)
+c(1, 2, 3) == c(3, 2, 1)
+```
+
+`%in%` testet, ob der/die Wert/e auf der linken Seite im Vektor auf der rechten Seite vertreten sind. Hier wird nicht elementweise getestet. Ist jeder Wert auf der linken Seite irgendwo im Vektor auf der rechten Seite?
+
+```{r}
+1 %in% c(3, 4, 5)
+c(1,2) %in% c(3, 4, 5)
+c(1, 2, 3) %in% c(3, 4, 5)
+c(1, 2, 3, 4) %in% c(3, 4, 5)
+```
+
+Verwechsel nicht `==` und `=`. Das eine ist ein Vergleich, das andere ist eine Zuordnung, wie auch `<-`.  
+ 
+__Aufgabe__ Wie viele Asse?
+
+Extrahiere die Kartenwete/face Spalte `face` von `deck2` und teste jeden Wert (ob er ein Ass ist). Zähle die Anzahl der Asse.
+
+```{r}
+deck$face
+deck$face == "ace"
+sum(deck$face == "ace")
+```
+
+Vergiss nicht die Gänsefüßchen. Sonst sucht R ein Objekt namens `ace`. Du kannst diese Methode verwenden, um Asse zu finden und dann in deinem Deck zu ersetzen. Sogar nachdem gemischt wurde. Bilde erst einen *logical test*, um die Asse zu identifizieren. Dann benutze den *logical Vektor* als Index.
+
+```{r}
+deck3$face == "ace"
+deck3$value[deck3$face == "ace"]
+```
+
+Jetzt wechsel die Ass-Werte in `deck3`.
+
+```{r}
+deck3$value[deck3$face == "ace"] <- 14
+head(deck3, 20)
+```
+
+__Aufgabe__ Jeder Kartenwert ist gleich `0`.
+```{r}
+deck4 <- deck
+deck4$value <- 0
+head(deck4, 13)
+```
+ 
+Gib jedem Herz einen Wert von `1`. 
+
+```{r}
+deck4$suit == "hearts"
+deck4$value[deck4$suit == "hearts"] <- 1
+deck4$value[deck4$suit == "hearts"]
+```
+
+In Hearts hat die Pik Dame (queen spades) eine/n Kartenzahl/Value von 13. Schauen wir uns die Damen an und die Piks.
+
+```{r}
+deck4[deck4$face == "queen", ]
+deck4[deck4$suit == "spades", ]
+```
+
+Wir wollen aber nur eine Karte. Wie kombinieren wir beide Eigenschaften? Mit *Boolean Operatoren*.
+
+### Boolean Operatoren
+
+Boolean Operatoren sind Dinge wie *und* (`&`) und *oder* (`|`). Sie schmeißen das Ergebnis von *multiplen logical Tests in ein `TRUE` oder `FALSE`. R hat sechs Boolean Operatoren.
+
+
+```{r}
+library(knitr)
+library(kableExtra)
+df <- data.frame(Operator = c("`&`","`|`", "`xor`", "`!`", "`any`", "`all`"), 
+                 Syntax = c("`cond1 & cond2`", "`cond1 | cond2`", 
+                          "`xor(cond1, cond2)`", "`!cond1`",
+                          "`any(cond1, cond2, ...)`",
+                          "`all(cond1, cond2, ...)`"),
+                 Test = c("Sind sowohl cond1 als auch cond2 wahr?",
+                          "Ist mind. eins von cond1, cond2 wahr?",
+                          "Ist genau eins von cond1, cond2 wahr?",
+                          "Ist cond1 falsch? Umkehrung von logical test",
+                          "Sind irgendwelche der Conditions wahr?",
+                          "Sind alle der Conditions wahr? Gleich b?"))
+kable(df)|>
+  kable_styling(latex_options = "striped")|>
+  scroll_box(width = "100%", height = "200px")
+```
+
+
+
+Um die *Boolean Operatoren* zu benutzen, platziere sie zwischen zwei kompletten *logical tests*. 
+
+R führt jeden Test aus und nutzt dann den Operator um die Ergebnisse zu kombinieren; in ein einziges `TRUE` oder `FALSE`.  
+*Boolean Operatoren* folgen den selben elementweisen Ausführungen wie arithmetische und *logical Operatoren*.
+
+```{r}
+a <- c(1, 2, 3)
+b <- c(1, 2, 3)
+c <- c(1, 2, 4)
+a == b
+b == c
+a == b & b == c
+```
+
+Jetzt wollen wir in unserem Deck sowohl die Dame, als auch das Pik lokalisieren. Mit *Boolean Operatoren*.
+
+```{r}
+queenOfSpades <- deck4$face == "queen" & deck4$suit == "spades"
+queenOfSpades
+deck4[queenOfSpades, ]
+deck4$value[queenOfSpades]
+```
+
+Jetzt können wir ihren Wert updaten. 
+
+```{r}
+deck4$value[queenOfSpades] <- 13
+deck4[queenOfSpades, ]
+```
+
+
+__Aufgabe__ Übung.
+
+Konvertiere in Tests folgende Sätze.
+
+* ist w positiv?
+* ist x größer als 10 und kleiner als 20?
+* ist Objekt y das Wort Februar?
+* ist jeder Wert in z ein Wochentag?
+
+```{r}
+w <- c(-1, 0, 1)
+x <- c(5, 15)
+y <- "Februar"
+z <- c("Montag", "Dienstag", "Mittwoch")
+```
+
+Na easy. oder?
+
+```{r}
+w > 0
+10 < x & x < 20
+y == "Februar"
+all(z %in% c("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"))
+```
+
+__Aufgabe__ Blackjack.
+Jeder König, jede Dame, jeder Bube hat einen Wert von 10. Ass hat einen Wert von 1 oder 11. Also los.
+
+```{r}
+deck5 <- deck
+head(deck5, 13)
+```
+
+Wechsel die Kartenzahl mithilfe von `%in%`. 
+
+```{r}
+facecard <- deck5$face %in% c("king", "queen", "jack")
+deck5[facecard, ]
+deck5$value[facecard] <- 10
+head(deck5, 13)
+```
+
+Jetzt müssen wir das Ass-Problem lösen. Was schwierig ist, weil sich deren Wert von Hand zu Hand ändert. Überschreitet die Gesamtsumme nicht die 21, so ist das Ass 11 wert, sonst nur 1.
+
+## Missing Information
+
+Die Messung ist verloren gegangen oder wurde nicht erhoben, manipuliert. R hilft.  
+Der `NA` Character ist ein spezielles Symbol in R. Es steht für "nicht verfügbar"; "not available". Es ist also ein Platzhalter. 
+Welche Information erwartest du bei Addition mit `NA`? Oder `NA` ist gleich `1`?
+
+```{r}
+1 + NA
+NA == 1
+```
+
+### na.rm
+
+*Missing Values* können zu Frustration führen. Versuche den Durchschnitt mit `mean` zu bestimmen.
+
+```{r}
+c(NA, 1:50)
+mean(c(NA, 1:50))
+```
+
+Die meisten R Funktionen bieten ein optionales Argument an, `na.rm`, das für `NA` remove steht. R ignoriert die `NA`s, wenn du das Argument `na.rm = TRUE` hinzufügst.
+
+```{r}
+mean(c(NA, 1:50), na.rm = TRUE)
+```
+
+### is.na
+
+`NA` identifizieren? Sogar dieser Test liefert ein erwartbares Ergebnis, seien wir ehrlich. Solche Tests helfen also nicht. 
+
+```{r}
+c(1, 2, 3, NA) == NA
+```
+
+
+R liefert aber eine spezielle Funktion, die testet, ob ein Wert ein `NA` ist: `is.na`.
+
+```{r}
+is.na(NA)
+vec <- c(1, 2, 3, NA)
+is.na(vec)
+```
+
+__Aufgabe__ Asse auf `NA` setzen.
+
+Setzen wir alle Asse auf eine Kartenzahl (*Value*) von `NA`. Es erinnert an die Unwissenheit vom Ass-Wert. Es verhindert auch die falsche Bewertung vom Ass. 
+
+```{r}
+deck5$value[deck5$face == "ace"] <- NA
+head(deck5, 13)
+```
+
+# Environments
+
+Wir können jetzt Blackjack spielen, haben wir doch unsere `shuffle` und `deal` Funktionen. Schauen wir mal. 
+
+```{r}
+deal(deck)
+deal(deck)
+deal(deck)
+```
+
+Oh Mist. Beide Funktionen benutzen `deck`, aber manipulieren es nicht. 
+
+## Environments/ Umgebungen
+
+Überlege wie dein Computer Datein speichert. In einem Ordnersystem. Es gibt dort eine Hierarchie und man kämpft sich so von Ordner zu Unterordner durch. R betreibt ein ähnliches System, um Objekte zu speichern. Jedes Objekt ist in einer Umgebung abgespeichert. Jede Umgebung ist mit einer *parent Environment* (higher-level environment) verbunden, so dass eine Hierarchie entsteht. Schau dir das System mit der `parenvs` Funktion an. Installiere zuerst das `pryr` Paket (z.B. über *Tools* und *install packages*) und lade es dann. Eine Liste der *Environments*, die während deiner R Session genutzt werden, wird ausgegeben. Er variiert natürlich von Nutzer zu Nutzer und Session zu Session.
+
+```{r}
+library(pryr)
+parenvs(all = TRUE)
+```
+
+Bei mir ist `R_GlobalEnv` die unterste Ebene, gespeichert in einer Umgebung `package:pryr` usw. bis `R_EmptyEnv`. Diese *Environment* hat keine *parent environment*. Das Beispiel ist bloß eine Metapher. Man kann nicht runter den Weg laufen, nur hoch im System von *parent* zu *parent*. 
+
+## Arbeiten mit Environments
+
+R liefert ein paar Hilfsfunktionen, die helfen deinen "Environment Baum" zu entdecken. `as.environment` nimmt einen *Environment*-Namen als *Character String* und gibt die korrespondierende Umgebung wider.
+
+```{r}
+as.environment("package:stats")
+```
+
+3 Umgebungen kommen mit ihrer eigenen Zugriffsfunktion daher: global `R_GlobalEnv`, base `base` und empty `R_EmptyEnv` Environment.
+
+```{r}
+globalenv()
+baseenv()
+emptyenv()
+```
+
+Schau dir die *parent environment* an. 
+
+```{r}
+parent.env(globalenv())
+```
+
+Nur die *empty environment* hat keinen *parent*.
+
+```{r}
+#parent.env(emptyenv())    Fehlermeldung
+```
+
+Schau dir die Objekte gespeichert in einer Umgebung an mit `ls` oder `ls.str`. `ls` gibt die Objektnamen wider, `ls.str` gibt über die Objektstruktur Informationen. 
+
+```{r}
+ls(emptyenv())
+ls(globalenv())
+```
+
+In der *global environment* sind viele bekannte Gesichter. Dort hat R alle bisher kreirten Objekte abgespeichert.  
+Betrete z.B. `deck` von deiner *global environment*. Andere Umgebungen können analog betreten werden.
+
+```{r}
+head(globalenv()$deck, 3)
+```
+
+`assign` kann benutzt werden, um ein Objekt in einer bestimmten *Environment* zu speichern. Erst der Name des neuen Objektes als *Character String*, dann den *Value* und dann die *Environment*. 
+
+```{r}
+assign("new", "Hello Global", envir = globalenv())
+globalenv()$new
+```
+
+### Active Environment
+
+Die *active environment* ist normalerweise die global *Environment*. Aber das kann sich ändern, wenn du eine Funktion laufen lässt. Schau dir die aktuelle, aktive Umgebung an.
+
+```{r}
+environment()
+```
+
+Denke dabei an den *user workspace*. Wenn du ein Objekt aufrufst, schaut R zuerst in der *global environment* nach. Aber wenn das Objekt nicht da ist? Dann befolgt R eine Reihe von Regeln, um das Objekt zu suchen.
+
+## Scoping Rules
+
+R folgt gewissen Regeln um nach Objekten zu suchen, den *Scoping Rules*.
+
+1. R sucht nach Objekten in der aktuell aktiven Umgebung. 
+2. Arbeitest du an der *command line*, so ist die aktive Umgebung die *global environment*. 
+
+3. **Wenn R nicht ein Objekt in einer Umgebung findet, sucht R in der *parent environment*, dann *parent* von *parent* und so weiter bis R das Objekt gefunden hat oder die *empty environment* erreicht hat.**  
+Wenn kein Objekt gefunden wird, dann gibt R eine Fehlermeldung aus. 
+
+## Assignment
+
+Ordnest du einen *Value* einem Objekt zu, speichert R den Wert in der aktiven Umgebung unter dem Objektnamen. Notfalls überschreibt R den selben Namen. 
+Das erzeugt ein Dilemma für R, wann immer R eine Funktion aufruft. Viele Funktionen speichern temporär Objekte, die ihnen helfen ihren Job zu tun. Zum Beispiel die `roll` Funktion speicherte ein Objekt mit Namen `die` und ein Objekt `dice`.
+
+```{r}
+roll <- function() {
+  die <- 1:6
+  dice <- sample(die, size = 2, replace = TRUE)
+  sum(dice)
+}
+```
+
+R speichert diese temporären Objekte in der aktiven Umgebung, ggf. werden dann existierende Objekte überschrieben. Wie vermeidet R das Risiko von Überschreibungen?
+
+## Evaluation
+
+R kreiert immer dann eine neue Umgebung, wenn es eine Funktion bewertet. R benutzt die neue Umgebung als aktive Umgebung, während R die Funktion ausführt. Danach kehrt R zur *Environment* zurück, von der es die Funktion ausgeführt hat. Diese Umgebung nennen wir *runtime environment*.  
+
+Wir erkunden mithilfe der folgenden Funktion die *runtime environment*. Was sind seine *parent environments* und welche Objekte enthalten sie? `show_env` sagt es uns.
+
+```{r}
+show_env <- function(){
+  list(ran.in = environment(), 
+    parent = parent.env(environment()), 
+    objects = ls.str(environment()))
+}
+```
+
+Es ist eine Funktion, die eine *runtime environment* kreiert. Es gibt uns den Namen der *runtime environment wider*, seine *parents* und die enthaltenen Objekte.
+
+```{r}
+show_env()
+```
+
+R kreiert eine neue *Environment* namens `0x7ff711d12e28`, es gibt keine Objekte und die parents ist die *global environment*. Lassen wir die Funktion noch einmal laufen, so erhalten wir eine neue *Environment* `(0x7ff715f49808)`.
+
+```{r}
+show_env()
+```
+
+Nach jedem Ausführen erhalten wir also eine neue Environment. Sie ist leer und hat die globale *Environment* als *parent*.
+R verknüpft die *runtime environment* einer Funktion zu der *Environment*, in der die Funktion zuerst kreiert wurde.
+Nennen wir sie *origin environment*. Die *origin* der Funktion wird aufgerufen über `environment`.
+
+```{r}
+environment(show_env)
+```
+
+Die origin von `show_env` ist die *global environment*, weil wir `show_env` in der *command line* kreiert haben, aber die *origin* braucht nicht die *global environment* zu sein. Die *Environment* von `parenvs` ist das `pryr` Paket.
+
+```{r}
+environment(parenvs)
+```
+
+Der *parent* einer *runtime environment* ist nicht immer die *global environment*. Es ist welche auch immer *Environment*, in die die Funktion zuerst kreiert wurde.  
+  
+Lass uns jetzt die Objekte betrachten, die in der *runtime environment* enthalten sind. Noch enthält `show_env`s *runtime environment* keine Objekte. Aber wir können dies natürlich ändern. Füllen wir den *body*. Dann ist die *runtime environment* die aktive *Environment*.
+
+```{r}
+show_env <- function(){
+  a <- 1
+  b <- 2
+  c <- 3
+  list(ran.in = environment(), 
+    parent = parent.env(environment()), 
+    objects = ls.str(environment()))
+}
+```
+
+Wenn wir jetzt `show_env` ausführen, speichert R `a`, `b`, und `c` in der *runtime environment*.
+
+```{r}
+show_env()
+```
+
+Dadurch geht R sicher, dass eine Funktion nichts überschreibt, dass es nicht sollte. R steckt auch noch einen zweiten Typ von Objekten in eine *runtime environment*. Argumente werden in die *runtime environment* übernommen. Das stellt sicher, dass eine Funktion seine Argumente auch benutzt und findet.
+
+```{r}
+foo <- "take me to your runtime"
+
+show_env <- function(x = foo){
+  list(ran.in = environment(), 
+    parent = parent.env(environment()), 
+    objects = ls.str(environment()))
+}
+
+show_env()
+```
+
+
+__Zusammenfassend__
+
+Bevor eine Funktion aufgerufen wird, arbeitet R in einer aktiven *Environment*. Nennen wir sie *calling environment*. Von ihr aus wird die Funktion aufgerufen. Nach dem Aufruf der Funktion entsteht eine neue *runtime environment*. Diese Umgebung ist ein *child* der *origin environment*. R kopiert jedes der Funktionsargumente in die *runtime environment* und macht diese zur aktiven *Environment*.  
+Jetzt wird der Code im body der Funktion ausgeführt. Werden Objekte kreiert, steckt R sie in die aktive, die *runtime environment*. Ruft R Objekte auf, so benutzt R die **Scoping Rules**. R sucht die *runtime environment* ab (origin environment), dann die *parent* der *origin* und so weiter.  
+R beendet die Funktion. Die *calling environment* wird wieder zur *active*. Speichert du die Ergebnisse der Funktion durch `<-` in ein neues Objekt, wird dieses in die *calling environment* gesteckt.  
+  
+Wie kannst du dieses Wissen für unsere `deal` und `shuffle` Funktion nutzen? Definieren wir noch einmal `deal`. 
+
+```{r}
+deal <- function() {
+  deck[1, ]
+}
+```
+
+`deal` übernimmt kein Argument und es ruft das `deck` Objekt auf, welches sich in der global environment befindet.  
+
+__Aufgabe__ Funktioniert `deal`?
+
+Findet R also `deck` und gibt eine Ausgabe, wenn ich die Version von `deal` aufrufe mit `deal()`?  
+
+Ja. R führt `deal` in einer *runtime environment* aus, die das *child* der *global environment* ist. Warum ist es *child* der *global environment*? Weil die *global environment* ist die *origin environment* of `deal`.
+
+```{r}
+environment(deal)
+```
+
+Wenn `deal` `deck` aufruft, guckt R hoch ins `deck` Objekt. R's Scoping Rules führen es zu `deck` in der *global environment*.  
+
+```{r}
+deal()
+```
+
+R findet `deck`, indem es in die *parent* von deal's *runtime environment* guckt. Die *parent* ist die *globale environment*, deal's *origin environment*. Hier findet R die Kopie von deck. 
+
+Reparieren wir jetzt die `deal` Funktion, um die entnommene Karte aus dem Deck zu entfernen. Erinnere dich daran, dass `deal` die oberste Karte aus dem `deck` nimmt, sie aber nicht entfernt. `deal` entnimmt immer dieselbe Karte.
+
+```{r}
+deal()
+deal()
+deal()
+```
+
+Der folgende Code speichert `deck` und entnimmt dann eine Karte immer.
+
+```{r}
+DECK <- deck
+deck <- deck[-1, ]
+head(deck, 3)
+```
+
+Den Code müssen wir jetzt natürlich `deal` hinzufügen. 
+
+```{r}
+deal <- function() {
+  card <- deck[1, ]
+  deck <- deck[-1, ]
+  card
+}
+```
+
+Der Code wird nicht funktionieren, weil sich R in einer *runtime environment* befindet, wenn es `deck <- deck[-1, ]` ausführt. Anstatt die globale Kopie von `deck` mit `deck[-1, ]` zu überscheiben, erzeugt `deal` bloß eine abgeänderte Kopie von `deck` in seiner *runtime environment*.  
+Die `deal` Funktion schaut hoch zu deck in der *global environment*, aber speichert deck[-1, ] in der *runtime environment* als ein neues Objekt namens `deck`.
+
+__Aufgabe__ Überschreibe `deck`.
+
+Überschreibe `deck` mit `deck <- deck[-1, ]` in der `deal` Funktion und übergebe `deck[-1, ]` an ein Objekt `deck` in der *global environment*. Benutze `assign`.
+
+```{r}
+deal <- function() {
+  card <- deck[1, ]
+  assign("deck", deck[-1, ], envir = globalenv())
+  card
+}
+```
+
+Jetzt reinigt `deal` die globale Kopie von `deck`.
+
+```{r}
+deal()
+deal()
+deal()
+```
+
+Denke noch an die `shuffle` Funktion.
+
+```{r}
+shuffle <- function(cards) { 
+  random <- sample(1:52, size = 52)
+  cards[random, ]
+}
+```
+
+`shuffle(deck)` mischt nicht das Kartendeck-Objekt. Es gibt eine gemischte Kopie des `deck` Objektes aus.
+
+```{r}
+head(deck, 3)
+a <- shuffle(deck)
+head(deck, 3)
+head(a, 3)
+```
+
+`shuffle` mischt nicht `deck` und mischt die ausgegebenen Karten nicht mit.
+
+__Aufgabe__ Schreibe `shuffle` neu.
+
+Es soll die Kopie von `deck` ersetzen, die in der globalen *Environment* lebt, durch `DECK`. Die neue Version von `shuffle` soll keine Argumente haben und keinen Output. 
+
+`DECK` lebt in der globalen Umgebung. `shuffle` *environment of origin*. `shuffle` findet `DECK` beim Durchlaufen. R sucht nach `DECK` zuerst in der *runtime environment* von `shuffle`. Dann in der *origin* von `shuffle`, der *global environment*. Dort ist `DECK` gespeichert. Durch `assign` wird die Kopie von `DECK` als `deck` in der *global environment* gespeichert und überschreibt die nichtgemischte Version von `deck`.
+
+```{r}
+shuffle <- function(){
+  random <- sample(1:52, size = 52)
+  assign("deck", DECK[random, ], envir = globalenv())
+}
+```
+
+## Closures
+
+Unser System funktioniert. Mische die Karten und dann gib sie aus. 
+
+```{r}
+shuffle()
+deal()
+deal()
+```
+
+Wir brauchen hierfür `deck` und `DECK` in der globalen Umgebung. Es ist jedoch möglich, dass `deck` modifiziert oder gelöscht wird. Besser wäre es `deck` in einer sicheren Umgebung zu speichern. `deck` in einer *runtime environment* zu speichern ist also keine so schlechte Idee.  
+Du könntest eine Funktion kreieren, die `deck` als Argument nimmt und speichert als eine Kopie von `deck` in `DECK`. Diese Funktion könnte auch ihre eigenen Kopien von `deal` und `shuffle` speichern.
+
+```{r}
+setup <- function(deck) {
+  DECK <- deck
+
+  DEAL <- function() {
+    card <- deck[1, ]
+    assign("deck", deck[-1, ], envir = globalenv())
+    card
+  }
+
+  SHUFFLE <- function(){
+    random <- sample(1:52, size = 52)
+    assign("deck", DECK[random, ], envir = globalenv())
+ }
+}
+```
+
+Wenn du `setup` ausführst, kreiert R eine *runtime environment* um die Objekte darin zu speichern. All diese Objekte (`deck`, `DECK`, `DEAL`, `SHUFFLE`) sind jetzt aus dem Weg geräumt und in einem child der *global environment*. Das macht sie sicher, aber schwer nutzbar. Frag `setup`, um `DEAL` und `SHUFFLE` zurückzugeben. Am besten mithilfe einer Liste.
+
+```{r}
+setup <- function(deck) {
+  DECK <- deck
+
+  DEAL <- function() {
+    card <- deck[1, ]
+    assign("deck", deck[-1, ], envir = globalenv())
+    card
+  }
+
+  SHUFFLE <- function(){
+    random <- sample(1:52, size = 52)
+    assign("deck", DECK[random, ], envir = globalenv())
+ }
+
+ list(deal = DEAL, shuffle = SHUFFLE)
+}
+
+cards <- setup(deck)
+```
+
+Speicher jedes Element der Liste in der *global environment*.
+
+```{r}
+deal <- cards$deal
+shuffle <- cards$shuffle
+```
+
+`deal` und `shuffle` kannst du jetzt wie zuvor benutzen. Der Code ist der gleiche wie zuvor. 
+
+```{r}
+deal
+shuffle
+```
+
+Ihre *origin environment* ist nicht länger die *global environment*. Sie ist die *runtime environment*, die R erstellt hat als du `setup` aufgerufen hast. Dort kreiert R `DEAL` und `SHUFFLE`. Die Funktionen, die ins neue `deal` und `shuffle` kopiert werden. 
+
+```{r}
+environment(deal)
+environment(shuffle)
+```
+
+Wenn du `deal` und `shuffle` aufrufst, bewertet R diese Funktionen in einer *runtime environment*, die `0x7ff7169c3390` als *parent aufruft*. `Deck` und `deck` sind in dieser *parent environmet*. Das heißt, dass `deal` und `shuffle` sie beim Durchlauf finden. `DECK` und `deck` sind im Suchpfad der Funktion.  
+
+**Das nennt man CLOSURE.**
+`setup` *runtime environment* umschließt die `deal` und `shuffle` Funktionen. Beide können eng zusammenarbeiten mit den Objekten, enthalten in der umschließenden *Environment*. 
+
+Du hast bemerkt, dass `deal` und `shuffle` immer noch das `deck` Objekt updaten, in der *global environment*. Wir ändern das.
+Wir wollen, dass `deal` und `shuffle` exklusiv mit den Objekten in der *parent* umschließenden *Environment* arbeiten. Anstatt, dass sich die Funktionen immer auf das upgedatete `deck` in der *global env* beziehen, kannst du sie sich auf die *parent env* beim Durchlauf beziehen lassen.  
+
+```{r}
+setup <- function(deck) {
+  DECK <- deck
+
+  DEAL <- function() {
+    card <- deck[1, ]
+    assign("deck", deck[-1, ], envir = parent.env(environment()))
+    card
+  }
+
+  SHUFFLE <- function(){
+    random <- sample(1:52, size = 52)
+    assign("deck", DECK[random, ], envir = parent.env(environment()))
+ }
+
+ list(deal = DEAL, shuffle = SHUFFLE)
+}
+
+cards <- setup(deck)
+deal <- cards$deal
+shuffle <- cards$shuffle
+```
+
+Endlich haben wir ein eigenständiges Kartenspiel. Die globale Kopie von `deck` kannst du modifizieren wie du willst und immer noch Karten spielen. `deal` und `shuffle` benutzen die makelose, geschützte Kopie von `deck`.
+
+```{r}
+rm(deck)
+shuffle()
+deal()
+deal()
+```
+
+# Programme
+
+In diesem Kapitel wollen wir eine Slot Maschine aufbauen. Die `play` Funktion soll zwei Dinge tun. 
+1. Die Maschine soll zufällig drei Symbole ausgeben.  
+2. Ein Preis soll daraus berechnet werden.  
+  
+  
+Der erste Schritt ist leicht zu simulieren. Mit der `sample` Funktion lassen sich leicht drei Symbole generieren.
+
+```{r}
+get_symbols <- function() {
+  wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+  sample(wheel, size = 3, replace = TRUE, 
+    prob = c(0.03, 0.03, 0.06, 0.1, 0.25, 0.01, 0.52))
+}
+```
+
+Drei Symbole mit Zurücklegen sind schnell erspielt.
+
+```{r}
+get_symbols()
+get_symbols()
+get_symbols()
+```
+
+Die entsprechenden Wahrscheinlichkeiten sind gegeben. Die Slot Maschine benutzt ein kompliziertes Auszahlungsschema. Man gewinnt bei:  
+
+* Drei mal gleiches Symbol (außer null)
+* Drei Balken (Unterschiedlichkeit) 
+* mindestens eine Kirsche
+
+Ansonsten gibt es keinen Preis. 
+
+Ein Spiel kostet 1 Euro. 
+
+Kombination     | Preis
+--------------  |---------------
+DD DD DD        |  100
+7 7 7           |  80
+BBB BBB BBB     |  40
+BB BB BB        |  10
+B B B           |  10
+C C C           |  10
+Any Comb of bars|  5
+C C *           |  5
+C * C           |  5
+* C C           |  5
+C * *           |  2
+* C *           |  2
+* * C           |  2
+
+Um deine `play` Funktion zu bauen, musst du ein Programm schreiben, dass den Output von `get_symbols` nimmt und daraus den korrekten Preis berechnet.  
+
+In R werden Programme entweder als Skripte oder als Funktionen gespeichert. Wir speichern unser Programm als Funktion namens `score`. Am Ende werden wir Funktionen wie folgt schreiben: `score(c("DD", "DD", "DD"))` und als Ergebnis `800` erhalten. 
+
+## Strategie
+
+Um unsere Slot Maschine zu programmieren, werden wir einen komplexen Algorithmus anwenden. Benutze dazu eine simple Strategie.
+
+* breche komplexe Aufgaben in einfachere Subaufgaben runter
+* Benutze konkrete Beispiele
+* Beschreibe deine Lösung, konvertiere sie dann in R
+
+Also Schritt für Schritt. R enthält zwei Typen von Subtasks: *sequential steps* und *parallel cases*.
+
+### *Sequential Steps* / Aufeinanderfolgende Schritte
+
+Die `play` Funktion nimmt dieses Verfahren vor. 
+
+```{r}
+play <- function() {
+
+  # step 1: generate symbols
+  symbols <- get_symbols()
+
+  # step 2: display the symbols
+  print(symbols)
+
+  # step 3: score the symbols
+  score(symbols)
+}
+```
+
+Erst generiert es drei Symbole. Dann werden sie in der Console angezeigt. Und dann erhalten sie einen Score. Alles step-by-step. 
+
+### *Parallel Cases* / Parallele Fälle
+
+Ein anderer Weg eine Aufgabe aufzuteilen, ist es Gruppen ähnlicher Fälle innerhalb der Aufgabe zusammenzufassen.  Haben wir bei unserer Slot Maschine drei gleiche, so ist ein anderer Algorithmus anzuwenden, als wenn wir drei verschiedene Symbole haben. `score` benutzt nie alle Algorithmen auf einmal. Immer nur einen, abhängig von der Kombination der Symbole. 
+
+Diamanten komplizieren alles, da sie als Joker zählen. Das ignorieren wir. Sie verdoppeln bei uns nur den Preis.  
+Das geschieht aber erst am Ende, falls notwendig. Erst folgen die Symbole, dann der Preis.  
+Den ersten Schritt haben wir gelöst. Unser Programm liefert uns drei slot machine Symbole mit der `get_symbols` Funktion. Dann kann es die Symbole mit der `print` Funktion anzeigen. Lass uns jetzt untersuchen wie unser Programm die *parallel score* Fälle arrangieren kann.
+
+## if Bedingung
+
+Fälle zu verbinden verlangt nach einer gewissen Struktur.  
+Unser Programm stößt auf eine Gabel, wann immer es zwischen verschiedenen Fällen wählen muss. Du kannst bei der Navigation der Gabel mit einem `if` Statement helfen.
+
+Ein `if` Statement gibt R vor, was es bei einem speziellen Fall zu tun hat.  
+
+```{r eval = FALSE}
+if (this) {
+  that
+}
+```
+
+Das `this` Objekt sollte ein *logical test* sein, oder ein anderer Ausdruck, der mit `TRUE` oder `FALSE` bewertet. Wenn `this` mit `TRUE` bewertet, so führt R den Code zwischen den gschweiften Klammern aus. Wenn `FALSE`, dann lässt R den Code aus.
+
+```{r eval = FALSE}
+if (num < 0) {
+  num <- num * -1
+}
+```
+
+Zum Beispiel soll `num` positiv gemacht werden. Wenn `num < 0` `TRUE` ist, wird `num` mit `-1` multipliziert. Logisch.
+
+```{r}
+num <- -2
+
+if (num < 0) {
+  num <- num * -1
+}
+
+num
+```
+
+Ist `num < 0` `FALSE`, macht R gar nichts.
+
+```{r}
+num <- 4
+
+if (num < 0) {
+  num <- num * -1
+}
+
+num
+```
+
+Wir brauchen ein eindeutiges `TRUE` oder `FALSE`. Ein Vektor bestehend aus `TRUE`s und `FALSE`s hilft nicht weiter. Mach falls notwendig Gebrauch von `any` und `all`. Du musst dich natürlich nicht beschränken auf bloß eine Zeile. Zwischen den geschweiften Klammern `{}` kannst du dich austoben. Beginnt in unserem Beispiel `num` aber als positive Zahl, so wird der ganze Block ausgelassen. Ansonsten passiert was?
+
+```{r}
+num <- -1
+
+if (num < 0) {
+  print("num is negative.")
+  print("Don't worry, I'll fix it.")
+  num <- num * -1
+  print("Now num is positive.")
+}
+num
+```
+
+__Aufgabe__ Was wird ausgegeben?
+
+```{r}
+x <- 1
+if (3 == 3) {
+  x <- 2
+}
+x
+```
+
+Logisch was rauskommt. 2 natürlich. Bedingung ist erfüllt, also `TRUE`.
+ __Aufgabe__ Was wird ausgegeben?
+ 
+```{r}
+x <- 1
+if (TRUE) {
+  x <- 2
+}
+x
+```
+ 
+Auch logisch, auch die 2. Da `TRUE`.
+
+__Aufgabe__ Was kommt raus?
+
+```{r}
+x <- 1
+if (x == 1) {
+  x <- 2
+  if (x == 1) {
+    x <- 3
+  }
+}
+x
+```
+
+Wieder die 2. Die erste Bedingung ist erfüllt, die zweite dann nicht mhr, da `x` auf `2` gesetzt wird. Der Rest in den eckigen Klammern spielt dann keine Rolle mehr.
+
+## *else Statement* / else Bedingung
+
+Du kannst aber R auch sagen was es zu machen hat, wenn die Bedingung *falsch* ist. 
+
+```{r eval = FALSE}
+if (this) {
+  Plan A
+} else {
+  Plan B
+}
+```
+
+Wenn `this` als `TRUE` bewertet wird, so führt R den Code zwischen den ersten geschweiften Klammern aus, nicht den zwischen den zweiten. Wenn `this` als `FALSE` bewertet wird, so führt R den Code zwischen dem zweiten Set geschweifter Klammern aus. So könntest du runden. `trunc()` ist hierbei der Zahl vor dem Komma, wenn a eine Dezimalzahl ist wie z.B. 6.67. Daraus wird dann 6.
+
+```{r}
+a <- 3.14
+dec <- a - trunc(a)
+dec
+```
+
+Runden wir also.
+
+```{r}
+if (dec >= 0.5) {
+  a <- trunc(a) + 1
+} else {
+  a <- trunc(a)
+}
+
+a
+```
+
+Wenn du mehr als 2 sich gegenseitig ausschließende Fälle hast, kannst du weitere `if` und `else` setzen. Das `if` Statement folgt dann direkt dem vorangegangenem `else` Statement.
+
+```{r}
+a <- 1
+b <- 1
+
+if (a > b) {
+  print("A wins!")
+} else if (a < b) {
+  print("B wins!")
+} else {
+  print("Tie.")
+}
+```
+
+R kämpft sich solange durch bis eine Bedingung mit `TRUE` bewertet wird, dann bricht es ab. Bei keinem `TRUE` führt R das letzte `else` Statement aus.  
+Du kannst `if` und `else` benutzen, um in unserer slot-machine Funktion die Subaufgaben miteinander zu verbinden.
+
+```{r eval = FALSE}
+if ( # Case 1: all the same <1>) {
+  prize <- # look up the prize <3>
+} else if ( # Case 2: all bars <2> ) {
+  prize <- # assign $5 <4>
+} else {
+  # count cherries <5>
+  prize <- # calculate a prize <7>
+}
+
+# count diamonds <6>
+# double the prize if necessary <8>
+```
+
+Unser Skelett ist noch recht unvollständig. Viel Kommentar, wenig Code. Wir haben aber das Programm in 8 einfache Subaufgaben runtergebrochen.
+
+1. Teste, ob wir 3 gleiche Symbole haben.
+2. Test, ob die Symbole alle Balken (B) sind.
+3. Schau nach dem Preis für drei gleiche Symbole.
+4. Ordne einen 5 Euro Preis zu.
+5. Zähle die Anzahl an Kirschen.
+6. Zähle die Anzahl an Diamanten.
+7. Kalkuliere einen Preis basierend auf der Anzahl an Kirschen.
+8. Passe den Preis für Diamanten an.
+
+Du kannst einen Flow Chart erstellen, mit Pfeilen, der dir die verschiedenen Wege weist. Sehr anschaulich.
+
+Jetzt können wir die Subaufgaben in Angriff nehmen, eine nach der anderen. Jede der Unteraufgaben ist leicht zu lösen, wenn du ein konkretes Beispiel ansetzt und eine Lösung ausschreibst bevor du in R codest.
+
+Die erste Unteraufgabe fragt nach, ob die Symbole alle gleich sind. Drei gleiche? Wie die finale `score` Funktion aussieht, weißt du in etwa.
+
+```{r eval = FALSE}
+score <- function(symbols) {
+
+  # calculate a prize
+
+  prize
+}
+```
+
+Die Argumente `symbols` sind der Output von `get_symbols`: ein Vektor, der drei *Character Strings* enthält.  
+Die ganze Funktion zu schreiben und dann zu testen ist keine gute Idee, da du sehr wahrscheinlich Fehler machst und dann nicht weißt wo genau dieser Fehler begangen wurde.   
+Kümmere dich also nur um eine Unteraufgabe auf einmal. Bau dir ein konkretes Beispiel und teste alle Unteraufgaben separat. 
+Erstelle z.B. einen Vektor mit drei möglichen *Character Strings* per Hand: `symbols <- c("7", "7", "7")`. Diese Werte kannst du natürlich per Hand jedezeit beliebig ändern. 
+Nachdem du dir ein konkretes Beispiel ausgesucht hast, beschreibe in geschriebener Sprache wie du die Unteraufgaben machen willst. Je präziser du bist, desto leichter fällt dir die Übersetzung in R.  
+Die erste Aufgabe besteht darin, "three of a kind" zu testen. Da sehe ich noch keine große Hilfe für meinen R Code.  
+Sage ich aber: ein Vektor namens `symbols` enthält drei gleiche Symbole, wenn das erste Element ist gleich dem zweiten Element und das zweite Element von `symbols` ist gleich dem dritten Element. Dann kann ich damit arbeiten.
+
+__Aufgabe__ Schreibe einen Test.
+
+Mach aus deiner Prosa einen *logical test*, geschrieben in R. Benutze dein Wissen von *logical tests*, Boolean Operatoren und Subsetting. Der Test muss natürlich mit dem Vektor `symbols` zusammenarbeiten und ein `TRUE` zurückgeben, falls alle drei Elemente gleich sind. Teste es also an `symbols`.  
+Es gibt mehrere Lösungen. Schau hin und verstehe.
+
+```{r}
+symbols <- c("7", "7", "7")
+symbols[1] == symbols[2] & symbols[2] == symbols[3] 
+symbols[1] == symbols[2] & symbols[1] == symbols[3] 
+all(symbols == symbols[1])
+```
+ 
+Eine weitere Möglichkeit mit `unique`. 
+
+```{r}
+length(unique(symbols) == 1)
+```
+
+Jeder einmalige Term deines Vektors wird ausgegeben. Aus 3 mach 1. Die Länge ist also `1`, wenn alle Elemente gleich sind. 
+
+Unser slot-machine Skript sieht jetzt wie folgt aus (`&&` gibt sofort `FALSE` aus, wenn die linke Seite des Tests  `FALSE` ist. Rechenleistung wird hier gespart).
+
+```{r eval = FALSE}
+same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+
+if (same) {
+  prize <- # look up the prize
+} else if ( # Case 2: all bars ) {
+  prize <- # assign $5
+} else {
+  # count cherries
+  prize <- # calculate a prize
+}
+
+# count diamonds
+# double the prize if necessary
+```
+
+Der zweite Preis wird gewonnen, wenn alle Symbole ein Balken sind, also `B` oder `BB` oder `BBB`: `symbols <- c("B", "BB", "BBB")`.
+
+__Aufgabe__ Test auf Balken.
+
+Du kannst einen sehr langen Code schreiben, der Boolean Operatoren benutzt. Es gibt natürlich noch andere, kürzere Wege.
+
+```{r}
+symbols <- c("B", "BBB", "BB")
+symbols[1] == "B" | symbols[1] == "BB" | symbols[1] == "BBB" &
+  symbols[2] == "B" | symbols[2] == "BB" | symbols[2] == "BBB" &
+  symbols[3] == "B" | symbols[3] == "BB" | symbols[3] == "BBB"
+```
+
+Zu uneffizient und lang. Oft kannst du multiple `|` Operatoren ersetzen durch ein `%in%`. Für jedes Element kannst du `TRUE` testen mit `all`. 
+
+```{r}
+all(symbols %in% c("B", "BB", "BBB"))
+```
+
+Fügen wir den Code dem Skript hinzu.
+
+```{r eval = FALSE}
+same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+bars <- symbols %in% c("B", "BB", "BBB")
+
+if (same) {
+  prize <- # look up the prize
+} else if (all(bars)) {
+  prize <- # assign $5
+} else {
+  # count cherries
+  prize <- # calculate a prize
+}
+
+# count diamonds
+# double the prize if necessary
+```
+
+Der einfache `%` Operator führt eine elementweise logische UND-Verknüpfung durch. `&&`führt eine kurze logische UND-Verknüpfung durch und evaluiert die zweite Bedingung nur unter bestimmten Bedingungen. Er bewertet die zweite Bedingung nur, wenn die erste wahr ist.  
+
+Unsere nächste Subaufgabe ist `symbols` einen Preis zuzuordnen. Bei drei gleichen gibt es eine Belohnung, die aber verschieden hoch ausfällt, je nach Symbol. `DD`s ergibt 100 Euro, `7`er ergeben 80 Euro usw. Ein `if` Baum kann helfen.
+
+```{r eval = FALSE}
+if (same) {
+  symbol <- symbols[1]
+  if (symbol == "DD") {
+    prize <- 800
+  } else if (symbol == "7") {
+    prize <- 80
+  } else if (symbol == "BBB") {
+    prize <- 40
+  } else if (symbol == "BB") {
+    prize <- 5
+  } else if (symbol == "B") {
+    prize <- 10
+  } else if (symbol == "C") {
+    prize <- 10
+  } else if (symbol == "0") {
+    prize <- 0
+  }
+}
+```
+
+Der Code ist natürlich wieder sehr lang und umständlich. Eine weitere Methode hilft.
+
+## Lookup Tables / Lookup-Tabellen
+
+Oft hilft Subsetting bei verschiedensten Analysen in R. Wir können einen Vektor bauen, mit Symbolen als Namen und Preisen als Elementen.
+
+```{r}
+payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+  "B" = 10, "C" = 10, "0" = 0)
+payouts
+```
+
+Der korrekte Preis kann jetzt leicht extrahiert werden.
+
+```{r}
+payouts["DD"]
+payouts["B"]
+```
+
+Die `unname` Funktion lässt dabei den Namen weg.
+
+```{r}
+unname(payouts["DD"])
+```
+
+`payouts` ist eine Lookup-Tabelle. Solche Tabellen kannst du in R mithilfe von benannten Objekten leicht bauen. 
+
+```{r}
+symbols <- c("7", "7", "7")
+symbols[1]
+payouts[symbols[1]]
+symbols <- c("C", "C", "C")
+payouts[symbols[1]]
+```
+
+Du brauchst beim Hochgucken (*look up*) nicht das exakte Symbol zu kennen, weil du R sagen kannst hochzuschauen, welches Symbol auch immer sich in `symbols` befindet. Da alle Symbole gleich sind, kannst du dir `symbols[1]`, `symbols[2]` oder `symbol[3]` aussuchen. Jetzt hast du schon eine einigermaßen automatisierte Preisberechnung, wenn `symbols` "three of a kind" enthält.
+
+```{r eval =FALSE}
+same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+bars <- symbols %in% c("B", "BB", "BBB")
+
+if (same) {
+  payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+    "B" = 10, "C" = 10, "0" = 0)
+  prize <- unname(payouts[symbols[1]])
+} else if (all(bars)) {
+  prize <- # assign $5
+} else {
+  # count cherries
+  prize <- # calculate a prize
+}
+
+# count diamonds
+# double the prize if necessary
+```
+
+Fall 2 kommt vor, wenn alle Symbole Balken sind. Die Zurodnung zu einem Gewinn von 5 Euro ist hier sehr einfach. 
+
+```{r eval = FALSE}
+same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+bars <- symbols %in% c("B", "BB", "BBB")
+
+if (same) {
+  payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+    "B" = 10, "C" = 10, "0" = 0)
+  prize <- unname(payouts[symbols[1]])
+} else if (all(bars)) {
+  prize <- 5
+} else {
+  # count cherries
+  prize <- # calculate a prize
+}
+
+# count diamonds
+# double the prize if necessary
+```
+
+
+Übrigens, warum entscheidet sich R bei drei gleichen `BBB` für Fall 1 und nicht Fall 2? Weil sobald eine Bedingung erfüllt ist nicht nach weiteren Bedingungen und Ausgaben gesucht wird. Siehe auch.
+
+```{r}
+x <- 11
+if(x>8) {
+print("1")
+} else if(x>6) {
+print("2")
+} else {
+print("No")
+}
+
+
+```
+
+Arbeiten wir jetzt den letzten Fall mit den Kirschen durch. Hier geht es um die Anzahl der Kirschen in `symbols`.
+
+__Aufgabe__ Finde `C`'s: Kirschen.
+
+Denke an Coercion. Auch Diamanten können so gezählt werden.
+
+```{r}
+symbols <- c("C", "DD", "C")
+symbols == "C"
+sum(symbols == "C")
+sum(symbols == "DD")
+```
+
+Fügen wir unsere Erkenntnisse unserem Programm hinzu.
+
+```{r eval = FALSE}
+same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+bars <- symbols %in% c("B", "BB", "BBB")
+
+if (same) {
+  payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+    "B" = 10, "C" = 10, "0" = 0)
+  prize <- unname(payouts[symbols[1]])
+} else if (all(bars)) {
+  prize <- 5
+} else {
+  cherries <- sum(symbols == "C")
+  prize <- # calculate a prize
+}
+
+diamonds <- sum(symbols == "DD")
+# double the prize if necessary
+```
+
+Der Fall, dass 3 Kirschen vorkommen wurde schon im ersten `if` Fall abgedeckt, jetzt fehlen noch 2, 1 und 0 Kirschen. Mit einem `if` Baum können wir das ganze natürlich abhandeln. 
+
+```{r eval = FALSE}
+if (cherries == 2) {
+  prize <- 5
+} else if (cherries == 1) {
+  prize <- 2
+} else {
+  prize <- 0
+}
+```
+
+Wir können aber auch durch Subsetting die Aufgabe lösen. Dafür brauchen wir einen Preisvektor: `c(0, 2, 5)`. Darauf können wir leicht zugreifen. Die Anzahl der Kirschen haben wir auch schon bestimmt durch `cherries`. Jetzt verbinden wir beides miteinander. Aber bedenke, dass 0, 1, 2 Kirschen möglich sind. Wir müssen also noch ein wenig modifizieren.
+
+```{r eval = FALSE}
+cherries + 1
+c(0, 2, 5)[cherries + 1]
+```
+
+Daraus folgt für unseren Programmcode.
+
+```{r eval = FALSE}
+if (same) {
+  payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+    "B" = 10, "C" = 10, "0" = 0)
+  prize <- unname(payouts[symbols[1]])
+} else if (all(bars)) {
+  prize <- 5
+} else {
+  cherries <- sum(symbols == "C")
+  prize <- c(0, 2, 5)[cherries + 1]
+}
+
+diamonds <- sum(symbols == "DD")
+# double the prize if necessary
+```
+
+__Lookup Table vs. If Baum__ 
+
+Als generelle Regel: benutze einen `if` Baum, wenn jeder Ast einen anderen Code ausführt.  
+  
+Benutze *Lookup* Tabellen, wenn jeder Ast des Baumes einen anderen Wert ausgibt.  
+  
+    
+Unsere letzte Unteraufgabe ist es jetzt, den Preis für jeden Diamanten zu verdoppeln. 
+
+__Aufgabe__ Anpassung für Diamanten.
+
+```{r eval = FALSE}
+prize * 2 ^ diamonds
+```
+
+Das ist einfach. Das finale Skript sieht also so aus.
+
+```{r eval = FALSE}
+same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+bars <- symbols %in% c("B", "BB", "BBB")
+
+if (same) {
+  payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+    "B" = 10, "C" = 10, "0" = 0)
+  prize <- unname(payouts[symbols[1]])
+} else if (all(bars)) {
+  prize <- 5
+} else {
+  cherries <- sum(symbols == "C")
+  prize <- c(0, 2, 5)[cherries + 1]
+}
+
+diamonds <- sum(symbols == "DD")
+prize * 2 ^ diamonds
+```
+
+## Kommentare in R
+
+Kommentare können helfen deinen Code leichter verständlich zu machen. Für dich, für andere, nach längerer Zeit und zur Übersichtlichkeit.
+
+```{r eval = FALSE}
+# identify case
+same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+bars <- symbols %in% c("B", "BB", "BBB")
+
+# get prize
+if (same) {
+  payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+    "B" = 10, "C" = 10, "0" = 0)
+  prize <- unname(payouts[symbols[1]])
+} else if (all(bars)) {
+  prize <- 5
+} else {
+  cherries <- sum(symbols == "C")
+  prize <- c(0, 2, 5)[cherries + 1]
+}
+
+# adjust for diamonds
+diamonds <- sum(symbols == "DD")
+prize * 2 ^ diamonds
+```
+
+Jetzt kannst du deinen ganzen Code in eine Funktion stecken. 
+Achte dabei darauf, dass die letzte Zeile der Funktion ein Resultat zurück gibt und identifiziere alle Argumente, die für die Funktion gebraucht werden. 
+
+Oftmals werden die konkreten Beispiele zum Testen deines Codes zu den Argumenten. `symbols` wird bei uns zum Argument der Funktion. Was auch sonst?  
+Denke noch an unsere erste, die Funktion `play` und an `get_symbols`. 
+
+```{r}
+score <- function (symbols) {
+  # identify case
+  same <- symbols[1] == symbols[2] && symbols[2] == symbols[3]
+  bars <- symbols %in% c("B", "BB", "BBB")
+  
+  # get prize
+  if (same) {
+    payouts <- c("DD" = 100, "7" = 80, "BBB" = 40, "BB" = 25, 
+      "B" = 10, "C" = 10, "0" = 0)
+    prize <- unname(payouts[symbols[1]])
+  } else if (all(bars)) {
+    prize <- 5
+  } else {
+    cherries <- sum(symbols == "C")
+    prize <- c(0, 2, 5)[cherries + 1]
+  }
+  
+  # adjust for diamonds
+  diamonds <- sum(symbols == "DD")
+  prize * 2 ^ diamonds
+}
+
+get_symbols <- function() {
+  wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+  sample(wheel, size = 3, replace = TRUE, 
+    prob = c(0.03, 0.03, 0.06, 0.1, 0.25, 0.01, 0.52))
+}
+
+play <- function() {
+  symbols <- get_symbols()
+  print(symbols)
+  score(symbols)
+}
+
+play()
+play()
+play()
+```
+
+# S3
+
+Wir wollen jetzt uns das Ergebnis in einem anschaulichen Format ausgeben lassen. Ohne Gänsefüßchen und mit einem Eurozeichen oder Dollarzeichen vor oder hinter dem Gewinn.  
+Durch das Aufrufen der Funktion werden durch das `print` die Symbole ausgedruckt. Aber nicht in der Variable gespeichert. Weise ich das Ergebnis einer Variable zu und rufe diese auf, wird nur der Gewinn angegeben. 
+
+## Das S3 System
+
+Wenn du `print` auf einen numrischen Vektor ausführst, wird eine Zahl ausgegeben. 
+
+```{r}
+num <- 1000000000
+print(num)
+```
+
+Übergibst du die Zahl der S3 Klasse `POSIXct` gefolgt von `POSIXt`, `print` gibt eine Zeit aus. 
+
+```{r}
+class(num) <- c("POSIXct", "POSIXt")
+print(num)
+```
+
+Wenn du Objekte mit Klassen benutzt, so findest du dich im S3 System wieder. Dieses besteht aus:  
+
+1. Attributen
+2. Funktionen
+3. Methoden
+
+
+## Attribute
+
+Im vorherigen Kapitel: Attribute, hast du gelernt, dass viele Objekte mit Attributen daherkommen. Zusätzliche Informationen, die einen Namen haben und an ein Objekt gehangen werden. Wir hatten es mit Metadaten verglichen. Zum Beispiel speichert ein *Data Frame* seine Reihen- und Spaltennamen als Attribute. Auch der Klassenname wird als Attribut gespeichert (`data.frame`). 
+
+Attribute können über `attributes` aufgerufen werden. 
+
+```{r}
+deck <- data.frame(
+  face = c("king", "queen", "jack", "ten", "nine", "eight", "seven", "six",
+    "five", "four", "three", "two", "ace", "king", "queen", "jack", "ten", 
+    "nine", "eight", "seven", "six", "five", "four", "three", "two", "ace", 
+    "king", "queen", "jack", "ten", "nine", "eight", "seven", "six", "five", 
+    "four", "three", "two", "ace", "king", "queen", "jack", "ten", "nine", 
+    "eight", "seven", "six", "five", "four", "three", "two", "ace"),  
+  suit = c("spades", "spades", "spades", "spades", "spades", "spades", 
+    "spades", "spades", "spades", "spades", "spades", "spades", "spades", 
+    "clubs", "clubs", "clubs", "clubs", "clubs", "clubs", "clubs", "clubs", 
+    "clubs", "clubs", "clubs", "clubs", "clubs", "diamonds", "diamonds", 
+    "diamonds", "diamonds", "diamonds", "diamonds", "diamonds", "diamonds", 
+    "diamonds", "diamonds", "diamonds", "diamonds", "diamonds", "hearts", 
+    "hearts", "hearts", "hearts", "hearts", "hearts", "hearts", "hearts", 
+    "hearts", "hearts", "hearts", "hearts", "hearts"), 
+  value = c(13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 13, 12, 11, 10, 9, 8, 
+    7, 6, 5, 4, 3, 2, 1, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 13, 12, 11, 
+    10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+)
+deck
+attributes(deck)
+```
+
+R kommt mit vielen Hilfsfunktionen daher. Kennengelernt haben wir schon die `names`, die `dim` und die `class` Funktion. Es gibt noch `row.names`, `levels` und viele andere.
+
+```{r}
+row.names(deck)
+row.names(deck) <- 101:152
+row.names(deck)
+levels(deck) <- c("level 1", "level 2", "level 3")
+levels(deck)
+attributes(deck)
+```
+
+R lässt dich irgendwelche Attribute hinzufügen, auch wenn sie fortan ignoriert werden. Du kannst mit `attr` irgendwelche Attribute hinzufügen oder dir den Wert eines Attributes anschauen. 
+
+```{r}
+one_play <- play()
+one_play
+attributes(one_play)
+```
+
+`attr` braucht zwei Argumente: ein R Objekt und den Namen eines Attributs als *Character String*.  
+Geben wir `one_play` ein Attribut namens `symbols`, dass einen Vektor mit *Character Strings* enthält.
+
+```{r}
+attr(one_play, "symbols") <- c("B", "0", "B")
+attributes(one_play)
+```
+
+Die Werte anschauen über `attr` und den entsprechenden Namen. Easy.
+
+```{r}
+attr(one_play, "symbols")
+one_play
+```
+
+Wenn du einem Vektor Attribute verpasst wird R diese normalerweise unter dem Wert des Vektors anzeigen. Wenn das Attribut die Klasse des Vektors wechselt, so zeigt R alle Informationen des Vektors auf eine neue Art und Weise an. Wie bei `POSIXct` gesehen.
+
+__Aufgabe__ Füge ein Objekt hinzu. 
+
+Modifiziere jetzt das Objekt `play`, um einen Preis zurückzugeben, der die `symbols` als Attribute mitliefert. `print(symbols)` brauchen wir jetzt natürlich nicht mehr. 
+
+```{r}
+play <- function() {
+  symbols <- get_symbols()
+  prize <- score(symbols)
+  attr(prize, "symbols") <- symbols
+  prize
+}
+```
+
+`play` gibt jetzt sowohl den Preis, als auch die angehängten Symbole mit dem Preis wieder. Preis und Symbole bleiben als Paar zusammen, auch wenn wir sie an ein neues Objekt übergeben.
+
+```{r}
+play()
+two_play <- play()
+two_play
+```
+
+Auch die `structure` Funktion kann Attribute zu einem Objekt setzen. Du kannst den Argumenten einen beliebigen Namen verpassen.
+
+```{r}
+play <- function() {
+  symbols <- get_symbols()
+  structure(score(symbols), symbols = symbols)
+}
+
+three_play <- play()
+three_play
+```
+
+Jetzt kannst du deine eigene Funktion schreiben, die die Attribute benutzt. 
+
+```{r}
+slot_display <- function(prize){
+
+  # extract symbols
+  symbols <- attr(prize, "symbols")
+
+  # collapse symbols into single string
+  symbols <- paste(symbols, collapse = " ")
+
+  # combine symbol with prize as a character string
+  # \n is special escape sequence for a new line (i.e. return or enter)
+  string <- paste(symbols, prize, sep = "\n$")
+
+  # display character string in console without quotes
+  cat(string)
+}
+one_play
+slot_display(one_play)
+```
+
+Die Funktion erwartet ein Objekt `one_play`, dass sowohl einen numerischen Wert also auch ein `symbols` Attribut liefert. Die Werte von `symbols` werden als ein Objekt gespeichert. Danach benutzt unsere Funktion `paste`, um die drei *Strings* in einen einzigen *String* zusammenzuführen. `paste` benutzt den Wert von `collapse`, um die einzelnen *Character Strings* voneinander zu trennen. So werden die Werte `B O B` voneinander durch ein Leerzeichen getrennt.  
+Jetzt haben wir `symbols` und `prize`. Zwei *Strings*, die wir durch `paste` zusammenführen. `sep` ist der Seperator zwischen den beiden *Strings*, so dass unser Ergebnis so aussieht: `"B O B\n$0"`.  
+`cat` ist wie `print`, nur dass es nicht seinen Output mit Gänsefüßchen umrahmt. `cat` ersetzt auch `\n` durch eine neue Zeile.
+Der Output von `play` sieht jetzt ein wenig schöner aus.
+
+```{r}
+slot_display(play())
+slot_display(play())
+```
+
+## Generische Funktionen
+R benutzt `print` häufiger als man denken mag. Immer wenn ein Ergebnis in der Console ausgegeben wird, geschieht dies im Hintergrund. 
+
+```{r}
+print(pi)
+pi
+print(head(deck))
+head(deck)
+print(play())
+play()
+```
+
+`print` ist eine generische Funktion. Das heißt, dass es verschiedenen Dinge in verschiedenen Fällen macht. 
+
+```{r}
+num <- 1000000000
+print(num)
+class(num) <- c("POSIXct", "POSIXt")
+print(num)
+```
+
+## Methoden
+
+`print` ruft eine spezielle Funktion auf: `UseMethod`.
+
+```{r}
+print
+```
+
+`UserMethod` untersucht die Klasse vom *Input* und übergibt alle Argumente einer neuen Funktion. Wenn du `print` ein POSIXct Objekt übergibst, gibt `UsMethod` `print`s Argumente an `print.POSIXct` weiter. Das Ergebnis lautet dann.
+
+```{r}
+print.POSIXct
+```
+
+Wenn du `print` einem Faktorobjekt übergibst, wird `UseMethod` alle Argumente von `print` als `print.factor` der `print` Funktion anhängen.
+
+```{r}
+print.factor
+```
+
+`print.POSIXct` und `print.factor` sind Methoden von `print`. Sie arbeiten wie reguläre R Funktionen. Sie machen beide aber verschiedene Dinge!  
+`print` ruft `UseMethod` auf, welches dann eine spezielle Methode wählt. Diese hängt von der Klasse von `print`s erstem Argument ab.  
+Welche Methoden existieren für generische Funktionen, kannst du mithilfe des `method` Aufrufs auf eine Funktion sehen. `print` hat fast 200 Methoden. Es existieren also sehr viele Klassen in R.
+
+```{r}
+methods(print)[1:10]
+```
+
+Dieses System ist als __S3__ bekannt. Viele bekannte R Funktionen sind S3 generisch, z.B. `summary`und `head`. Andere Funktionen wie `c`, `+`, `-`, `<` und weitere verhalten sich wie generische Funktionen. Sie rufen aber `.primitive` statt `UseMethod` auf.  
+
+### Method Dispatch
+
+`UseMethod` benutzt ein sehr simples System, um Methoden an Funktionen anzupassen.  
+Jede S3 Methode hat einen zweigeteilten Namen. Der erste Teil bezieht sich auf die Funktion, mit der die Methode arbeitet. Der zweite Teil bezieht sich auf die Klasse. Beide Teile sind durch einen Punkt miteinander verbunden, wie `print.function`. Arbeiten wir mit Matrizen: `summary.matrix`, usw.  
+
+Du kannst mit diesem System arbeiten, indem du eine eigene Funktion schreibst und ihr einen gültigen S3 Namen verpasst. Geben wir z.B. `one_play` eine Klasse. R speichert sämtliche *Character Strings* im Klassenattribut:
+
+```{r}
+class(one_play) <- "slots"
+```
+ 
+Schreiben wir jetzt eine `print` Methode für die Klasse. Sie muss `print.slots` genannt werden, sonst wird sie nicht gefunden.  Sie muss auch dieselben Argumente wie `print` haben. 
+
+```{r}
+args(print)
+print.slots <- function(x, ...) {
+  cat("I'm using the print.slots method")
+}
+```
+
+Diese Methode funktioniert, macht aber hier wenig Sinn.
+
+```{r}
+print(one_play)
+one_play
+rm(print.slots)
+```
+
+Manche Objekte haben mehrere Klassen. Welche Klasse benutzt `UseMethod` jetzt, um eine `print` Methode zu finden? 
+
+```{r}
+now <- Sys.time()
+attributes(now)
+```
+
+`UseMethod` sucht zuerst nach einer Methode, die zur ersten Klassen passt. Wird keine gefunden, sucht sie nach einer Methode, die zur zweiten Klasse passt. Gibst du `print` ein Objekt, deren Klasse(n) keine `print` Methode haben, `UseMethod` ruft `print.default` auf.  
+Lass uns eine bessere Methode für unseren *slot machine Output* schreiben.  
+
+__Aufgabe__ Schreibe eine *print* Methode. 
+
+Die Methode sollte `slot_display` aufrufen.  
+Wir haben schon harte Arbeit für die Methode geleistet. Folgende Methode funktioniert.
+
+Der Name natürlich `print.slots`, so dass `UseMethod` sie finden kann. 
+
+```{r}
+print.slots <- function(x, ...) {
+  slot_display(x)
+}
+```
+
+R benutzt jetzt automatisch `slot_display`, um Objekte der Klasse *slots* anzuzeigen. 
+
+
+```{r}
+one_play
+```
+
+Jetzt wollen wir sichergehen, dass jeder Output die Klasse `slots` hat.
+
+__Aufgabe__ Füge eine Klasse hinzu.
+
+Modifiziere die `play` Funktion, so dass sie `slots` zum `class` Attribut des Outputs zuweist.
+
+```{r eval = FALSE}
+play <- function() {
+  symbols <- get_symbols()
+  structure(score(symbols), symbols = symbols)
+}
+```
+
+Füge nur `class = "slots"` in `structure `hinzu.  
+```{r}
+play <- function() {
+  symbols <- get_symbols()
+  structure(score(symbols), symbols = symbols, class = "slots")
+}
+```
+
+Jedes Spiel der *slot machine* hat jetzt die Klasse `slots`.
+
+```{r}
+class(play())
+```
+
+Als Ergebnis gibt R alles in unserem schönen Format wieder.
+
+```{r}
+play()
+play()
+play()
+play()
+play()
+```
+
+## Klassen
+
+Du kannst jetzt auch eine neue Klasse von Objekten in R machen:
+
+* Wähle einen Namen für deine Klasse.
+* Ordne jeder Instanz deiner Klasse ein class Attribut zu.
+* Schreibe class Methoden für irgendwelche generischen Funktionen, für die du wahrscheinlich Objekte deiner Klasse anwendest.
+
+Du kannst Methoden einer Klasse mit dem `class` Argument aufrufen. Jede geschriebene Methode für die Klasse wird angezeigt.
+
+```{r}
+methods(class = "factor")
+```
+
+Es ist viel Arbeit und normalerweise musst du eine `class` Methode für jede *basic* Operation in R schreiben.
+
+R lässt Attribute weg, wenn Objekte zu einem Vektor verbunden werden.
+
+```{r}
+play1 <- play()
+play1
+play2 <- play()
+play2
+c(play1, play2)
+```
+
+Der Vektor hat jetzt nicht mehr das *slots* Klassenattribut. Auch beim Subsetting verliert ein Objekt sein Attribut.
+
+```{r}
+play1[1]
+```
+
+Du kannst das vermeiden, indem du eine `c.slots` Methode schreibst, sowie eine `[.slots` Methode. Dann hast du aber andere Probleme.  
+Wir bleiben also beim *single prize value*.
+
+# Loops/Schleifen
+
+Schleifen sind R's Methode eine Aufgabe zu wiederholen.
+Schauen wir uns unsere Slot Maschine und die `score` Funktion an. Ihr wird Betrug vorgeworfen! Das lässt sich natürlich nur überprüfen, wenn wir das Programm einige Male laufen lassen. Einige sehr viele Male natürlich.
+
+## Erwatungswert
+
+Der Erwartungswert einer Funktion ist der gewichtete Durchschnitt. Jeder mögliche Wert wird mit der Eintrittswahrscheinlichkeit multipliziert und aufsummiert.
+
+$$E(x) = \sum_{i=1}^n (x_i \cdot P(x_i))$$  
+
+Spielen wir das Spiel unendlich oft, so erhalten wir als durchschnittlichen Gewinn den Erwartungswert.  
+Benutzen wir diese Formel, um ein paar einfache Erwartungswerte auszurechnen.
+
+Berechnen wir den Erwartungswert des einfachen Würfelwurfes. Jede Zahl von 1 bis 6 wird mit ihrer Eintrittswahrscheinlichkeit 1/6 multipliziert und aufsummiert.
+
+```{r}
+die <- c(1, 2, 3, 4, 5, 6)
+```
+
+$$ E(die) = \sum_{i=1}^n (die_i \cdot P(die_i))$$
+
+Leicht können wir aufsummieren. 
+
+\begin{align}
+    E(die) &= \sum_{i=1}^n (die_i \cdot P(die_i)) \\
+    &= 1 \cdot \frac{1}{6} +  ...  + 6 \cdot \frac{1}{6} \\
+    &= 3.5
+\end{align}
+
+Der Erwartungswert eines einfachen Würfelwurfes liegt also bei 3.5
+
+Es geht natürlich auch ein wenig schwieriger. Lass uns jetzt den Erwartungswert eines Würfelpaares berechnen, wobei nicht alle Wahrscheinlichkeiten gleich groß sind.  
+  
+Zuerst brauchen wir alle möglichen Kombinationen. 
+
+## `expand.grid`
+
+Die `expand.grid` Funktion bietet einen schnellen Weg alle Kombinationen der Elemente von n Vektoren zu berechnen. Berechne zum Beispiel alle Kombinationen von `c(1, 2, 3)` und `c(1, 2)`. Es sind 6 Stück.
+
+Wir führen zum Beispiel `expand.grid` auf 2 Kopien von `die` aus.
+
+```{r}
+rolls <- expand.grid(die, die)
+rolls
+```
+
+Insgesamt erhalten wir also alle 36 Kombinationen.  
+Natürlich können wir auch mehr als 2 Vektoren auf die Funktion anwenden, z.B. `expand.grid(die, die, die)` usw. Es wird immer ein *Data Frame* ausgegeben, der jede mögliche Kombination genau einmal enthält.
+
+Die Augensumme kannst du leicht berechnen und der Tabelle hinzufügen. 
+
+```{r}
+rolls$value <- rolls$Var1 + rolls$Var2
+head(rolls, 3)
+```
+
+Als nächstes brauchen wir noch die Wahrscheinlichkeiten. Da die Würfelwürfe unabhängig voneinander sind, gilt:
+
+\usepackage{amsmath}
+\begin{align}
+   P(A\&B\&C\&...) = P(A) \cdot P(B) \cdot P(C) \cdot ... 
+\end{align}
+
+Die Wahrscheinlichkeit für (1, 1) ist also die Wahrscheinlichkeit für eine 1 mal die Wahrscheinlichkeit für noch eine 1. Bei unserem Würfel (nicht fair) ist das jeweils 1/8.  
+
+\begin{align}
+    P(1\&1) &= P(1) \cdot P(1) \\
+            &= 1/8 \cdot 1/8 \\
+            &= 1/64
+\end{align}
+
+Insgesamt gilt für die Eintrittswahrscheinlichkeit unseres unfairen Würfels:
+
+```{r}
+prob <- c("1" = 1/8, "2" = 1/8, "3" = 1/8, "4" = 1/8, "5" = 1/8, "6" = 3/8)
+
+prob
+```
+
+Jetzt können wir die Wahrscheinlichkeit für die Zahlen 1 bis 6 berechnen. Erst für Würfelwurf `1`, dann für Würfelwurf `2`. Für alle 36 Fälle. Dann können wir multiplizieren.
+
+```{r}
+rolls$Var1
+prob[rolls$Var1]
+rolls$prob1 <- prob[rolls$Var1]
+head(rolls, 3)
+```
+
+Ein Vektor wurde angefügt.
+
+```{r}
+rolls$prob2 <- prob[rolls$Var2]
+head(rolls, 3)
+```
+
+Multiplizieren liefert die Wahrscheinlichkeiten für die Augensummen.
+
+```{r}
+rolls$prob <- rolls$prob1 * rolls$prob2
+head(rolls, 3)
+```
+
+Der Erwartungswert ist jetzt die Summe der Werte multipliziert mit der Eintrittswahrscheinlichkeit.
+
+```{r}
+sum(rolls$value * rolls$prob)
+```
+
+8.25 ist der Erwartungswert unseres unfairen Paarwurfes. Für faire Würfel ist er 7.  
+  
+    
+Lass uns jetzt den Erwartungswert für die Slot Maschine berechnen. 
+
+__Aufgabe__ Kombinationen für *slot machine* bestimmen.
+
+Wir brauchen wieder `expand.grid` für unsere 3 Kombinationsmöglichkeiten aus dem `wheel` Vektor.
+
+```{r}
+wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+```
+
+Verhindere durch `stringsAsFactors = FALSE`, dass die Kombinationen als Faktoren gespeichert werden.  
+
+Gebe jetzt `expand.grid` drei Kopien von `wheel`. 
+
+```{r}
+combos <- expand.grid(wheel, wheel, wheel, stringsAsFactors = FALSE)
+head(combos)
+tail(combos)
+```
+
+Folgende Wahrscheinlichkeiten gelten für unsere *slot machine*.
+
+```{r}
+get_symbols <- function() {
+  wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+  sample(wheel, size = 3, replace = TRUE, 
+    prob = c(0.03, 0.03, 0.06, 0.1, 0.25, 0.01, 0.52))
+}
+```
+
+__Aufgabe__ Baue eine Look-Up Tabelle.  
+Haben wir schon einmal gemacht. Dafür brauchen wir Namen für unsere Wahrscheinlichkeiten.
+
+```{r}
+prob <- c("DD" = 0.03, "7" = 0.03, "BBB" = 0.06, 
+  "BB" = 0.1, "B" = 0.25, "C" = 0.01, "0" = 0.52)
+```
+
+Füge die Wahrscheinlichkeiten der Tabelle hinzu.
+
+```{r}
+combos$prob1 <- prob[combos$Var1]
+combos$prob2 <- prob[combos$Var2]
+combos$prob3 <- prob[combos$Var3]
+
+head(combos, 3)
+dim(combos)
+```
+
+__Aufgabe__ Berechne Wahrscheinlichkeiten für alle Kombinationen.
+
+Wieder müssen wir das Produkt der Eizelwahrscheinlichkeiten berechnen, da diese unabhängig voneinander sind.
+
+```{r}
+combos$prob <- combos$prob1 * combos$prob2 * combos$prob3
+
+head(combos, 3)
+sum(combos$prob)
+```
+
+Jetzt müssen wir den Preis natürlich noch bestimmen. Für die erste Reihe zum Beispiel.
+
+```{r}
+symbols <- c(combos[1, 1], combos[1, 2], combos[1, 3])
+score(symbols)
+```
+
+Insgesamt gibt es aber 343 Zeilen. Wir brauchen eine `for` Schleife.
+
+## *for Loop* / for-Schleife
+
+Eine `for` Schleife wiederholt einen Batzen Code viele Male für ein Element in einer Menge. Die Syntax in R sieht so aus.
+
+```{r eval = FALSE}
+for (value in that) {
+  this
+}
+```
+
+Für jedes Mitglied der Menge `that` wird der Code zwischen den geschweiften Klammern ausgeführt. Im folgenden Beispiel wird der `print` Befehl für jedes Element der Menge (*Character Strings*) ausgeführt. Also hier genau 4 mal.
+
+```{r}
+for (value in c("My", "first", "for", "loop")) {
+  print("one run")
+}
+```
+
+Natürlich kannst du auch direkt den `value` ausgeben lassen. Er nimmt jeden Wert der Menge an, die hinter `in` steht.
+
+```{r}
+for (value in c("My", "second", "for", "loop")) {
+  print(value)
+}
+value
+```
+ 
+Der `value` hat am Ende immer noch den Namen des letzten Elements unserer Menge: "loop".
+
+Du musst nicht den Namen `value` nehmen, sondern kannst jeden beliebigen anderen Namen wählen.
+
+```{r}
+for (word in c("My", "second", "for", "loop")) {
+  print(word)
+}
+for (string in c("My", "second", "for", "loop")) {
+  print(string)
+}
+for (i in c("My", "second", "for", "loop")) {
+  print(i)
+}
+```
+
+Wir können jetzt eine `for` Schleife anwenden, um für jede Zeile in `combos` den `score` zu berechnen. Du musst das Ergebnis aber vorsichtig abspeichern. 
+
+```{r eval = FALSE}
+for (value in c("My", "third", "for", "loop")) {
+  value
+}
+```
+
+Nichts wird hier ausgegeben, da das `print` fehlt. Während die Schleife läuft, musst du die Outputs abspeichern.  
+Zum Beispiel kannst du einen leeren Vektor erzeugen und ihn dann während des Durchlaufens befüllen.
+
+```{r}
+chars <- vector(length = 4)
+words <- c("My", "fourth", "for", "loop")
+
+for (i in 1:4) {
+  chars[i] <- words[i]
+}
+
+chars
+```
+
+Anstatt auf eine Menge von Objekten deine Schleife auszuführen, führe sie auf ganzen Zahlen aus, und indiziere auf dein Objekt und deinen Speicher-Vektor.
+
+Fügen wir `combos` einen Vektor mit `NA`s hinzu.  
+
+__Aufgabe__ Bilde eine Schleife.
+
+```{r}
+for (i in 1:nrow(combos)) {
+  symbols <- c(combos[i, 1], combos[i, 2], combos[i, 3])
+  combos$prize[i] <- score(symbols)
+}
+```
+
+Nach dem Ausführen der Schleife, enthält  `combos$prize` den korrekten Preis für jede Zeile. 
+
+```{r}
+head(combos, 3)
+```
+
+Der Erwartungswert kann endlich berechnet werden. Er ist die Summe von `combos$prize`, gewichtet mit `combos$prob`. 
+
+```{r}
+sum(combos$prize * combos$prob)
+```
+
+Auf einen Dollar holen wir also 54 Cents raus. Kein guter Deal, oder?  
+Etwas haben wir aber vergessen. `DD` ist ein Joker.  
+
+Ignorieren wir es: 54 Cents. Ohne ignorieren: 93 Cents.  
+
+__Aufgabe__ Challenge.
+
+```{r}
+score <- function(symbols) {
+  
+  diamonds <- sum(symbols == "DD")
+  cherries <- sum(symbols == "C")
+  
+  # identify case
+  # since diamonds are wild, only nondiamonds 
+  # matter for three of a kind and all bars
+  slots <- symbols[symbols != "DD"]
+  same <- length(unique(slots)) == 1
+  bars <- slots %in% c("B", "BB", "BBB")
+
+  # assign prize
+  if (diamonds == 3) {
+    prize <- 100
+  } else if (same) {
+    payouts <- c("7" = 80, "BBB" = 40, "BB" = 25,
+      "B" = 10, "C" = 10, "0" = 0)
+    prize <- unname(payouts[slots[1]])
+  } else if (all(bars)) {
+    prize <- 5
+  } else if (cherries > 0) {
+    # diamonds count as cherries
+    # so long as there is one real cherry
+    prize <- c(0, 2, 5)[cherries + diamonds + 1]
+  } else {
+    prize <- 0
+  }
+  
+  # double for each diamond
+  prize * 2^diamonds
+}
+```
+
+__Aufgabe__ Berechne den Erwartungswert.
+
+Berechne den Erwartungswert, wenn die neue `score` Funktion genutzt wird.  
+
+```{r}
+for (i in 1:nrow(combos)) {
+  symbols <- c(combos[i, 1], combos[i, 2], combos[i, 3])
+  combos$prize[i] <- score(symbols)
+}
+sum(combos$prize * combos$prob)
+```
+
+Der Erwartungswert beträgt also 0.934356  Dollar.
+
+## *while Loops* / while-Schleifen.
+
+Eine `while` Schleife läuft so lange wiederholend durch, wie sie `TRUE` ist. 
+
+```{r eval = FALSE}
+while (condition) {
+  code
+}
+```
+
+So lange `condition` `TRUE` ist, läuft `while` den Code zwischen den geschweiften Klammern. Wenn `condition` zu `FALSE` wird, beendet die Schleife ihren Job.  
+
+Wie wechselt die `condition` von `TRUE` zu `FALSE`? Nur, wenn der Code in der Schleife sich verändert. Ohne, musst du wohl ESC drücken.
+
+Wie bei `for` Schleifen, geben `while` Schleifen kein Ergebnis aus. Du musst wissen was die Schleife ausgeben soll und es als Objekt speichern. Diese Art von Schleifen wird aber eher selten angewendet.
+
+```{r}
+plays_till_broke <- function(start_with) {
+  cash <- start_with
+  n <- 0
+  while (cash > 0) {
+    cash <- cash - 1 + play()
+    n <- n + 1
+  }
+  n
+}
+
+plays_till_broke(100)
+```
+
+## repeat-Schleife / *repeat Loop*
+
+Sie wiederholen einen Batzen Code, bis du ihnen sagst aufzuhören (ESC), oder bis sie auf den `break` Befehl treffen. Dieser stoppt die Schleife.  
+Schreibe die Schleife von oben mithilfe von `repeat`.
+
+```{r}
+plays_till_broke <- function(start_with) {
+  cash <- start_with
+  n <- 0
+  repeat {
+    cash <- cash - 1 + play()
+    n <- n + 1
+    if (cash <= 0) {
+      break
+    }
+  }
+  n
+}
+
+plays_till_broke(100)
+```
+
+# Speed
+
+Geschwindigkeit, wir brauchen Geschwindigkeit. Das Arbeiten mit großen Datensätzen gelingt nur, wenn unser Code schnell durchläuft. Dafür sorgen wir in diesem Kapitel.
+
+## Vektorisierter Code
+
+Der schnellste Code in R macht sich drei Dinge zu Nutze:  
+
+1. Logical Tests
+2. Subsetting
+3. Elementweise Ausführung
+  
+Vektorisierter Code hat die höchste Qualität!  
+Er kann einen Vektor als *Input* nehmen, und gleichzeitig jeden seiner Werte manipulieren.  Vergleichen wir 2 Beispiele. Das erste Beispiel benutzt eine `loop` Schleife, das zweite manipuliert mithilfe von *logical Subsetting* jede negative Zahl im Vektor zur selben Zeit.  
+
+```{r}
+abs_loop <- function(vec){
+  for (i in 1:length(vec)) {
+    if (vec[i] < 0) {
+      vec[i] <- -vec[i]
+    }
+  }
+  vec
+}
+```
+
+Ohne `for` Schleife.
+
+```{r}
+abs_sets <- function(vec){
+  negs <- vec < 0
+  vec[negs] <- vec[negs] * -1
+  vec
+}
+```
+
+`abs_set` ist viel schneller als `abs_loop`, weil R diese Operationen schneller kann:  
+*logical tests*, *subsetting* und *element-wise execution*.  
+Um zu sehen wie schnell `abs_set` ist, benutze `system.time`. Schauen wir uns den Vergleich mithilfe eines langen Vektors an.
+
+```{r}
+long <- rep(c(-1, 1), 5000000)
+```
+
+So erstellen wir einen Vektor der Länge 10 Mio., wobei sich immer -1 und +1 abwechseln.  
+
+```{r}
+system.time(abs_loop(long))
+system.time(abs_sets(long))
+```
+
+Die letzte Spalte zeigt, dass `abs_set` den absoluten Wert 30 mal schneller berechnet hat als `abs_loop`.   
+
+__Aufgabe__ Wie schnell ist `abs`?  
+Viele Funktionen in R sind bereits vektorisiert und so optimiert, um so schnell wie möglich zu laufen. Die `abs` Funktion zum Beispiel. Überprüfe wie viel schneller `abs` den Betrag berechnet, als die anderen Funktionen.  
+
+Ca. 11 mal schneller als `abs_set` und 300 mal schneller als `abs_loop`.
+
+```{r}
+system.time(abs(long))
+```
+
+## Wie schreibe ich vektorisierten Code?
+
+1. Benutze verktorisierte Funktionen   
+2. Benutze *subsetting*. Versuche jedes Element auf einmal zu manipulieren.  
+
+Alle Elemente, die wir mit -1 multiplizieren, können wir über einen *logial test* identifizieren.  
+
+```{r}
+vec <- c(1, -2, 3, -4, 5, -6, 7, -8, 9, -10)
+vec < 0
+vec[vec < 0]
+```
+
+Alle in R verfügbaren arithmetischen Operatoren sind vektorisiert. Wir brauchen also nur einfach alle negativen Werte mit -1 zur selben Zeit zu multiplizieren.
+
+```{r}
+vec[vec < 0] * -1
+vec[vec < 0] <- vec[vec < 0] * -1
+vec
+```
+
+__Aufgabe__ Vektorisiere eine Funktion. 
+
+Folgende Funktion nimmt einen Vektor mit *slot* Symbolen und ändert diese.
+
+```{r}
+change_symbols <- function(vec){
+  for (i in 1:length(vec)){
+    if (vec[i] == "DD") {
+      vec[i] <- "joker"
+    } else if (vec[i] == "C") {
+      vec[i] <- "ace"
+    } else if (vec[i] == "7") {
+      vec[i] <- "king"
+    }else if (vec[i] == "B") {
+      vec[i] <- "queen"
+    } else if (vec[i] == "BB") {
+      vec[i] <- "jack"
+    } else if (vec[i] == "BBB") {
+      vec[i] <- "ten"
+    } else {
+      vec[i] <- "nine"
+    } 
+  }
+  vec
+}
+
+vec <- c("DD", "C", "7", "B", "BB", "BBB", "0")
+
+change_symbols(vec)
+many <- rep(vec, 1000000)
+system.time(change_symbols(many))
+```
+
+Um die Aufgabe zu vektorisieren, baue einen *logical test*. 
+
+```{r eval = FALSE}
+vec[vec == "DD"]
+## "DD"
+
+vec[vec == "C"]
+## "C"
+
+vec[vec == "7"]
+## "7"
+
+vec[vec == "B"]
+## "B"
+
+vec[vec == "BB"]
+## "BB"
+
+vec[vec == "BBB"]
+## "BBB"
+
+vec[vec == "0"]
+## "0"
+```
+
+Folgender Code ändert das Symbol für jeden Fall.
+
+```{r}
+vec[vec == "DD"] <- "joker"
+vec[vec == "C"] <- "ace"
+vec[vec == "7"] <- "king"
+vec[vec == "B"] <- "queen"
+vec[vec == "BB"] <- "jack"
+vec[vec == "BBB"] <- "ten"
+vec[vec == "0"] <- "nine"
+```
+
+
+Baue es in eine Funktion ein.
+
+```{r}
+change_vec <- function (vec) {
+  vec[vec == "DD"] <- "joker"
+  vec[vec == "C"] <- "ace"
+  vec[vec == "7"] <- "king"
+  vec[vec == "B"] <- "queen"
+  vec[vec == "BB"] <- "jack"
+  vec[vec == "BBB"] <- "ten"
+  vec[vec == "0"] <- "nine"
+  
+  vec
+}
+
+system.time(change_vec(many))
+```
+
+Besser sind natürlich immer *Look-Up* Tabellen.
+
+```{r}
+change_vec2 <- function(vec){
+  tb <- c("DD" = "joker", "C" = "ace", "7" = "king", "B" = "queen", 
+    "BB" = "jack", "BBB" = "ten", "0" = "nine")
+  unname(tb[vec])
+}
+
+system.time(change_vec(many))
+```
+
+## Wie schnelle `for Loops` schreiben?
+
+Zuerst kannst du Schleifen beschleunigen, indem du soviel wie möglich außerhalb der Schleife schreibst. Weil alles innerhalb natürlich viele Male durchläuft.  
+Gehe sicher, dass dein Objekt in der Schleife, in dem du alle Informationen speicherst, groß genug ist.  
+Das Objekt `output` hat schon eine Länge von 1 Mio.
+
+```{r}
+system.time({
+  output <- rep(NA, 1000000) 
+  for (i in 1:1000000) {
+    output[i] <- i + 1
+  }
+})
+```
+
+Das Objekt der zweiten Schleife hat beim Start eine Länge von 1. R verlängert dieses Objek beim Laufen dann.
+
+```{r}
+system.time({
+  output <- NA 
+  for (i in 1:1000000) {
+    output[i] <- i + 1
+  }
+})
+```
+
+Im zweiten Fall muss R immer einen neues Platz im *Memory* des Computers finden. Der alte Vektor wird gelöscht, nachdem eine neue Kopie entstanden ist: 1 Mio. mal.
+
+## Vektorisierter Code in der Praxis
+
+In unserem *slot machine* Beispiel kann der Durchschnittspreis leicht berechnet werden, indem wir die Maschine sehr oft laufen lassen.  
+Dieser Preis ist eine gute Schätzung für die wahre Payout-Rate. Diese Methode basiert auf dem Gesetz der großen Zahlen.
+
+```{r}
+winnings <- vector(length = 1000000)
+for (i in 1:1000000) {
+  winnings[i] <- play()
+}
+
+mean(winnings)
+```
+
+Wenn du diese Simulation laufen lässt, dauert es sehr lange. Du kannst die 5.7 Minuten deutlich reduzieren, indem du vektorisierten Code benutzt.
+
+```{r}
+system.time(for (i in 1:1000000) {
+  winnings[i] <- play()
+})
+```
+
+Statt `if` Baum und `for` Kombination, könntest du verktorisierten Code benutzen. Es werden viele Kombinationen ausgegeben, auf die du dann mit *logical subsetting* zugreifen kannst. Auf alle gleichzeitig.  
+In unserem Fall erhalten wir eine Matrix mit n Zeilen und 3 Spalten. Jede Zeile enthält eine *slot* Kombination.
+
+```{r}
+get_many_symbols <- function(n) {
+  wheel <- c("DD", "7", "BBB", "BB", "B", "C", "0")
+  vec <- sample(wheel, size = 3 * n, replace = TRUE,
+    prob = c(0.03, 0.03, 0.06, 0.1, 0.25, 0.01, 0.52))
+  matrix(vec, ncol = 3)
+}
+
+get_many_symbols(5)
+```
+
+Du kannst auch `play` neu schreiben mit n als Argument. Als Ausgabe erhälst du `n` Preise in einem *Data Frame*.
+
+```{r}
+play_many <- function(n) {
+  symb_mat <- get_many_symbols(n = n)
+  data.frame(w1 = symb_mat[,1], w2 = symb_mat[,2],
+             w3 = symb_mat[,3], prize = score_many(symb_mat))
+}
+```
+
+Jetzt schreibe die komplizierte Funktion `score_many`, die vektorisierte Version von `score`. `rowSums` berechnet die Summe jeder Zeile von Zahlen (oder *logicals*). Sie hilft dir hier.
+
+Überlege dir ein konkretes Beispiel.
+
+```{r}
+symbols <- matrix(
+  c("DD", "DD", "DD", 
+    "C", "DD", "0", 
+    "B", "B", "B", 
+    "B", "BB", "BBB", 
+    "C", "C", "0", 
+    "7", "DD", "DD"), nrow = 6, byrow = TRUE)
+
+symbols
+```
+
+Dann kannst du jede Zeile von `score_many` durchlaufen lassen. 
+
+__Aufgabe__ Teste dich.
+
+Schreibe deine eigenen vektorisierte Version von `score`. Gehe davon aus, dass die Daten in einer $n \times 3$-Matrix gespeichert werden.  
+Jede Zeile stellt naürlich eine Kombination von Symbolen dar.  
+
+`score_many` ist die vektorisierte Version von `score`. Sie läuft ca. 20 Sekunden und ist so 17 mal schneller als die `for`-Schleife.
+
+```{r}
+# symbols should be a matrix with a column for each slot machine window
+score_many <- function(symbols) {
+
+  # Step 1: Assign base prize based on cherries and diamonds ---------
+  ## Count the number of cherries and diamonds in each combination
+  cherries <- rowSums(symbols == "C")
+  diamonds <- rowSums(symbols == "DD") 
+  
+  ## Wild diamonds count as cherries
+  prize <- c(0, 2, 5)[cherries + diamonds + 1]
+  
+  ## ...but not if there are zero real cherries 
+  ### (cherries is coerced to FALSE where cherries == 0)
+  prize[!cherries] <- 0
+  
+  # Step 2: Change prize for combinations that contain three of a kind 
+  same <- symbols[, 1] == symbols[, 2] & 
+    symbols[, 2] == symbols[, 3]
+  payoffs <- c("DD" = 100, "7" = 80, "BBB" = 40, 
+    "BB" = 25, "B" = 10, "C" = 10, "0" = 0)
+  prize[same] <- payoffs[symbols[same, 1]]
+  
+  # Step 3: Change prize for combinations that contain all bars ------
+  bars <- symbols == "B" | symbols ==  "BB" | symbols == "BBB"
+  all_bars <- bars[, 1] & bars[, 2] & bars[, 3] & !same
+  prize[all_bars] <- 5
+  
+  # Step 4: Handle wilds ---------------------------------------------
+  
+  ## combos with two diamonds
+  two_wilds <- diamonds == 2
+
+  ### Identify the nonwild symbol
+  one <- two_wilds & symbols[, 1] != symbols[, 2] & 
+    symbols[, 2] == symbols[, 3]
+  two <- two_wilds & symbols[, 1] != symbols[, 2] & 
+    symbols[, 1] == symbols[, 3]
+  three <- two_wilds & symbols[, 1] == symbols[, 2] & 
+    symbols[, 2] != symbols[, 3]
+  
+  ### Treat as three of a kind
+  prize[one] <- payoffs[symbols[one, 1]]
+  prize[two] <- payoffs[symbols[two, 2]]
+  prize[three] <- payoffs[symbols[three, 3]]
+  
+  ## combos with one wild
+  one_wild <- diamonds == 1
+  
+  ### Treat as all bars (if appropriate)
+  wild_bars <- one_wild & (rowSums(bars) == 2)
+  prize[wild_bars] <- 5
+  
+  ### Treat as three of a kind (if appropriate)
+  one <- one_wild & symbols[, 1] == symbols[, 2]
+  two <- one_wild & symbols[, 2] == symbols[, 3]
+  three <- one_wild & symbols[, 3] == symbols[, 1]
+  prize[one] <- payoffs[symbols[one, 1]]
+  prize[two] <- payoffs[symbols[two, 2]]
+  prize[three] <- payoffs[symbols[three, 3]]
+ 
+  # Step 5: Double prize for every diamond in combo ------------------
+  unname(prize * 2^diamonds)
+  
+}
+
+system.time(play_many(10000000))
+```
+
+
